@@ -599,7 +599,9 @@ GameObject:
   - component: {fileID: 1587002572}
   - component: {fileID: 1587002573}
   - component: {fileID: 1587002570}
+  - component: {fileID: 1587002577}
   - component: {fileID: 1587002574}
+  - component: {fileID: 1587002576}
   - component: {fileID: 1587002571}
   - component: {fileID: 1587002575}
   - component: {fileID: 1587002569}
@@ -716,8 +718,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef8a2558fdf4f414e8e6005fa764bc43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 4
-  rotateSpeed: 5
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!65 &1587002575
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -731,6 +734,34 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.3, y: 1, z: 0.15}
   m_Center: {x: 0, y: 0.5, z: -0.075}
+--- !u!114 &1587002576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587002568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6a3446d3d1554c8cae96f5c6cc7e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isMovable: 0
+  clickPoint: {x: 0, y: 0, z: 0}
+--- !u!114 &1587002577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587002568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c199a3a620a9e83448a12a7a3ba7d388, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 4
+  rotateSpeed: 5
 --- !u!1 &1626780963
 GameObject:
   m_ObjectHideFlags: 0
