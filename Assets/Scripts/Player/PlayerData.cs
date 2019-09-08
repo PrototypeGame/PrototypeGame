@@ -6,4 +6,6 @@ public class PlayerData : MonoBehaviour
 {
     public float moveSpeed;
     public float rotateSpeed;
+
+    public float dashPower;
 }
