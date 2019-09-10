@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    private void Awake()
-    {
+    public float moveSpeed;
+    public float rotateSpeed;
 
-    }
+    public float dashPower;
+
+    public float attackRange;
+    public float itemGetRange;
 }

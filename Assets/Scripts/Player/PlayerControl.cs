@@ -4,43 +4,45 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
+    /// <summary> 걷는 속도와 달리는 속도를 구분하는 기준속도 변수 </summary>
+    private float speedSection;
+
     public static bool isMovable;
     private Vector3 clickPoint;
 
-    private PlayerData data;
-    private Attack attack;
+    private PlayerManager manager;
 
     private EnemyDetector detector;
 
     private Rigidbody rigid;
     private Animator anim;
 
-    private LayerMask floorLayer;
-    private LayerMask enemyLayer;
-
     public GameTimer dashDelay;
 
-    public GameObject pointer;
+    private LayerMask floorLayer;
+    private LayerMask enemyLayer;
+    private LayerMask itemLayer;
 
     private void Awake()
     {
         isMovable = true;
 
-        data = GetComponent<PlayerData>();
-        attack = GetComponent<Attack>();
+        manager = GetComponent<PlayerManager>();
 
         detector = GetComponentInChildren<EnemyDetector>();
 
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
 
-        floorLayer = 1 << LayerMask.NameToLayer("Floor");
+        // 충돌 레이어 설정
+        floorLayer = LayerMask.NameToLayer("Floor");
+        enemyLayer = LayerMask.NameToLayer("Enemy");
+        itemLayer = LayerMask.NameToLayer("Item");
     }
 
     private void Update()
     {
-        ControlInput();
-        EnemyTrace();
+        MovementInput();
 
         GameTimer.TimerOnGoing(dashDelay);
     }
@@ -50,16 +52,26 @@ public class PlayerControl : MonoBehaviour
         MoveToPoint();
     }
 
-    private void ControlInput()
+    private RaycastHit hit;
+
+    private void MovementInput()
     {
+        if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
+        {
+            // 자동 공격 이동
+            Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
+        }
+        if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
+        {
+            // 보스 무시 이동
+            Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
+        }
+        // Layer에 따라 움직임
         if (Input.GetMouseButton(1))
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit, 1000, floorLayer))
+            if (RaycastUtil.FireRay(ref hit, floorLayer))
             {
-                if (data.moveSpeed <= 4)
+                if (manager.moveSpeed <= speedSection)
                 {
                     anim.SetFloat("speed", 0.5f);
                 }
@@ -67,34 +79,47 @@ public class PlayerControl : MonoBehaviour
                 {
                     anim.SetFloat("speed", 1.0f);
                 }
+
                 clickPoint = hit.point;
                 isMovable = true;
+
+                Debug.Log("[DEBUG] 클릭하는 지점으로 이동합니다.");
+            }
+            else if (RaycastUtil.FireRay(ref hit, enemyLayer))
+            {
+                Vector3 temp = hit.transform.position - transform.position;
+                temp.y = 0.0f;
+
+                if (temp.sqrMagnitude <= Mathf.Pow(2, manager.attackRange))
+                {
+                    Debug.Log("[DEBUG] 클릭한 보스를 공격합니다.");
+                }
+                else
+                {
+                    Debug.Log("[DEBUG] 클릭한 보스를 공격하기 위해서는 좀더 다가가야 합니다.");
+                }
+            }
+            else if (RaycastUtil.FireRay(ref hit, itemLayer))
+            {
+                Vector3 temp = hit.transform.position - transform.position;
+                temp.y = 0.0f;
+
+                if (temp.sqrMagnitude <= Mathf.Pow(2, manager.itemGetRange))
+                {
+                    Debug.Log("[DEBUG] 클릭한 아이템을 획득합니다.");
+                }
+                else
+                {
+                    Debug.Log("[DEBUG] 클릭한 아이템을 획득하기 위해서는 좀더 다각야 합니다.");
+                }
             }
             else
-                isMovable = false;
-
-            //if (!Input.GetKey(KeyCode.LeftAlt))
-            //{
-            //    if (Physics.Raycast(ray, out hit, 1000, enemyLayer))
-            //    {
-            //        // 공격대상으로 지정
-            //        detector.isDetected = true;
-            //        detector.detectedEnemy = hit.transform.root;
-            //    }
-            //}
-        }
-
-        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonUp(1))
-        {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit, 1000, floorLayer))
             {
-                pointer.transform.position = hit.point;
+                isMovable = false;
             }
         }
 
+        // Dash
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (dashDelay.notInCool)
@@ -104,10 +129,11 @@ public class PlayerControl : MonoBehaviour
                 anim.SetFloat("speed", 0.0f);
 
                 MovementUtil.ForceDashMove(rigid, transform, ArrowControl.arrowDest, data.dashPower, ForceMode.Impulse);
-                //MovementUtil.TeleportMove(transform, ArrowControl.arrowDest, data.dashPower);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+
+        // Stop Movement
+        if (Input.GetKeyDown(KeyCode.S))
         {
             // Move Cancel
             isMovable = false;
@@ -122,43 +148,20 @@ public class PlayerControl : MonoBehaviour
     {
         if (isMovable)
         {
-            MovementUtil.Move(rigid, transform.position, clickPoint, data.moveSpeed * Time.deltaTime);
+            MovementUtil.Move(rigid, transform.position, clickPoint, manager.moveSpeed * Time.deltaTime);
 
             Vector3 dir = clickPoint - transform.position;
             dir.y = 0.0f;
 
             if (dir != Vector3.zero)
             {
-                MovementUtil.Rotate(transform, dir, data.rotateSpeed * Time.deltaTime * 100);
+                MovementUtil.Rotate(transform, dir, manager.rotateSpeed * Time.deltaTime * 100);
             }
 
             if (dir.sqrMagnitude < 0.1f * 0.1f)
             {
                 anim.SetFloat("speed", 0.0f);
                 isMovable = false;
-            }
-        }
-    }
-
-    private void EnemyTrace()
-    {
-        if (detector.isDetected)
-        {
-            // Enemy Trace
-
-            Vector3 playerPos = transform.position;
-            playerPos.y = 0.0f;
-            Vector3 enemyPos = detector.detectedEnemy.position;
-            enemyPos.y = 0.0f;
-
-            if ((playerPos - enemyPos).sqrMagnitude <= attack.attackRange)
-            {
-                // Enemy Attack
-                // Attack에서 공격 대상으로 지정
-            }
-            else
-            {
-                // 공격대상에서 해제
             }
         }
     }
