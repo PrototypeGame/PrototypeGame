@@ -128,7 +128,7 @@ public class PlayerControl : MonoBehaviour
                 isMovable = false;
                 anim.SetFloat("speed", 0.0f);
 
-                MovementUtil.ForceDashMove(rigid, transform, ArrowControl.arrowDest, data.dashPower, ForceMode.Impulse);
+                MovementUtil.ForceDashMove(rigid, transform, ArrowControl.arrowDest, manager.dashPower, ForceMode.Impulse);
             }
         }
 
