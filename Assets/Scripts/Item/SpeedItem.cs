@@ -30,7 +30,7 @@ public class SpeedItem : MonoBehaviour, Item
 
     public void ItemEffects()
     {
-        FindObjectOfType<PlayerData>().moveSpeed *= speedMultiple;
+        target.gameObject.GetComponent<PlayerManager>().moveSpeed *= speedMultiple;
 
         StartCoroutine("ReleaseEffects");
     }
@@ -41,7 +41,7 @@ public class SpeedItem : MonoBehaviour, Item
         itemCollider.enabled = false;
 
         yield return new WaitForSeconds(remainSecond);
-        FindObjectOfType<PlayerData>().moveSpeed /= speedMultiple;
+        target.gameObject.GetComponent<PlayerManager>().moveSpeed /= speedMultiple;
 
         Destroy(gameObject);
     }

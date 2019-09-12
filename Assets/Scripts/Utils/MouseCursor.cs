@@ -55,19 +55,19 @@ public class MouseCursor : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 1000))
         {
-            switch (hit.collider.tag)
+            Collider col = hit.collider;
+
+            if (col.CompareTag("Floor"))
             {
-                case "Enemy":
-                    StartCoroutine("SetCursor", cursorSprites[(int)MouseState.ATTACK]);
-                    break;
-                case "Item":
-                    StartCoroutine("SetCursor", cursorSprites[(int)MouseState.ITEM]);
-                    break;
-                case "Floor":
-                    StartCoroutine("SetCursor", cursorSprites[(int)MouseState.MOVE]);
-                    break;
-                default:
-                    break;
+                StartCoroutine("SetCursor", cursorSprites[(int)MouseState.MOVE]);
+            }
+            else if (col.CompareTag("Enemy"))
+            {
+                StartCoroutine("SetCursor", cursorSprites[(int)MouseState.ATTACK]);
+            }
+            else if (col.CompareTag("Item"))
+            {
+                StartCoroutine("SetCursor", cursorSprites[(int)MouseState.ITEM]);
             }
         }
     }

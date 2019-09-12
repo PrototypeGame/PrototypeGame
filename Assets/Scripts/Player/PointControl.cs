@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-enum PointState
+public enum PointState
 {
     MOVE, ENEMY, ITEM
 }
@@ -10,13 +10,12 @@ enum PointState
 public class PointControl : MonoBehaviour
 {
     public GameObject[] Points;
-    private GameObject curPoint;
 
     private Vector3 pointPos;
 
-    private PointState ptState;
+    public PointState ptState;
 
-    private Dictionary<PointState, GameObject> ptSet;
+    private Dictionary<PointState, GameObject> ptSet = new Dictionary<PointState, GameObject>();
 
     private RaycastHit hit;
 
@@ -26,7 +25,7 @@ public class PointControl : MonoBehaviour
 
     private void Awake()
     {
-        ptSet = new Dictionary<PointState, GameObject>();
+        ptState = PointState.MOVE;
         InitPoints();
 
         // 충돌 레이어 설정
@@ -45,8 +44,6 @@ public class PointControl : MonoBehaviour
         {
             item.Value.SetActive(false);
         }
-
-        curPoint = Points[0];
     }
 
     private void Update()
@@ -58,16 +55,20 @@ public class PointControl : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
+            Debug.Log("Down");
             if (RaycastUtil.FireRay(ref hit, floorLayer))
             {
+                Debug.Log("Floor");
                 SetPoint(PointState.MOVE);
             }
-            else if (RaycastUtil.FireRay(ref hit, enemyLayer))
+            if (RaycastUtil.FireRay(ref hit, enemyLayer))
             {
+                Debug.Log("Enemy");
                 SetPoint(PointState.ENEMY);
             }
-            else if (RaycastUtil.FireRay(ref hit, itemLayer))
+            if (RaycastUtil.FireRay(ref hit, itemLayer))
             {
+                Debug.Log("Item");
                 SetPoint(PointState.ITEM);
             }
 
@@ -75,18 +76,25 @@ public class PointControl : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(1))
         {
+            Debug.Log("Up");
             transform.position = hit.point;
         }
     }
 
-    private void SetPoint(PointState stat)
+    public void SetPoint(PointState stat)
     {
+        ptState = stat;
+
         foreach (var item in ptSet)
         {
             item.Value.SetActive(false);
         }
 
-        curPoint = ptSet[stat];
-        curPoint.SetActive(true);
+        ptSet[stat].SetActive(true);
+    }
+
+    public void TransformPoint(Vector3 ptPos)
+    {
+        transform.position = ptPos;
     }
 }

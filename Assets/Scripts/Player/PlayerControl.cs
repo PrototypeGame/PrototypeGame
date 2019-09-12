@@ -12,8 +12,6 @@ public class PlayerControl : MonoBehaviour
 
     private PlayerManager manager;
 
-    private EnemyDetector detector;
-
     private Rigidbody rigid;
     private Animator anim;
 
@@ -28,8 +26,6 @@ public class PlayerControl : MonoBehaviour
         isMovable = true;
 
         manager = GetComponent<PlayerManager>();
-
-        detector = GetComponentInChildren<EnemyDetector>();
 
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
@@ -54,21 +50,26 @@ public class PlayerControl : MonoBehaviour
 
     private RaycastHit hit;
 
+    /// <summary>
+    /// 키보드, 마우스 입력
+    /// </summary>
     private void MovementInput()
     {
-        if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
-        {
-            // 자동 공격 이동
-            Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
-        }
         if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
         {
             // 보스 무시 이동
             Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
         }
+        if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
+        {
+            // 자동 공격 이동
+            Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
+        }
         // Layer에 따라 움직임
         if (Input.GetMouseButton(1))
         {
+            Debug.Log("[DEBUG] 오른쪽 마우스 클릭됨");
+
             if (RaycastUtil.FireRay(ref hit, floorLayer))
             {
                 if (manager.moveSpeed <= speedSection)
@@ -82,8 +83,6 @@ public class PlayerControl : MonoBehaviour
 
                 clickPoint = hit.point;
                 isMovable = true;
-
-                Debug.Log("[DEBUG] 클릭하는 지점으로 이동합니다.");
             }
             else if (RaycastUtil.FireRay(ref hit, enemyLayer))
             {
