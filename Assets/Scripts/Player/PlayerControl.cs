@@ -59,11 +59,15 @@ public class PlayerControl : MonoBehaviour
         {
             // 보스 무시 이동
             Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
+
+            clickPoint = hit.point;
         }
         if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
         {
             // 자동 공격 이동
             Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
+
+            clickPoint = hit.point;
         }
         // Layer에 따라 움직임
         if (Input.GetMouseButton(1))
@@ -72,6 +76,7 @@ public class PlayerControl : MonoBehaviour
 
             if (RaycastUtil.FireRay(ref hit, floorLayer))
             {
+                Debug.Log("[DEBUG] Floor");
                 if (manager.moveSpeed <= speedSection)
                 {
                     anim.SetFloat("speed", 0.5f);
@@ -86,6 +91,7 @@ public class PlayerControl : MonoBehaviour
             }
             else if (RaycastUtil.FireRay(ref hit, enemyLayer))
             {
+                Debug.Log("[DEBUG] Enemy");
                 Vector3 temp = hit.transform.position - transform.position;
                 temp.y = 0.0f;
 
@@ -97,9 +103,12 @@ public class PlayerControl : MonoBehaviour
                 {
                     Debug.Log("[DEBUG] 클릭한 보스를 공격하기 위해서는 좀더 다가가야 합니다.");
                 }
+
+                clickPoint = hit.point;
             }
             else if (RaycastUtil.FireRay(ref hit, itemLayer))
             {
+                Debug.Log("[DEBUG] Item");
                 Vector3 temp = hit.transform.position - transform.position;
                 temp.y = 0.0f;
 
@@ -111,6 +120,8 @@ public class PlayerControl : MonoBehaviour
                 {
                     Debug.Log("[DEBUG] 클릭한 아이템을 획득하기 위해서는 좀더 다각야 합니다.");
                 }
+
+                clickPoint = hit.point;
             }
             else
             {

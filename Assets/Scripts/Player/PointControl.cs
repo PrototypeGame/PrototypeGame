@@ -12,7 +12,6 @@ public class PointControl : MonoBehaviour
     public GameObject[] Points;
 
     private Vector3 pointPos;
-
     public PointState ptState;
 
     private Dictionary<PointState, GameObject> ptSet = new Dictionary<PointState, GameObject>();
@@ -55,29 +54,65 @@ public class PointControl : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            Debug.Log("Down");
-            if (RaycastUtil.FireRay(ref hit, floorLayer))
+            if (RaycastUtil.FireRay(ref hit))
             {
-                Debug.Log("Floor");
-                SetPoint(PointState.MOVE);
-            }
-            if (RaycastUtil.FireRay(ref hit, enemyLayer))
-            {
-                Debug.Log("Enemy");
-                SetPoint(PointState.ENEMY);
-            }
-            if (RaycastUtil.FireRay(ref hit, itemLayer))
-            {
-                Debug.Log("Item");
-                SetPoint(PointState.ITEM);
-            }
+                Debug.Log("Down");
+                if (hit.transform.CompareTag("Floor"))
+                {
+                    Debug.Log("Floor");
+                    SetPoint(PointState.MOVE);
+                }
+                else if (hit.transform.CompareTag("Enemy"))
+                {
+                    Debug.Log("Enemy");
+                    SetPoint(PointState.ENEMY);
+                }
+                else if (hit.transform.CompareTag("Item"))
+                {
+                    Debug.Log("Item");
+                    SetPoint(PointState.ITEM);
+                }
 
-            transform.position = hit.point;
+                Vector3 hitPos = hit.point;
+                hitPos.y = 0.0f;
+
+                transform.position = hitPos;
+            }
+            else
+            {
+                DisablePoint();
+            }
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            Debug.Log("Up");
-            transform.position = hit.point;
+            if (RaycastUtil.FireRay(ref hit))
+            {
+                Debug.Log("Up");
+                if (hit.transform.CompareTag("Floor"))
+                {
+                    Debug.Log("Floor");
+                    SetPoint(PointState.MOVE);
+                }
+                else if (hit.transform.CompareTag("Enemy"))
+                {
+                    Debug.Log("Enemy");
+                    SetPoint(PointState.ENEMY);
+                }
+                else if (hit.transform.CompareTag("Item"))
+                {
+                    Debug.Log("Item");
+                    SetPoint(PointState.ITEM);
+                }
+
+                Vector3 hitPos = hit.point;
+                hitPos.y = 0.0f;
+
+                transform.position = hitPos;
+            }
+            else
+            {
+                DisablePoint();
+            }
         }
     }
 
@@ -93,8 +128,11 @@ public class PointControl : MonoBehaviour
         ptSet[stat].SetActive(true);
     }
 
-    public void TransformPoint(Vector3 ptPos)
+    public void DisablePoint()
     {
-        transform.position = ptPos;
+        foreach (var item in ptSet)
+        {
+            item.Value.SetActive(false);
+        }
     }
 }
