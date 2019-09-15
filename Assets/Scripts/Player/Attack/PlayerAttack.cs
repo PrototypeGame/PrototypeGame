@@ -1,32 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Attack : MonoBehaviour
+public class PlayerAttack : MonoBehaviour
 {
-    protected Animator anim;
+    protected PlayerManager manager;
+
     [SerializeField]
-    protected GameTimer[] Timer;
+    protected GameTimer[] timer;
 
     // 공격 대상
-    protected GameObject attackTarget;
+    public EnemyManager target;
 
-    public float attackRange;
+    private int enemyNum = 0;
+    protected EnemyManager[] enemys;
 
     protected virtual void Awake()
     {
-        anim = GetComponentInChildren<Animator>();
+        manager = GetComponent<PlayerManager>();
+
+        // 몬스터 등록
+        foreach (var item in FindObjectsOfType<EnemyManager>())
+        {
+            enemys[enemyNum++] = item;
+        }
     }
 
     private void Update()
     {
         TimerUpdate();
+
         KeyInput();
+
         AttackTarget();
     }
 
     public virtual void TimerUpdate()
     {
-        foreach (var item in Timer)
+        foreach (var item in timer)
         {
             GameTimer.TimerOnGoing(item);
         }
@@ -36,30 +46,20 @@ public class Attack : MonoBehaviour
     {
         if (Input.anyKeyDown)
         {
-            if (Input.GetMouseButton(0))
-            {
-                Skill_Auto();
-
-                //if (Input.GetKey(KeyCode.A))
-                //{
-                //
-                //}
-            }
-                
             if (Input.GetKeyDown(KeyCode.Q))
                 Skill_Slot_1();
-            if (Input.GetKeyDown(KeyCode.W))
+            else if (Input.GetKeyDown(KeyCode.W))
                 Skill_Slot_2();
-            if (Input.GetKeyDown(KeyCode.E))
+            else if (Input.GetKeyDown(KeyCode.E))
                 Skill_Slot_3();
-            if (Input.GetKeyDown(KeyCode.R))
+            else if (Input.GetKeyDown(KeyCode.R))
                 Skill_Ultimate();
         }
     }
 
     private void AttackTarget()
     {
-        if (attackTarget != null)
+        if (target != null)
         {
             // Enemy 공격
         }

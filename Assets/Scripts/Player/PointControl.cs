@@ -54,7 +54,7 @@ public class PointControl : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            if (RaycastUtil.FireRay(ref hit))
+            if (DetectUtil.FireRay(ref hit))
             {
                 Debug.Log("Down");
                 if (hit.transform.CompareTag("Floor"))
@@ -85,7 +85,7 @@ public class PointControl : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            if (RaycastUtil.FireRay(ref hit))
+            if (DetectUtil.FireRay(ref hit))
             {
                 Debug.Log("Up");
                 if (hit.transform.CompareTag("Floor"))

@@ -1,46 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ArcherAttack : Attack
+public class ArcherAttack : PlayerAttack
 {
     public GameObject ball;
 
     public override void Skill_Auto()
     {
-        if (Timer[0].notInCool)
+        if (timer[0].notInCool)
         {
-            GameTimer.TimerRemainResetToCool(Timer[0]);
-            anim.SetFloat("speed", 0.0f);
+            GameTimer.TimerRemainResetToCool(timer[0]);
+            //anim.SetFloat("speed", 0.0f);
             PlayerControl.isMovable = false;
 
-            transform.rotation = Quaternion.LookRotation(ArrowControl.arrowDest);
-            anim.SetInteger("skill", 0);
+            transform.rotation = Quaternion.LookRotation(PlayerArrow.arrowDest);
+            //anim.SetInteger("skill", 0);
             Instantiate(ball, transform.position + Vector3.up, transform.rotation);
         }
     }
 
     public override void Skill_Slot_1()
     {
-        if (Timer[1].notInCool)
+        if (timer[1].notInCool)
         {
-            GameTimer.TimerRemainResetToCool(Timer[1]);
-            anim.SetFloat("speed", 0.0f);
+            GameTimer.TimerRemainResetToCool(timer[1]);
+            //anim.SetFloat("speed", 0.0f);
             PlayerControl.isMovable = false;
 
-            anim.SetInteger("skill", 1);
+            //anim.SetInteger("skill", 1);
             Debug.Log("Skill 1 Used");
         }
     }
 
     public override void Skill_Slot_2()
     {
-        if (Timer[2].notInCool)
+        if (timer[2].notInCool)
         {
-            GameTimer.TimerRemainResetToCool(Timer[2]);
-            anim.SetFloat("speed", 0.0f);
+            GameTimer.TimerRemainResetToCool(timer[2]);
+            //anim.SetFloat("speed", 0.0f);
             PlayerControl.isMovable = false;
 
-            anim.SetInteger("skill", 2);
+            //anim.SetInteger("skill", 2);
             Debug.Log("Skill 2 Used");
         }
     }

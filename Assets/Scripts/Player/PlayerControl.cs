@@ -7,13 +7,18 @@ public class PlayerControl : MonoBehaviour
     /// <summary> 걷는 속도와 달리는 속도를 구분하는 기준속도 변수 </summary>
     private float speedSection;
 
-    public static bool isMovable;
     private Vector3 clickPoint;
 
+    public float moveSpeed;
+    public float rotateSpeed;
+    public float dashPower;
+
+    public static bool isMovable;
+
     private PlayerManager manager;
+    private PlayerAttack attack;
 
     private Rigidbody rigid;
-    private Animator anim;
 
     public GameTimer dashDelay;
 
@@ -26,9 +31,9 @@ public class PlayerControl : MonoBehaviour
         isMovable = true;
 
         manager = GetComponent<PlayerManager>();
+        attack = GetComponent<PlayerAttack>();
 
         rigid = GetComponent<Rigidbody>();
-        anim = GetComponentInChildren<Animator>();
 
         // 충돌 레이어 설정
         floorLayer = LayerMask.NameToLayer("Floor");
@@ -55,6 +60,17 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     private void MovementInput()
     {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (Input.GetKey(KeyCode.LeftAlt))
+            {
+
+            }
+            else
+            {
+
+            }
+        }
         if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
         {
             // 보스 무시 이동
@@ -74,28 +90,28 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.Log("[DEBUG] 오른쪽 마우스 클릭됨");
 
-            if (RaycastUtil.FireRay(ref hit, floorLayer))
+            if (DetectUtil.FireRay(ref hit, floorLayer))
             {
                 Debug.Log("[DEBUG] Floor");
-                if (manager.moveSpeed <= speedSection)
+                if (moveSpeed <= speedSection)
                 {
-                    anim.SetFloat("speed", 0.5f);
+                    manager.anim.SetFloat("speed", 0.5f);
                 }
                 else
                 {
-                    anim.SetFloat("speed", 1.0f);
+                    manager.anim.SetFloat("speed", 1.0f);
                 }
 
                 clickPoint = hit.point;
                 isMovable = true;
             }
-            else if (RaycastUtil.FireRay(ref hit, enemyLayer))
+            else if (DetectUtil.FireRay(ref hit, enemyLayer))
             {
                 Debug.Log("[DEBUG] Enemy");
                 Vector3 temp = hit.transform.position - transform.position;
                 temp.y = 0.0f;
 
-                if (temp.sqrMagnitude <= Mathf.Pow(2, manager.attackRange))
+                if (temp.sqrMagnitude <= Mathf.Pow(2, manager.detectRange))
                 {
                     Debug.Log("[DEBUG] 클릭한 보스를 공격합니다.");
                 }
@@ -106,7 +122,7 @@ public class PlayerControl : MonoBehaviour
 
                 clickPoint = hit.point;
             }
-            else if (RaycastUtil.FireRay(ref hit, itemLayer))
+            else if (DetectUtil.FireRay(ref hit, itemLayer))
             {
                 Debug.Log("[DEBUG] Item");
                 Vector3 temp = hit.transform.position - transform.position;
@@ -136,9 +152,9 @@ public class PlayerControl : MonoBehaviour
             {
                 GameTimer.TimerRemainResetToCool(dashDelay);
                 isMovable = false;
-                anim.SetFloat("speed", 0.0f);
+                manager.anim.SetFloat("speed", 0.0f);
 
-                MovementUtil.ForceDashMove(rigid, transform, ArrowControl.arrowDest, manager.dashPower, ForceMode.Impulse);
+                MovementUtil.ForceDashMove(rigid, transform, PlayerArrow.arrowDest, dashPower, ForceMode.Impulse);
             }
         }
 
@@ -158,19 +174,19 @@ public class PlayerControl : MonoBehaviour
     {
         if (isMovable)
         {
-            MovementUtil.Move(rigid, transform.position, clickPoint, manager.moveSpeed * Time.deltaTime);
+            MovementUtil.Move(rigid, transform.position, clickPoint, moveSpeed * Time.deltaTime);
 
             Vector3 dir = clickPoint - transform.position;
             dir.y = 0.0f;
 
             if (dir != Vector3.zero)
             {
-                MovementUtil.Rotate(transform, dir, manager.rotateSpeed * Time.deltaTime * 100);
+                MovementUtil.Rotate(transform, dir, rotateSpeed * Time.deltaTime * 100);
             }
 
             if (dir.sqrMagnitude < 0.1f * 0.1f)
             {
-                anim.SetFloat("speed", 0.0f);
+                manager.anim.SetFloat("speed", 0.0f);
                 isMovable = false;
             }
         }

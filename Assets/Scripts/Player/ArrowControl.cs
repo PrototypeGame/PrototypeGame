@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArrowControl : MonoBehaviour
+public class PlayerArrow : MonoBehaviour
 {
     public static Vector3 arrowDest;
     public static bool isFollowEnemy;
