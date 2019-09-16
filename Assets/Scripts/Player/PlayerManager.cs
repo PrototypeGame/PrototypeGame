@@ -19,6 +19,10 @@ public class PlayerManager : MonoBehaviour
     public float detectRange;
     public bool isDetected;
 
+    public LayerMask floorLayer;
+    public LayerMask enemyLayer;
+    public LayerMask itemLayer;
+
     private void Awake()
     {
         anim = GetComponentInChildren<Animator>();
@@ -29,6 +33,11 @@ public class PlayerManager : MonoBehaviour
 
         detectedEnemy = null;
         isDetected = false;
+
+        // 충돌 레이어 설정
+        floorLayer = LayerMask.NameToLayer("Floor");
+        enemyLayer = LayerMask.NameToLayer("Enemy");
+        itemLayer = LayerMask.NameToLayer("Item");
     }
 
     // 탐지된 Enemy 저장
@@ -37,19 +46,21 @@ public class PlayerManager : MonoBehaviour
     {
         if (detectEnable)
         {
-            // other가 Enemy이고 isDetected가 false이면..
-
-            isDetected = true;
-            detectedEnemy = other.transform;
+            if (other.gameObject.layer == (1 << enemyLayer))
+            {
+                isDetected = true;
+                detectedEnemy = other.transform.root.GetComponent<EnemyManager>();
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // other가 Enemy이고 isDetected가 true이면..
-
-        isDetected = false;
-        detectedEnemy = null;
+        if (other.gameObject.layer == (1 << enemyLayer))
+        {
+            isDetected = false;
+            detectedEnemy = null;
+        }
     }
 
     private void OnDrawGizmos()

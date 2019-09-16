@@ -22,10 +22,6 @@ public class PlayerControl : MonoBehaviour
 
     public GameTimer dashDelay;
 
-    private LayerMask floorLayer;
-    private LayerMask enemyLayer;
-    private LayerMask itemLayer;
-
     private void Awake()
     {
         isMovable = true;
@@ -34,11 +30,6 @@ public class PlayerControl : MonoBehaviour
         attack = GetComponent<PlayerAttack>();
 
         rigid = GetComponent<Rigidbody>();
-
-        // 충돌 레이어 설정
-        floorLayer = LayerMask.NameToLayer("Floor");
-        enemyLayer = LayerMask.NameToLayer("Enemy");
-        itemLayer = LayerMask.NameToLayer("Item");
     }
 
     private void Update()
@@ -90,7 +81,7 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.Log("[DEBUG] 오른쪽 마우스 클릭됨");
 
-            if (DetectUtil.FireRay(ref hit, floorLayer))
+            if (DetectUtil.FireRay(ref hit, manager.floorLayer))
             {
                 Debug.Log("[DEBUG] Floor");
                 if (moveSpeed <= speedSection)
@@ -105,7 +96,7 @@ public class PlayerControl : MonoBehaviour
                 clickPoint = hit.point;
                 isMovable = true;
             }
-            else if (DetectUtil.FireRay(ref hit, enemyLayer))
+            else if (DetectUtil.FireRay(ref hit, manager.enemyLayer))
             {
                 Debug.Log("[DEBUG] Enemy");
                 Vector3 temp = hit.transform.position - transform.position;
@@ -122,7 +113,7 @@ public class PlayerControl : MonoBehaviour
 
                 clickPoint = hit.point;
             }
-            else if (DetectUtil.FireRay(ref hit, itemLayer))
+            else if (DetectUtil.FireRay(ref hit, manager.itemLayer))
             {
                 Debug.Log("[DEBUG] Item");
                 Vector3 temp = hit.transform.position - transform.position;

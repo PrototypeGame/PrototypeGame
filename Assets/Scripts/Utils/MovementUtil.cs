@@ -9,6 +9,11 @@ public class MovementUtil
         rigid.MovePosition(deltaMove);
     }
 
+    public static void Move(Transform target, Vector3 curPos, Vector3 destPos, float moveSpeed)
+    {
+        target.Translate(Vector3.MoveTowards(curPos, destPos, moveSpeed));
+    }
+
     public static void Rotate(Transform target, Vector3 destRot, float rotateSpeed)
     {
         target.rotation = Quaternion.RotateTowards(target.rotation, Quaternion.LookRotation(destRot), rotateSpeed);
