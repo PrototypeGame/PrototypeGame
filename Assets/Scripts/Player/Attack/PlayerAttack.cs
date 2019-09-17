@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class PlayerAttack : MonoBehaviour
@@ -34,22 +35,46 @@ public class PlayerAttack : MonoBehaviour
         {
             // 키보드 컨트롤 1
             if (Input.GetKeyDown(KeyCode.Q))
-                Skill_Slot_1();
+            {
+                if (timer[1].notInCool)
+                {
+                    GameTimer.TimerRemainResetToCool(timer[1]);
+                    StartCoroutine(Skill_Slot_1());
+                }
+            }
             // 키보드 컨트롤 2
             else if (Input.GetKeyDown(KeyCode.W))
-                Skill_Slot_2();
+            {
+                if (timer[2].notInCool)
+                {
+                    GameTimer.TimerRemainResetToCool(timer[2]);
+                    StartCoroutine(Skill_Slot_2());
+                }
+            }
             // 키보드 컨트롤 3
             else if (Input.GetKeyDown(KeyCode.E))
-                Skill_Slot_3();
+            {
+                if (timer[3].notInCool)
+                {
+                    GameTimer.TimerRemainResetToCool(timer[3]);
+                    StartCoroutine(Skill_Slot_3());
+                }
+            }
             // 키보드 컨트롤 4
             else if (Input.GetKeyDown(KeyCode.R))
-                Skill_Ultimate();
+            {
+                if (timer[4].notInCool)
+                {
+                    GameTimer.TimerRemainResetToCool(timer[4]);
+                    StartCoroutine(Skill_Ultimate());
+                }
+            }
         }
     }
 
-    public virtual void Skill_Auto() { }
-    public virtual void Skill_Slot_1() { }
-    public virtual void Skill_Slot_2() { }
-    public virtual void Skill_Slot_3() { }
-    public virtual void Skill_Ultimate() { }
+    public virtual IEnumerator Skill_Auto() { yield return null; }
+    public virtual IEnumerator Skill_Slot_1() { yield return null; }
+    public virtual IEnumerator Skill_Slot_2() { yield return null; }
+    public virtual IEnumerator Skill_Slot_3() { yield return null; }
+    public virtual IEnumerator Skill_Ultimate() { yield return null; }
 }
