@@ -7,13 +7,13 @@ public class PlayerControl : MonoBehaviour
     /// <summary> 걷는 속도와 달리는 속도를 구분하는 기준속도 변수 </summary>
     private float speedSection;
 
-    private Vector3 clickPoint;
+    public Vector3 clickPoint;
 
     public float moveSpeed;
     public float rotateSpeed;
     public float dashPower;
 
-    public static bool isMovable;
+    public static bool isMovable = false;
 
     private PlayerManager manager;
     private PlayerAttack attack;
@@ -35,6 +35,7 @@ public class PlayerControl : MonoBehaviour
     private void Update()
     {
         MovementInput();
+        TargetLock();
 
         GameTimer.TimerOnGoing(dashDelay);
     }
@@ -46,118 +47,116 @@ public class PlayerControl : MonoBehaviour
 
     private RaycastHit hit;
 
-    /// <summary>
-    /// 키보드, 마우스 입력
-    /// </summary>
+    /// <summary> 키보드, 마우스 입력 </summary>
     private void MovementInput()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.anyKey)
         {
-            if (Input.GetKey(KeyCode.LeftAlt))
+            // 혼합 컨트롤 1
+            if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
             {
-
-            }
-            else
-            {
-
-            }
-        }
-        if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
-        {
-            // 보스 무시 이동
-            Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
-
-            clickPoint = hit.point;
-        }
-        if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
-        {
-            // 자동 공격 이동
-            Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
-
-            clickPoint = hit.point;
-        }
-        // Layer에 따라 움직임
-        if (Input.GetMouseButton(1))
-        {
-            Debug.Log("[DEBUG] 오른쪽 마우스 클릭됨");
-
-            if (DetectUtil.FireRay(ref hit, manager.floorLayer))
-            {
-                Debug.Log("[DEBUG] Floor");
-                if (moveSpeed <= speedSection)
+                if (DetectUtil.FireRay(ref hit))
                 {
-                    manager.anim.SetFloat("speed", 0.5f);
+                    // 자동 공격 이동
+                    Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
+
+                    manager.isTargeted = false;
+
+                    clickPoint = hit.point;
+                }
+            }
+            // 혼합 컨트롤 2
+            if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
+            {
+                if (DetectUtil.FireRay(ref hit))
+                {
+                    // 보스 무시 이동
+                    Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
+
+                    manager.isTargeted = false;
+
+                    clickPoint = hit.point;
+                }
+            }
+            // 마우스 입력
+            if (Input.GetMouseButton(1))
+            {
+                Debug.Log("[DEBUG] 오른쪽 마우스 클릭됨");
+
+                manager.isTargeted = false;
+
+                if (DetectUtil.FireRay(ref hit))
+                {
+                    Debug.Log("[DEBUG] Hit Layer : " + hit.transform.root.gameObject.layer);
+
+                    if (hit.transform.root.gameObject.layer == manager.floorLayer)
+                    {
+                        Debug.Log("[DEBUG] Floor");
+
+                        clickPoint = hit.point;
+                        isMovable = true;
+                    }
+                    else if (hit.transform.root.gameObject.layer == manager.enemyLayer)
+                    {
+                        manager.isTargeted = true;
+                        manager.targetedEnemy = hit.transform.root;
+                        Debug.Log("[DEBUG] Enemy : " + manager.targetedEnemy.name + " / isTargeted : " + manager.isTargeted);
+
+                        isMovable = true;
+                    }
                 }
                 else
                 {
-                    manager.anim.SetFloat("speed", 1.0f);
+                    isMovable = false;
                 }
-
-                clickPoint = hit.point;
-                isMovable = true;
             }
-            else if (DetectUtil.FireRay(ref hit, manager.enemyLayer))
+
+            // Dash
+            // 키보드 컨트롤 5
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("[DEBUG] Enemy");
-                Vector3 temp = hit.transform.position - transform.position;
-                temp.y = 0.0f;
-
-                if (temp.sqrMagnitude <= Mathf.Pow(2, manager.detectRange))
+                if (dashDelay.notInCool)
                 {
-                    Debug.Log("[DEBUG] 클릭한 보스를 공격합니다.");
-                }
-                else
-                {
-                    Debug.Log("[DEBUG] 클릭한 보스를 공격하기 위해서는 좀더 다가가야 합니다.");
-                }
+                    if (DetectUtil.FireRay(ref hit, manager.floorLayer))
+                    {
+                        GameTimer.TimerRemainResetToCool(dashDelay);
+                        isMovable = false;
+                        manager.anim.SetFloat("speed", 0.0f);
 
-                clickPoint = hit.point;
+                        MovementUtil.ForceDashMove(rigid, transform, hit.point - transform.position, dashPower, ForceMode.Impulse);
+                    }
+                }
             }
-            else if (DetectUtil.FireRay(ref hit, manager.itemLayer))
-            {
-                Debug.Log("[DEBUG] Item");
-                Vector3 temp = hit.transform.position - transform.position;
-                temp.y = 0.0f;
 
-                if (temp.sqrMagnitude <= Mathf.Pow(2, manager.itemGetRange))
-                {
-                    Debug.Log("[DEBUG] 클릭한 아이템을 획득합니다.");
-                }
-                else
-                {
-                    Debug.Log("[DEBUG] 클릭한 아이템을 획득하기 위해서는 좀더 다각야 합니다.");
-                }
-
-                clickPoint = hit.point;
-            }
-            else
+            // 키보드 컨트롤 13
+            // Stop Movement
+            if (Input.GetKeyDown(KeyCode.S))
             {
+                // Move Cancel
                 isMovable = false;
+
+                // Force Cancel
+                rigid.isKinematic = true;
+                rigid.isKinematic = false;
             }
         }
+    }
 
-        // Dash
-        if (Input.GetKeyDown(KeyCode.Space))
+    private void TargetLock()
+    {
+        if (manager.isTargeted)
         {
-            if (dashDelay.notInCool)
+            Debug.Log("Target Point is refreshing now");
+            clickPoint = manager.targetedEnemy.position;
+        }
+        else
+        {
+            Debug.Log("Targeting is disabled");
+            if (manager.targetedEnemy != null)
             {
-                GameTimer.TimerRemainResetToCool(dashDelay);
-                isMovable = false;
-                manager.anim.SetFloat("speed", 0.0f);
-
-                MovementUtil.ForceDashMove(rigid, transform, PlayerArrow.arrowDest, dashPower, ForceMode.Impulse);
+                Debug.Log("Target Point is missing");
+                manager.targetedEnemy = null;
             }
-        }
-
-        // Stop Movement
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            // Move Cancel
-            isMovable = false;
-
-            // Force Cancel
-            rigid.isKinematic = true;
-            rigid.isKinematic = false;
         }
     }
 
@@ -175,11 +174,25 @@ public class PlayerControl : MonoBehaviour
                 MovementUtil.Rotate(transform, dir, rotateSpeed * Time.deltaTime * 100);
             }
 
-            if (dir.sqrMagnitude < 0.1f * 0.1f)
+            if (manager.isTargeted)
             {
-                manager.anim.SetFloat("speed", 0.0f);
-                isMovable = false;
+                if (dir.sqrMagnitude < 0.2f * 0.2f)
+                {
+                    manager.anim.SetFloat("speed", 0.0f);
+                    manager.isTargeted = false;
+                    isMovable = false;
+                }
             }
+            else
+            {
+                if (dir.sqrMagnitude < 0.1f * 0.1f)
+                {
+                    manager.anim.SetFloat("speed", 0.0f);
+                    isMovable = false;
+                }
+            }
+
+            
         }
     }
 }

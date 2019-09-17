@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface Item
+public interface IEffectItemBase
 {
     void OnTriggerEnter(Collider other);
 

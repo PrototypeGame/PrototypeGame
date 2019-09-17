@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpeedItem : MonoBehaviour, Item
+public class SpeedItem : MonoBehaviour, IEffectItemBase
 {
     private Transform target;
 

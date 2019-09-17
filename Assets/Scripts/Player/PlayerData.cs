@@ -96,5 +96,8 @@ public class PlayerData
         return this;
     }
 
-
+    //public float SetHealth()
+    //{
+    //    health = 100 + (25 * strength) + 
+    //}
 }

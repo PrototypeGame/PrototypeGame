@@ -5,61 +5,94 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public PlayerData data;
+    private PlayerControl control;
 
     public Animator anim;
 
+    public Transform arrow;
     public Camera sight;
 
     public float itemGetRange;
 
-    // Alt 클릭에서는 비활성화
-    public bool detectEnable;
+    // Enemy 관련 변수
+    public bool isAttackable = false;
 
-    public EnemyManager detectedEnemy;
-    public float detectRange;
-    public bool isDetected;
+    public bool isDetectable = false;
+    public bool isDetected = false;
+    public float detectEnemyRange;
+
+    public bool isTargeted = false;
+    public Transform targetedEnemy;
+
+    // Enemy 저장 변수
+    public int enemyNum = 0;
+    // 보스의 매니저 클래스의 이름에 따라 EnemyManager 이름 변경
+    public EnemyManager[] enemys;
+    public int detectedEnemyNum = 0;
+    public EnemyManager[] detectedEnemys;
 
     public LayerMask floorLayer;
     public LayerMask enemyLayer;
-    public LayerMask itemLayer;
 
     private void Awake()
     {
+        control = GetComponent<PlayerControl>();
+
         anim = GetComponentInChildren<Animator>();
 
         sight = GetComponentInChildren<Camera>();
 
-        detectEnable = false;
-
-        detectedEnemy = null;
-        isDetected = false;
+        // 몬스터 등록
+        foreach (var item in FindObjectsOfType<EnemyManager>())
+        {
+            enemys[enemyNum++] = item;
+        }
 
         // 충돌 레이어 설정
         floorLayer = LayerMask.NameToLayer("Floor");
         enemyLayer = LayerMask.NameToLayer("Enemy");
-        itemLayer = LayerMask.NameToLayer("Item");
     }
 
-    // 탐지된 Enemy 저장
-
-    private void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        if (detectEnable)
+        ArrowControl();
+    }
+
+    private RaycastHit hit;
+    private void ArrowControl()
+    {
+        if (DetectUtil.FireRay(ref hit))
         {
-            if (other.gameObject.layer == (1 << enemyLayer))
-            {
-                isDetected = true;
-                detectedEnemy = other.transform.root.GetComponent<EnemyManager>();
-            }
+            arrow.rotation = Quaternion.LookRotation((hit.point - arrow.position).normalized);
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void DetectEnemy()
     {
-        if (other.gameObject.layer == (1 << enemyLayer))
+        // TODO: Enemy를 Detect 했을때 처리 작업할 것
+        if (isDetectable)
         {
-            isDetected = false;
-            detectedEnemy = null;
+            // 탐지한 Enemy의 숫자를 0으로 초기화
+            detectedEnemyNum = 0;
+
+            // 커다란 원의 내부에 Enemy가 있으면 Collider를 저장
+            Collider[] enemyCols = Physics.OverlapSphere(transform.position, detectEnemyRange, 1 << enemyLayer);
+
+            // Enemy의 Collider에서 EnemyManager를 불러와 탐지된 Enemy들을 저장
+            foreach (var item in enemyCols)
+            {
+                detectedEnemys[detectedEnemyNum++] = item.transform.root.GetComponent<EnemyManager>();
+            }
+
+            // 저장된 Enemy의 수가 1 이상이면 탐지됨을 나타냄
+            if (detectedEnemyNum != 0)
+            {
+                isDetected = true;
+            }
+            else
+            {
+                isDetected = false;
+            }
         }
     }
 

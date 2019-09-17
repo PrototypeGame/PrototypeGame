@@ -14,7 +14,7 @@ public class WorriorAttack : PlayerAttack
         {
             GameTimer.TimerRemainResetToCool(timer[0]);
 
-            foreach (var enemy in enemys)
+            foreach (var enemy in manager.enemys)
             {
                 if (DetectUtil.Detect(manager.sight, attackDistance, attackLength, enemy.hitCol))
                 {

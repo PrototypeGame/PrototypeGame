@@ -4,25 +4,13 @@ using System.Collections;
 public class PlayerAttack : MonoBehaviour
 {
     protected PlayerManager manager;
-
+    
     [SerializeField]
-    protected GameTimer[] timer;
-
-    // 공격 대상
-    public EnemyManager target;
-
-    private int enemyNum = 0;
-    protected EnemyManager[] enemys;
+    protected GameTimer[] timer = new GameTimer[5];
 
     protected virtual void Awake()
     {
         manager = GetComponent<PlayerManager>();
-
-        // 몬스터 등록
-        foreach (var item in FindObjectsOfType<EnemyManager>())
-        {
-            enemys[enemyNum++] = item;
-        }
     }
 
     private void Update()
@@ -30,8 +18,6 @@ public class PlayerAttack : MonoBehaviour
         TimerUpdate();
 
         KeyInput();
-
-        AttackTarget();
     }
 
     public virtual void TimerUpdate()
@@ -46,22 +32,18 @@ public class PlayerAttack : MonoBehaviour
     {
         if (Input.anyKeyDown)
         {
+            // 키보드 컨트롤 1
             if (Input.GetKeyDown(KeyCode.Q))
                 Skill_Slot_1();
+            // 키보드 컨트롤 2
             else if (Input.GetKeyDown(KeyCode.W))
                 Skill_Slot_2();
+            // 키보드 컨트롤 3
             else if (Input.GetKeyDown(KeyCode.E))
                 Skill_Slot_3();
+            // 키보드 컨트롤 4
             else if (Input.GetKeyDown(KeyCode.R))
                 Skill_Ultimate();
-        }
-    }
-
-    private void AttackTarget()
-    {
-        if (target != null)
-        {
-            // Enemy 공격
         }
     }
 
