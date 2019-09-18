@@ -5,6 +5,7 @@ using System.Collections;
 public class PlayerAttack : MonoBehaviour
 {
     protected PlayerManager manager;
+    protected PlayerAnimStateSender animSender;
     
     [SerializeField]
     protected GameTimer[] timer = new GameTimer[5];
@@ -12,6 +13,7 @@ public class PlayerAttack : MonoBehaviour
     protected virtual void Awake()
     {
         manager = GetComponent<PlayerManager>();
+        animSender = GetComponentInChildren<PlayerAnimStateSender>();
     }
 
     private void Update()

@@ -81,27 +81,23 @@ public class PlayerControl : MonoBehaviour
             // 마우스 입력
             if (Input.GetMouseButton(1))
             {
-                Debug.Log("[DEBUG] 오른쪽 마우스 클릭됨");
-
                 manager.isTargeted = false;
 
                 if (DetectUtil.FireRay(ref hit))
                 {
-                    Debug.Log("[DEBUG] Hit Layer : " + hit.transform.root.gameObject.layer);
+                    manager.anim.SetInteger("speed", 1);
+                    Debug.Log(manager.anim.GetInteger("speed"));
 
                     if (hit.transform.root.gameObject.layer == manager.floorLayer)
                     {
-                        Debug.Log("[DEBUG] Floor");
-
                         clickPoint = hit.point;
                         isMovable = true;
                     }
                     else if (hit.transform.root.gameObject.layer == manager.enemyLayer)
                     {
                         manager.isTargeted = true;
+                        manager.isDetectable = true;
                         manager.targetedEnemy = hit.transform.root;
-                        Debug.Log("[DEBUG] Enemy : " + manager.targetedEnemy.name + " / isTargeted : " + manager.isTargeted);
-
                         isMovable = true;
                     }
                 }
@@ -121,7 +117,6 @@ public class PlayerControl : MonoBehaviour
                     {
                         GameTimer.TimerRemainResetToCool(dashDelay);
                         isMovable = false;
-                        manager.anim.SetFloat("speed", 0.0f);
 
                         MovementUtil.ForceDashMove(rigid, transform, hit.point - transform.position, dashPower, ForceMode.Impulse);
                     }
@@ -146,15 +141,12 @@ public class PlayerControl : MonoBehaviour
     {
         if (manager.isTargeted)
         {
-            Debug.Log("Target Point is refreshing now");
             clickPoint = manager.targetedEnemy.position;
         }
         else
         {
-            Debug.Log("Targeting is disabled");
             if (manager.targetedEnemy != null)
             {
-                Debug.Log("Target Point is missing");
                 manager.targetedEnemy = null;
             }
         }
@@ -176,9 +168,10 @@ public class PlayerControl : MonoBehaviour
 
             if (manager.isTargeted)
             {
-                if (dir.sqrMagnitude < 0.2f * 0.2f)
+                if (manager.DetectEnemy())
                 {
-                    manager.anim.SetFloat("speed", 0.0f);
+                    Debug.Log("타게팅, 도착");
+                    manager.anim.SetInteger("speed", 0);
                     manager.isTargeted = false;
                     isMovable = false;
                 }
@@ -187,12 +180,11 @@ public class PlayerControl : MonoBehaviour
             {
                 if (dir.sqrMagnitude < 0.1f * 0.1f)
                 {
-                    manager.anim.SetFloat("speed", 0.0f);
+                    Debug.Log("타게팅X, 도착");
+                    manager.anim.SetInteger("speed", 0);
                     isMovable = false;
                 }
             }
-
-            
         }
     }
 }

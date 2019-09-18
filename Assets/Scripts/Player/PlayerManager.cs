@@ -19,7 +19,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool isDetectable = false;
     public bool isDetected = false;
-    public float detectEnemyRange;
+    public float attackableEnemyRange;
 
     public bool isTargeted = false;
     public Transform targetedEnemy;
@@ -27,9 +27,9 @@ public class PlayerManager : MonoBehaviour
     // Enemy 저장 변수
     public int enemyNum = 0;
     // 보스의 매니저 클래스의 이름에 따라 EnemyManager 이름 변경
-    public EnemyManager[] enemys;
+    public List<EnemyManager> enemys = new List<EnemyManager>();
     public int detectedEnemyNum = 0;
-    public EnemyManager[] detectedEnemys;
+    public List<EnemyManager> detectedEnemys = new List<EnemyManager>();
 
     public LayerMask floorLayer;
     public LayerMask enemyLayer;
@@ -45,7 +45,8 @@ public class PlayerManager : MonoBehaviour
         // 몬스터 등록
         foreach (var item in FindObjectsOfType<EnemyManager>())
         {
-            enemys[enemyNum++] = item;
+            enemys.Add(item);
+            enemyNum++;
         }
 
         // 충돌 레이어 설정
@@ -67,33 +68,40 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void DetectEnemy()
+    public bool DetectEnemy()
     {
         // TODO: Enemy를 Detect 했을때 처리 작업할 것
         if (isDetectable)
         {
-            // 탐지한 Enemy의 숫자를 0으로 초기화
-            detectedEnemyNum = 0;
-
-            // 커다란 원의 내부에 Enemy가 있으면 Collider를 저장
-            Collider[] enemyCols = Physics.OverlapSphere(transform.position, detectEnemyRange, 1 << enemyLayer);
-
-            // Enemy의 Collider에서 EnemyManager를 불러와 탐지된 Enemy들을 저장
-            foreach (var item in enemyCols)
+            if (!isDetected)
             {
-                detectedEnemys[detectedEnemyNum++] = item.transform.root.GetComponent<EnemyManager>();
-            }
+                // 탐지한 Enemy의 숫자를 0으로 초기화
+                detectedEnemyNum = 0;
 
-            // 저장된 Enemy의 수가 1 이상이면 탐지됨을 나타냄
-            if (detectedEnemyNum != 0)
-            {
-                isDetected = true;
-            }
-            else
-            {
-                isDetected = false;
+                // 커다란 원의 내부에 Enemy가 있으면 Collider를 저장
+                Collider[] enemyCols = Physics.OverlapSphere(transform.position, attackableEnemyRange, 1 << enemyLayer);
+
+                // Enemy의 Collider에서 EnemyManager를 불러와 탐지된 Enemy들을 저장
+                foreach (var item in enemyCols)
+                {
+                    detectedEnemys.Add(item.transform.root.GetComponent<EnemyManager>());
+                    detectedEnemyNum++;
+                }
+
+                // 저장된 Enemy의 수가 1 이상이면 탐지됨을 나타냄
+                if (detectedEnemyNum != 0)
+                {
+                    isDetectable = false;
+                    return isDetected = true;
+                }
+                else
+                {
+                    return isDetected = false;
+                }
             }
         }
+
+        return isDetected = false;
     }
 
     private void OnDrawGizmos()
