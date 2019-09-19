@@ -3,31 +3,32 @@ using System.Collections;
 
 public class WorriorAttack : PlayerAttack
 {
-    // 거리
-    public float attackDistance;
-    // 범위 (가로, 세로길이)
-    public float attackLength;
-
-    public override IEnumerator Skill_Auto()
+    public override void Skill_Auto()
     {
-        foreach (var enemy in manager.enemys)
+        if (manager.isTargeted)
         {
-            if (DetectUtil.Detect(manager.sight, attackDistance, attackLength, enemy.hitCol))
+            if (DetectUtil.Detect(sight, manager.targetEnemy.hitCol))
             {
-                // Enemy에게 Hit 판정 내리기
+                if (timer[0].notInCool && !skillAutoOnGoing)
+                {
+                    control.isMovable = false;
+                    skillAutoOnGoing = true;
+                    GameTimer.TimerRemainResetToCool(timer[0]);
 
-                yield return new WaitUntil(() => animSender.tAttackAllow);
+                    // Enemy에게 Hit 판정 내리기
+                    manager.anim.SetInteger("skill", 0);
 
-                enemy.transform.root.gameObject.SetActive(false);
-    
-                Debug.Log(enemy.transform.root.name + "에게 공격 성공함");
+                    manager.targetEnemy.hitCol.transform.root.gameObject.SetActive(false);
+
+                    Debug.Log(manager.targetEnemy.hitCol.transform.root.name + "에게 공격 성공함");
+
+                    skillAutoOnGoing = false;
+                }
             }
         }
-
-        yield break;
     }
-    //public override IEnumerator Skill_Slot_1() { }
-    //public override IEnumerator Skill_Slot_2() { }
-    //public override IEnumerator Skill_Slot_3() { }
-    //public override IEnumerator Skill_Ultimate() { }
+    public override void Skill_Slot_1() { }
+    public override void Skill_Slot_2() { }
+    public override void Skill_Slot_3() { }
+    public override void Skill_Ultimate() { }
 }

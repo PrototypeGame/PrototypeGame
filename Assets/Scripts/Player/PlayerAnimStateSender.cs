@@ -1,17 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 
 public class PlayerAnimStateSender : MonoBehaviour
 {
-    public bool tAttackAllow = false;
+    public UnityEvent skillAutoEvent;
 
-    public void AttackAllowSetFalse()
+    public void LinkAnim_Skill_Auto()
     {
-        tAttackAllow = false;
-    }
-
-    public void AttackAllowSetTrue()
-    {
-        tAttackAllow = true;
+        skillAutoEvent.Invoke();
     }
 }

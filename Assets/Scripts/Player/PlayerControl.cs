@@ -13,7 +13,7 @@ public class PlayerControl : MonoBehaviour
     public float rotateSpeed;
     public float dashPower;
 
-    public static bool isMovable = false;
+    public bool isMovable;
 
     private PlayerManager manager;
     private PlayerAttack attack;
@@ -24,7 +24,7 @@ public class PlayerControl : MonoBehaviour
 
     private void Awake()
     {
-        isMovable = true;
+        isMovable = false;
 
         manager = GetComponent<PlayerManager>();
         attack = GetComponent<PlayerAttack>();
@@ -43,6 +43,7 @@ public class PlayerControl : MonoBehaviour
     private void FixedUpdate()
     {
         MoveToPoint();
+        DetectRotate();
     }
 
     private RaycastHit hit;
@@ -61,6 +62,7 @@ public class PlayerControl : MonoBehaviour
                     Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
 
                     manager.isTargeted = false;
+                    manager.isDetectable = true;
 
                     clickPoint = hit.point;
                 }
@@ -74,6 +76,7 @@ public class PlayerControl : MonoBehaviour
                     Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
 
                     manager.isTargeted = false;
+                    manager.isDetectable = false;
 
                     clickPoint = hit.point;
                 }
@@ -90,14 +93,32 @@ public class PlayerControl : MonoBehaviour
 
                     if (hit.transform.root.gameObject.layer == manager.floorLayer)
                     {
+                        Debug.Log("바닥");
                         clickPoint = hit.point;
+
+                        manager.isTargeted = false;
+                        manager.isDetectable = false;
+
                         isMovable = true;
                     }
                     else if (hit.transform.root.gameObject.layer == manager.enemyLayer)
                     {
+                        Debug.Log("적");
                         manager.isTargeted = true;
-                        manager.isDetectable = true;
-                        manager.targetedEnemy = hit.transform.root;
+                        manager.isDetectable = false;
+                        manager.isDetected = true;
+
+                        manager.targetEnemy = hit.transform.root.GetComponent<EnemyManager>();
+                        isMovable = true;
+                    }
+                    else
+                    {
+                        Debug.Log("그 이외");
+                        clickPoint = hit.point;
+
+                        manager.isTargeted = false;
+                        manager.isDetectable = false;
+
                         isMovable = true;
                     }
                 }
@@ -141,13 +162,13 @@ public class PlayerControl : MonoBehaviour
     {
         if (manager.isTargeted)
         {
-            clickPoint = manager.targetedEnemy.position;
+            clickPoint = manager.targetEnemy.transform.position;
         }
         else
         {
-            if (manager.targetedEnemy != null)
+            if (manager.targetEnemy != null)
             {
-                manager.targetedEnemy = null;
+                manager.targetEnemy = null;
             }
         }
     }
@@ -166,24 +187,27 @@ public class PlayerControl : MonoBehaviour
                 MovementUtil.Rotate(transform, dir, rotateSpeed * Time.deltaTime * 100);
             }
 
-            if (manager.isTargeted)
+            if (dir.sqrMagnitude < 0.1f * 0.1f)
             {
-                if (manager.DetectEnemy())
-                {
-                    Debug.Log("타게팅, 도착");
-                    manager.anim.SetInteger("speed", 0);
-                    manager.isTargeted = false;
-                    isMovable = false;
-                }
+                manager.anim.SetInteger("speed", 0);
+                isMovable = false;
             }
-            else
+        }
+    }
+
+    private void DetectRotate()
+    {
+        // 탐지가 활성화 되어있으면 탐지가 되면 정지
+        if (manager.DetectEnemy())
+        {
+            isMovable = false;
+
+            Vector3 dir = manager.targetEnemy.transform.position - transform.position;
+            dir.y = 0.0f;
+
+            if (dir != Vector3.zero)
             {
-                if (dir.sqrMagnitude < 0.1f * 0.1f)
-                {
-                    Debug.Log("타게팅X, 도착");
-                    manager.anim.SetInteger("speed", 0);
-                    isMovable = false;
-                }
+                MovementUtil.Rotate(transform, dir, rotateSpeed * Time.deltaTime * 100);
             }
         }
     }

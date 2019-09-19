@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -10,27 +11,26 @@ public class PlayerManager : MonoBehaviour
     public Animator anim;
 
     public Transform arrow;
-    public Camera sight;
 
     public float itemGetRange;
 
-    // Enemy 관련 변수
-    public bool isAttackable = false;
-
+    // Enemy Detect 관련 변수
     public bool isDetectable = false;
     public bool isDetected = false;
-    public float attackableEnemyRange;
-
-    public bool isTargeted = false;
-    public Transform targetedEnemy;
+    public float enemyDetectRange;
 
     // Enemy 저장 변수
     public int enemyNum = 0;
     // 보스의 매니저 클래스의 이름에 따라 EnemyManager 이름 변경
     public List<EnemyManager> enemys = new List<EnemyManager>();
+
     public int detectedEnemyNum = 0;
     public List<EnemyManager> detectedEnemys = new List<EnemyManager>();
 
+    public bool isTargeted = false;
+    public EnemyManager targetEnemy;
+
+    // 충돌 레이어 설정
     public LayerMask floorLayer;
     public LayerMask enemyLayer;
 
@@ -40,18 +40,20 @@ public class PlayerManager : MonoBehaviour
 
         anim = GetComponentInChildren<Animator>();
 
-        sight = GetComponentInChildren<Camera>();
+        floorLayer = LayerMask.NameToLayer("Floor");
+        enemyLayer = LayerMask.NameToLayer("Enemy");
 
+        AllEnemyRegister();
+    }
+
+    private void AllEnemyRegister()
+    {
         // 몬스터 등록
         foreach (var item in FindObjectsOfType<EnemyManager>())
         {
             enemys.Add(item);
             enemyNum++;
         }
-
-        // 충돌 레이어 설정
-        floorLayer = LayerMask.NameToLayer("Floor");
-        enemyLayer = LayerMask.NameToLayer("Enemy");
     }
 
     private void Update()
@@ -63,9 +65,7 @@ public class PlayerManager : MonoBehaviour
     private void ArrowControl()
     {
         if (DetectUtil.FireRay(ref hit))
-        {
             arrow.rotation = Quaternion.LookRotation((hit.point - arrow.position).normalized);
-        }
     }
 
     public bool DetectEnemy()
@@ -73,50 +73,61 @@ public class PlayerManager : MonoBehaviour
         // TODO: Enemy를 Detect 했을때 처리 작업할 것
         if (isDetectable)
         {
-            if (!isDetected)
+            Vector3 curPlayerPos = new Vector3(transform.position.x, 0.0f, transform.position.z);
+            Vector3 tempEnemyPos;
+
+            EnemyManager tempTarget;
+            // 첫번째 거리의 비교 몬스터는 리스트 중 첫번째 노드에 있는것을 사용
+            float minBetweenDist = Vector3.Distance(curPlayerPos, enemys[0].transform.position);
+
+            foreach (var item in enemys)
             {
-                // 탐지한 Enemy의 숫자를 0으로 초기화
-                detectedEnemyNum = 0;
+                // Enemy의 몬스터 위치
+                tempEnemyPos = new Vector3(item.transform.root.position.x, 0.0f, item.transform.root.position.z);
 
-                // 커다란 원의 내부에 Enemy가 있으면 Collider를 저장
-                Collider[] enemyCols = Physics.OverlapSphere(transform.position, attackableEnemyRange, 1 << enemyLayer);
-
-                // Enemy의 Collider에서 EnemyManager를 불러와 탐지된 Enemy들을 저장
-                foreach (var item in enemyCols)
+                // Enemy가 탐지 거리 안에 있는 경우
+                if (Vector3.Distance(curPlayerPos, tempEnemyPos) <= enemyDetectRange)
                 {
-                    detectedEnemys.Add(item.transform.root.GetComponent<EnemyManager>());
-                    detectedEnemyNum++;
-                }
+                    // Detected List에 없다면 추가
+                    if (!detectedEnemys.Contains(item))
+                    {
+                        detectedEnemys.Add(item);
+                        detectedEnemyNum++;
 
-                // 저장된 Enemy의 수가 1 이상이면 탐지됨을 나타냄
-                if (detectedEnemyNum != 0)
-                {
-                    isDetectable = false;
-                    return isDetected = true;
+                        Assert.IsTrue(detectedEnemyNum > enemyNum, "[ERROR] Detected Enemy's num is more then total enemy's num");
+                    }
                 }
+                // Enemy가 탐지 거리를 초과해 밖에 있는 경우
                 else
                 {
-                    return isDetected = false;
+                    // 이미 List에 있다면 제거
+                    if (detectedEnemys.Contains(item))
+                    {
+                        detectedEnemys.Remove(item);
+                        detectedEnemyNum--;
+
+                        Assert.IsTrue(detectedEnemyNum < 0, "[ERROR] Detected Enemy's num is less then 0");
+                    }
+                }
+
+                // Enemy 중 가장 가까운 몬스터를 타겟으로 둠
+                if (Vector3.Distance(curPlayerPos, tempEnemyPos) < minBetweenDist)
+                {
+                    minBetweenDist = Vector3.Distance(curPlayerPos, tempEnemyPos);
+                    tempTarget = item;
                 }
             }
-        }
 
-        return isDetected = false;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (sight != null)
-        {
-            Gizmos.color = Color.red;
-            Matrix4x4 temp = Gizmos.matrix;
-            Gizmos.matrix = Matrix4x4.TRS(
-                sight.transform.position,
-                sight.transform.rotation,
-                Vector3.one
-                );
-            Gizmos.DrawFrustum(Vector3.zero, sight.fieldOfView, sight.farClipPlane, sight.nearClipPlane, 1);
-            Gizmos.matrix = temp;
+            // 저장된 Enemy의 수가 1 이상이면 탐지됨을 나타냄
+            if (detectedEnemyNum > 0)
+            {
+                return isDetected = true;
+            }
+            else
+                return isDetected = false;
         }
+        // Enemy Detect가 활성화 되지 않아 감지된 Enemy를 false로 표시
+        else
+            return isDetected = false;
     }
 }

@@ -4,5 +4,4 @@ using System.Collections;
 public class EnemyManager : MonoBehaviour
 {
     public Collider hitCol;
-    public Transform transf;
 }

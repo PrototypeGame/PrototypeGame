@@ -5,6 +5,8 @@ public class MovementUtil
 {
     public static void Move(Rigidbody rigid, Vector3 curPos, Vector3 destPos, float moveSpeed)
     {
+        destPos.y = curPos.y;
+
         Vector3 deltaMove = Vector3.MoveTowards(curPos, destPos, moveSpeed);
         rigid.MovePosition(deltaMove);
     }

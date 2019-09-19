@@ -9,6 +9,8 @@ public enum PointState
 
 public class PointControl : MonoBehaviour
 {
+    private PlayerManager manager;
+
     public GameObject[] Points;
 
     private Vector3 pointPos;
@@ -18,19 +20,12 @@ public class PointControl : MonoBehaviour
 
     private RaycastHit hit;
 
-    private LayerMask floorLayer;
-    private LayerMask enemyLayer;
-    private LayerMask itemLayer;
-
     private void Awake()
     {
+        manager = FindObjectOfType<PlayerManager>();
+
         ptState = PointState.MOVE;
         InitPoints();
-
-        // 충돌 레이어 설정
-        floorLayer = LayerMask.NameToLayer("Floor");
-        enemyLayer = LayerMask.NameToLayer("Enemy");
-        itemLayer = LayerMask.NameToLayer("Item");
     }
 
     private void InitPoints()
@@ -52,62 +47,91 @@ public class PointControl : MonoBehaviour
 
     private void PointManage()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.anyKey)
         {
             if (DetectUtil.FireRay(ref hit))
             {
-                Debug.Log("Down");
-                if (hit.transform.CompareTag("Floor"))
+                // 혼합 컨트롤 1
+                if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
                 {
-                    Debug.Log("Floor");
-                    SetPoint(PointState.MOVE);
-                }
-                else if (hit.transform.CompareTag("Enemy"))
-                {
-                    Debug.Log("Enemy");
                     SetPoint(PointState.ENEMY);
-                }
-                else if (hit.transform.CompareTag("Item"))
-                {
-                    Debug.Log("Item");
-                    SetPoint(PointState.ITEM);
-                }
 
-                Vector3 hitPos = hit.point;
-                hitPos.y = 0.0f;
+                    Vector3 hitPos = hit.point;
+                    hitPos.y = 0.0f;
 
-                transform.position = hitPos;
-            }
-            else
-            {
-                DisablePoint();
-            }
-        }
-        else if (Input.GetMouseButtonUp(1))
-        {
-            if (DetectUtil.FireRay(ref hit))
-            {
-                Debug.Log("Up");
-                if (hit.transform.CompareTag("Floor"))
-                {
-                    Debug.Log("Floor");
-                    SetPoint(PointState.MOVE);
+                    transform.position = hitPos;
                 }
-                else if (hit.transform.CompareTag("Enemy"))
+                else if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonUp(0))
                 {
-                    Debug.Log("Enemy");
                     SetPoint(PointState.ENEMY);
+
+                    Vector3 hitPos = hit.point;
+                    hitPos.y = 0.0f;
+
+                    transform.position = hitPos;
                 }
-                else if (hit.transform.CompareTag("Item"))
+
+                // 혼합 컨트롤 2
+                if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
                 {
-                    Debug.Log("Item");
-                    SetPoint(PointState.ITEM);
+                    SetPoint(PointState.MOVE);
+
+                    Vector3 hitPos = hit.point;
+                    hitPos.y = 0.0f;
+
+                    transform.position = hitPos;
+                }
+                else if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonUp(1))
+                {
+                    SetPoint(PointState.MOVE);
+
+                    Vector3 hitPos = hit.point;
+                    hitPos.y = 0.0f;
+
+                    transform.position = hitPos;
                 }
 
-                Vector3 hitPos = hit.point;
-                hitPos.y = 0.0f;
+                // 마우스 입력
+                if (Input.GetMouseButtonDown(1))
+                {
+                    if (hit.transform.CompareTag("Floor"))
+                    {
+                        SetPoint(PointState.MOVE);
+                    }
+                    else if (hit.transform.CompareTag("Enemy"))
+                    {
+                        SetPoint(PointState.ENEMY);
+                    }
+                    else if (hit.transform.CompareTag("Item"))
+                    {
+                        SetPoint(PointState.ITEM);
+                    }
 
-                transform.position = hitPos;
+                    Vector3 hitPos = hit.point;
+                    hitPos.y = 0.0f;
+
+                    transform.position = hitPos;
+                }
+                else if (Input.GetMouseButtonUp(1))
+                {
+                    if (hit.transform.CompareTag("Floor"))
+                    {
+                        SetPoint(PointState.MOVE);
+                    }
+                    else if (hit.transform.CompareTag("Enemy"))
+                    {
+                        SetPoint(PointState.ENEMY);
+                    }
+                    else if (hit.transform.CompareTag("Item"))
+                    {
+                        SetPoint(PointState.ITEM);
+                    }
+
+                    Vector3 hitPos = hit.point;
+                    hitPos.y = 0.0f;
+
+                    transform.position = hitPos;
+                }
             }
             else
             {
