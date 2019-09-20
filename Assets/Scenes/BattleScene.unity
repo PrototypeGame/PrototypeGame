@@ -962,8 +962,8 @@ MonoBehaviour:
     magicPoint: 0
     attackMinPower: 0
     attackMaxPower: 0
-    attackSpeed: 0
     criticalDamage: 0
+    attackSpeed: 0
     armor: 0
     avoidRate: 0
   anim: {fileID: 0}
@@ -971,7 +971,7 @@ MonoBehaviour:
   itemGetRange: 0.5
   isDetectable: 0
   isDetected: 0
-  enemyDetectRange: 1
+  enemyDetectRange: 2.5
   enemyNum: 0
   enemys: []
   detectedEnemyNum: 0
