@@ -61,8 +61,12 @@ public class PlayerControl : MonoBehaviour
                     // 자동 공격 이동
                     Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
 
+                    // 타겟 지정을 해제
                     manager.isTargeted = false;
+                    // Enemy 탐지 활성화
                     manager.isDetectable = true;
+                    // 움직임 활성화
+                    isMovable = true;
 
                     clickPoint = hit.point;
                 }
@@ -75,21 +79,24 @@ public class PlayerControl : MonoBehaviour
                     // 보스 무시 이동
                     Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
 
+                    // 타겟 지정을 해제
                     manager.isTargeted = false;
+                    // Enemy 탐지 비활성화
                     manager.isDetectable = false;
+                    // 움직임 활성화
+                    isMovable = true;
 
                     clickPoint = hit.point;
                 }
             }
             // 마우스 입력
-            if (Input.GetMouseButton(1))
+            if (!Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButton(1))
             {
                 manager.isTargeted = false;
 
                 if (DetectUtil.FireRay(ref hit))
                 {
                     manager.anim.SetInteger("speed", 1);
-                    Debug.Log(manager.anim.GetInteger("speed"));
 
                     if (hit.transform.root.gameObject.layer == manager.floorLayer)
                     {
@@ -97,19 +104,14 @@ public class PlayerControl : MonoBehaviour
                         clickPoint = hit.point;
 
                         manager.isTargeted = false;
-                        manager.isDetectable = false;
-
-                        isMovable = true;
                     }
                     else if (hit.transform.root.gameObject.layer == manager.enemyLayer)
                     {
                         Debug.Log("적");
                         manager.isTargeted = true;
-                        manager.isDetectable = false;
                         manager.isDetected = true;
 
                         manager.targetEnemy = hit.transform.root.GetComponent<EnemyManager>();
-                        isMovable = true;
                     }
                     else
                     {
@@ -117,10 +119,11 @@ public class PlayerControl : MonoBehaviour
                         clickPoint = hit.point;
 
                         manager.isTargeted = false;
-                        manager.isDetectable = false;
-
-                        isMovable = true;
                     }
+
+                    manager.isDetectable = false;
+
+                    isMovable = true;
                 }
                 else
                 {
@@ -177,7 +180,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (isMovable)
         {
-            MovementUtil.Move(rigid, transform.position, clickPoint, moveSpeed * Time.deltaTime);
+            MovementUtil.Move(rigid, transform.position, clickPoint, manager.data.moveSpeed * Time.deltaTime);
 
             Vector3 dir = clickPoint - transform.position;
             dir.y = 0.0f;

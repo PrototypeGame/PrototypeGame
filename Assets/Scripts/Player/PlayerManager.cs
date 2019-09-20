@@ -23,10 +23,12 @@ public class PlayerManager : MonoBehaviour
     public int enemyNum = 0;
     // 보스의 매니저 클래스의 이름에 따라 EnemyManager 이름 변경
     public List<EnemyManager> enemys = new List<EnemyManager>();
-
+    // 탐지 된 Enemy 숫자
     public int detectedEnemyNum = 0;
+    // 탐지 된 Enemy들
     public List<EnemyManager> detectedEnemys = new List<EnemyManager>();
 
+    // 몬스터가 사용자 지정된 경우
     public bool isTargeted = false;
     public EnemyManager targetEnemy;
 

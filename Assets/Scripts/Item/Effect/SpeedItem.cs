@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class SpeedItem : MonoBehaviour, IEffectItemBase
 {
-    private Transform target;
+    private PlayerManager target;
+    private PlayerData targetData;
 
     private Renderer itemRender;
     private Collider itemCollider;
@@ -22,7 +23,8 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            target = other.transform;
+            target = other.transform.root.GetComponent<PlayerManager>();
+            targetData = target.data;
 
             ItemEffects();
         }
@@ -30,7 +32,7 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
 
     public void ItemEffects()
     {
-        target.gameObject.GetComponent<PlayerControl>().moveSpeed *= speedMultiple;
+        targetData.moveSpeed *= speedMultiple;
 
         StartCoroutine("ReleaseEffects");
     }
@@ -41,7 +43,8 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
         itemCollider.enabled = false;
 
         yield return new WaitForSeconds(remainSecond);
-        target.gameObject.GetComponent<PlayerControl>().moveSpeed /= speedMultiple;
+
+        targetData.moveSpeed /= speedMultiple;
 
         Destroy(gameObject);
     }

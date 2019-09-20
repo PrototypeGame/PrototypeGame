@@ -10,6 +10,9 @@ public enum SetStat
 [Serializable]
 public class PlayerData
 {
+    [Header("Movement Status")]
+    public float moveSpeed;
+
     [Header("Basic Status")]
     public float strength;
     public float dexterity;
@@ -17,29 +20,19 @@ public class PlayerData
     
     [Header("Variable Status")]
     public float health;
-    public float healthRecycle;
+    //public float healthRecycle;
     [Space(10)]
     public float magicPoint;
-    public float magicPointRecycle;
+    //public float magicPointRecycle;
     [Space(10)]
     public float attackMinPower;
     public float attackMaxPower;
+    public float criticalDamage;
     public float attackSpeed;
     [Space(10)]
-    public float physicalCriticalRate;
-    public float magicCriticalRate;
-    public float criticalDamage;
-    [Space(10)]
-    public float energyAbsord;
     public float armor;
     [Space(10)]
-    public float physicalNearTolerance;
-    public float physicalFarTolerance;
-    public float magicNearTolerance;
-    public float magicFarTolerance;
-    [Space(10)]
     public float avoidRate;
-    public float moveSpeed;
 
     public PlayerData SetStrength(float setPoint, SetStat setter)
     {
