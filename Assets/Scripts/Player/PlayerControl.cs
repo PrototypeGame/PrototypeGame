@@ -82,8 +82,17 @@ public class PlayerControl : MonoBehaviour
                         manager.isTargeted = false;
                         manager.isDetectable = false;
 
+<<<<<<< HEAD
                         manager.anim.SetInteger("speed", 1);
                         isMovable = true;
+=======
+                    // 타겟 지정을 해제
+                    manager.isTargeted = false;
+                    // Enemy 탐지 비활성화
+                    manager.isDetectable = false;
+                    // 움직임 활성화
+                    isMovable = true;
+>>>>>>> 88d16e6c98473a1dcf25ca88e92c056f19a0edc4
 
                         pointer.SetState(PointState.IGNORE_ENEMY);
                         pointer.SetPosition(hit.point, false);
@@ -91,14 +100,25 @@ public class PlayerControl : MonoBehaviour
                 }
             }
             // 마우스 입력
+<<<<<<< HEAD
             else
+=======
+            if (!Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButton(1))
+>>>>>>> 88d16e6c98473a1dcf25ca88e92c056f19a0edc4
             {
                 if (Input.GetMouseButtonDown(1))
                 {
+<<<<<<< HEAD
                     if (RayUtil.FireRay(ref hit))
+=======
+                    manager.anim.SetInteger("speed", 1);
+
+                    if (hit.transform.root.gameObject.layer == manager.floorLayer)
+>>>>>>> 88d16e6c98473a1dcf25ca88e92c056f19a0edc4
                     {
                         Debug.Log("Mouse 1");
 
+<<<<<<< HEAD
                         int hitLayer = 1 << hit.transform.root.gameObject.layer;
 
                         if (manager.floorLayer == hitLayer)
@@ -151,7 +171,29 @@ public class PlayerControl : MonoBehaviour
                         }
 
                         pointer.SetPosition(hit.point, false);
+=======
+                        manager.isTargeted = false;
                     }
+                    else if (hit.transform.root.gameObject.layer == manager.enemyLayer)
+                    {
+                        Debug.Log("적");
+                        manager.isTargeted = true;
+                        manager.isDetected = true;
+
+                        manager.targetEnemy = hit.transform.root.GetComponent<EnemyManager>();
+                    }
+                    else
+                    {
+                        Debug.Log("그 이외");
+                        clickPoint = hit.point;
+
+                        manager.isTargeted = false;
+>>>>>>> 88d16e6c98473a1dcf25ca88e92c056f19a0edc4
+                    }
+
+                    manager.isDetectable = false;
+
+                    isMovable = true;
                 }
             }
             // Dash
@@ -193,7 +235,11 @@ public class PlayerControl : MonoBehaviour
     {
         if (isMovable)
         {
+<<<<<<< HEAD
             MovementUtil.Move(rigid, transform.position, destPoint, moveSpeed * Time.deltaTime);
+=======
+            MovementUtil.Move(rigid, transform.position, clickPoint, manager.data.moveSpeed * Time.deltaTime);
+>>>>>>> 88d16e6c98473a1dcf25ca88e92c056f19a0edc4
 
             Vector3 dir = destPoint - transform.position;
             dir.y = 0.0f;
