@@ -16,7 +16,7 @@ public class PlayerAttack : MonoBehaviour
     public float attackLength;
 
     [SerializeField]
-    public GameTimer[] timer;
+    public TimerUtil[] timer;
 
     protected virtual void Awake()
     {
@@ -42,7 +42,7 @@ public class PlayerAttack : MonoBehaviour
     {
         foreach (var item in timer)
         {
-            GameTimer.TimerOnGoing(item);
+            TimerUtil.TimerOnGoing(item);
         }
     }
 
@@ -55,7 +55,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (timer[1].notInCool)
                 {
-                    GameTimer.TimerRemainResetToCool(timer[1]);
+                    TimerUtil.TimerRemainResetToCool(timer[1]);
                     Skill_Slot_1();
                 }
             }
@@ -64,7 +64,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (timer[2].notInCool)
                 {
-                    GameTimer.TimerRemainResetToCool(timer[2]);
+                    TimerUtil.TimerRemainResetToCool(timer[2]);
                     Skill_Slot_2();
                 }
             }
@@ -73,7 +73,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (timer[3].notInCool)
                 {
-                    GameTimer.TimerRemainResetToCool(timer[3]);
+                    TimerUtil.TimerRemainResetToCool(timer[3]);
                     Skill_Slot_3();
                 }
             }
@@ -82,7 +82,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (timer[4].notInCool)
                 {
-                    GameTimer.TimerRemainResetToCool(timer[4]);
+                    TimerUtil.TimerRemainResetToCool(timer[4]);
                     Skill_Ultimate();
                 }
             }

@@ -40,8 +40,8 @@ public class PlayerManager : MonoBehaviour
 
         anim = GetComponentInChildren<Animator>();
 
-        floorLayer = LayerMask.NameToLayer("Floor");
-        enemyLayer = LayerMask.NameToLayer("Enemy");
+        floorLayer = 1 << LayerMask.NameToLayer("Floor");
+        enemyLayer = 1 << LayerMask.NameToLayer("Enemy");
 
         AllEnemyRegister();
     }
@@ -58,13 +58,16 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
+        DetectEnemy();
+
         ArrowControl();
+        TargetLock();
     }
 
     private RaycastHit hit;
     private void ArrowControl()
     {
-        if (DetectUtil.FireRay(ref hit))
+        if (RayUtil.FireRay(ref hit))
             arrow.rotation = Quaternion.LookRotation((hit.point - arrow.position).normalized);
     }
 
@@ -73,6 +76,8 @@ public class PlayerManager : MonoBehaviour
         // TODO: Enemy를 Detect 했을때 처리 작업할 것
         if (isDetectable)
         {
+            Debug.Log(detectedEnemys);
+
             Vector3 curPlayerPos = new Vector3(transform.position.x, 0.0f, transform.position.z);
             Vector3 tempEnemyPos;
 
@@ -129,5 +134,21 @@ public class PlayerManager : MonoBehaviour
         // Enemy Detect가 활성화 되지 않아 감지된 Enemy를 false로 표시
         else
             return isDetected = false;
+    }
+
+    private void TargetLock()
+    {
+        if (isTargeted)
+        {
+            // Target Enemy의 위치를 destPoint로 지정
+            control.destPoint = targetEnemy.transform.position;
+            control.pointer.SetPosition(targetEnemy.transform.position, true);
+        }
+        else
+        {
+            // Target이 해제되면 TargetEnemy를 null
+            if (targetEnemy != null)
+                targetEnemy = null;
+        }
     }
 }

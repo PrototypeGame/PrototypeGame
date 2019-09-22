@@ -7,7 +7,7 @@ public class PlayerControl : MonoBehaviour
     /// <summary> 걷는 속도와 달리는 속도를 구분하는 기준속도 변수 </summary>
     private float speedSection;
 
-    public Vector3 clickPoint;
+    public Vector3 destPoint;
 
     public float moveSpeed;
     public float rotateSpeed;
@@ -18,9 +18,13 @@ public class PlayerControl : MonoBehaviour
     private PlayerManager manager;
     private PlayerAttack attack;
 
+    public PointerManager pointer;
+
     private Rigidbody rigid;
 
-    public GameTimer dashDelay;
+    public TimerUtil dashDelay;
+
+    private RaycastHit hit;
 
     private void Awake()
     {
@@ -29,121 +33,142 @@ public class PlayerControl : MonoBehaviour
         manager = GetComponent<PlayerManager>();
         attack = GetComponent<PlayerAttack>();
 
+        pointer = FindObjectOfType<PointerManager>();
+
         rigid = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        MovementInput();
-        TargetLock();
+        TimerUtil.TimerOnGoing(dashDelay);
 
-        GameTimer.TimerOnGoing(dashDelay);
-    }
-
-    private void FixedUpdate()
-    {
-        MoveToPoint();
-        DetectRotate();
-    }
-
-    private RaycastHit hit;
-
-    /// <summary> 키보드, 마우스 입력 </summary>
-    private void MovementInput()
-    {
         if (Input.anyKey)
         {
             // 혼합 컨트롤 1
-            if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
+            // 이동 + 자동공격
+            if (Input.GetKey(KeyCode.A))
             {
-                if (DetectUtil.FireRay(ref hit))
+                if (Input.GetMouseButtonDown(0))
                 {
-                    // 자동 공격 이동
-                    Debug.Log("[DEBUG] 클릭한 지점까지 움직이면서 범위안에 들어온 보스를 자동 공격합니다.");
+                    if (RayUtil.FireRay(ref hit, manager.floorLayer))
+                    {
+                        Debug.Log("A + Mouse 0");
 
-                    manager.isTargeted = false;
-                    manager.isDetectable = true;
+                        destPoint = hit.point;
 
-                    clickPoint = hit.point;
+                        manager.isTargeted = false;
+                        manager.isDetectable = true;
+
+                        manager.anim.SetInteger("speed", 1);
+                        isMovable = true;
+
+                        pointer.SetState(PointState.DETECT_ENEMY);
+                        pointer.SetPosition(hit.point, false);
+                    }
                 }
             }
             // 혼합 컨트롤 2
-            if (Input.GetKey(KeyCode.LeftAlt) && Input.GetMouseButtonDown(1))
+            // 이동 + Enemy Engore
+            if (Input.GetKey(KeyCode.LeftAlt))
             {
-                if (DetectUtil.FireRay(ref hit))
+                if (Input.GetMouseButtonDown(1))
                 {
-                    // 보스 무시 이동
-                    Debug.Log("[DEBUG] 범위안에 들어온 보스를 무시하면서 클릭한 지점까지 움직입니다.");
+                    if (RayUtil.FireRay(ref hit))
+                    {
+                        Debug.Log("Alt + Mouse 1");
 
-                    manager.isTargeted = false;
-                    manager.isDetectable = false;
+                        destPoint = hit.point;
 
-                    clickPoint = hit.point;
+                        manager.isTargeted = false;
+                        manager.isDetectable = false;
+
+                        manager.anim.SetInteger("speed", 1);
+                        isMovable = true;
+
+                        pointer.SetState(PointState.IGNORE_ENEMY);
+                        pointer.SetPosition(hit.point, false);
+                    }
                 }
             }
             // 마우스 입력
-            if (Input.GetMouseButton(1))
+            else
             {
-                manager.isTargeted = false;
-
-                if (DetectUtil.FireRay(ref hit))
+                if (Input.GetMouseButtonDown(1))
                 {
-                    manager.anim.SetInteger("speed", 1);
-                    Debug.Log(manager.anim.GetInteger("speed"));
-
-                    if (hit.transform.root.gameObject.layer == manager.floorLayer)
+                    if (RayUtil.FireRay(ref hit))
                     {
-                        Debug.Log("바닥");
-                        clickPoint = hit.point;
+                        Debug.Log("Mouse 1");
 
-                        manager.isTargeted = false;
-                        manager.isDetectable = false;
+                        int hitLayer = 1 << hit.transform.root.gameObject.layer;
 
-                        isMovable = true;
+                        if (manager.floorLayer == hitLayer)
+                        {
+                            destPoint = hit.point;
+
+                            manager.isTargeted = false;
+                            manager.isDetectable = false;
+
+                            manager.anim.SetInteger("speed", 1);
+                            isMovable = true;
+
+                            pointer.SetState(PointState.MOVE);
+                        }
+                        else if (manager.enemyLayer == hitLayer)
+                        {
+                            // Target Set
+                            manager.targetEnemy = hit.transform.root.GetComponent<EnemyManager>();
+
+                            manager.isTargeted = true;
+                            manager.isDetectable = false;
+                            manager.isDetected = true;
+
+                            manager.anim.SetInteger("speed", 1);
+                            isMovable = true;
+
+                            pointer.SetState(PointState.ENEMY);
+                        }
+                        else
+                        {
+                            // 아이템 처리
+                            if (hit.transform.root.CompareTag("Item"))
+                            {
+                                destPoint = hit.point;
+
+                                manager.isTargeted = false;
+                                manager.isDetectable = false;
+
+                                manager.anim.SetInteger("speed", 1);
+                                isMovable = true;
+
+                                pointer.SetState(PointState.DEFAULT);
+                            }
+                            else
+                            {
+                                isMovable = false;
+
+                                pointer.SetState(PointState.DISABLE);
+                            }
+                        }
+
+                        pointer.SetPosition(hit.point, false);
                     }
-                    else if (hit.transform.root.gameObject.layer == manager.enemyLayer)
-                    {
-                        Debug.Log("적");
-                        manager.isTargeted = true;
-                        manager.isDetectable = false;
-                        manager.isDetected = true;
-
-                        manager.targetEnemy = hit.transform.root.GetComponent<EnemyManager>();
-                        isMovable = true;
-                    }
-                    else
-                    {
-                        Debug.Log("그 이외");
-                        clickPoint = hit.point;
-
-                        manager.isTargeted = false;
-                        manager.isDetectable = false;
-
-                        isMovable = true;
-                    }
-                }
-                else
-                {
-                    isMovable = false;
                 }
             }
-
             // Dash
             // 키보드 컨트롤 5
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (dashDelay.notInCool)
                 {
-                    if (DetectUtil.FireRay(ref hit, manager.floorLayer))
+                    if (RayUtil.FireRay(ref hit, manager.floorLayer))
                     {
-                        GameTimer.TimerRemainResetToCool(dashDelay);
+                        TimerUtil.TimerRemainResetToCool(dashDelay);
                         isMovable = false;
 
                         MovementUtil.ForceDashMove(rigid, transform, hit.point - transform.position, dashPower, ForceMode.Impulse);
                     }
                 }
             }
-
             // 키보드 컨트롤 13
             // Stop Movement
             if (Input.GetKeyDown(KeyCode.S))
@@ -158,28 +183,19 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    private void TargetLock()
+    private void FixedUpdate()
     {
-        if (manager.isTargeted)
-        {
-            clickPoint = manager.targetEnemy.transform.position;
-        }
-        else
-        {
-            if (manager.targetEnemy != null)
-            {
-                manager.targetEnemy = null;
-            }
-        }
+        MoveToPoint();
+        DetectRotate();
     }
 
     private void MoveToPoint()
     {
         if (isMovable)
         {
-            MovementUtil.Move(rigid, transform.position, clickPoint, moveSpeed * Time.deltaTime);
+            MovementUtil.Move(rigid, transform.position, destPoint, moveSpeed * Time.deltaTime);
 
-            Vector3 dir = clickPoint - transform.position;
+            Vector3 dir = destPoint - transform.position;
             dir.y = 0.0f;
 
             if (dir != Vector3.zero)

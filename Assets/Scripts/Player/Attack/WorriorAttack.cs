@@ -13,7 +13,7 @@ public class WorriorAttack : PlayerAttack
                 {
                     control.isMovable = false;
                     skillAutoOnGoing = true;
-                    GameTimer.TimerRemainResetToCool(timer[0]);
+                    TimerUtil.TimerRemainResetToCool(timer[0]);
 
                     // Enemy에게 Hit 판정 내리기
                     manager.anim.SetInteger("skill", 0);

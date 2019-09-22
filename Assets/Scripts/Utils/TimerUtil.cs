@@ -4,22 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class GameTimer
+public class TimerUtil
 {
-    //[HideInInspector]
-    public bool notInCool;
+    [HideInInspector]
+    public bool notInCool = true;
 
     public float timeCool;
-    //[HideInInspector]
-    public float remainTime;
+    [HideInInspector]
+    public float remainTime = 0.0f;
 
-    GameTimer()
-    {
-        notInCool = true;
-        remainTime = 0.0f;
-    }
-
-    public static void TimerOnGoing(GameTimer timer)
+    public static void TimerOnGoing(TimerUtil timer)
     {
         if (timer.remainTime > 0)
         {
@@ -32,7 +26,7 @@ public class GameTimer
         }
     }
 
-    public static void TimerRemainResetToCool(GameTimer timer)
+    public static void TimerRemainResetToCool(TimerUtil timer)
     {
         timer.remainTime = timer.timeCool;
         timer.notInCool = false;

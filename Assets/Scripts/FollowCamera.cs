@@ -15,12 +15,7 @@ public class FollowCamera : MonoBehaviour
     /// <summary> Target을 따라가는 속도 </summary>
     public float followSpeed;
 
-    private float followMarginRange = 0.05f;
-
-    /// <summary> 카메라의 초기 위치값 </summary>
-    public Vector3 initPos = new Vector3(0.0f, 0.0f, 0.0f);
-    /// <summary> 카메라의 초기 회전값 </summary>
-    public Vector3 initRot = new Vector3(0.0f, 0.0f, 0.0f);
+    private float followMarginRange = 0.05f;    
 
     private void Start()
     {
@@ -30,14 +25,10 @@ public class FollowCamera : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 followPos = new Vector3(followTarget.position.x, yFollowHeight, followTarget.position.z - zFollowDist);
-        Quaternion followLook = Quaternion.LookRotation(followPos);
-
-        WaitForSeconds delay = new WaitForSeconds(0.002f);
 
         if (Vector3.Distance(transform.position, followPos) >= followMarginRange)
         {
             transform.position = Vector3.Lerp(transform.position, followPos, followSpeed * Time.deltaTime);
-            //transform.rotation = Quaternion.Lerp(transform.rotation, followLook, yRotSpeed * Time.deltaTime);
         }
     }
 
@@ -55,23 +46,11 @@ public class FollowCamera : MonoBehaviour
 
         bool[] bCheck = new bool[2] { false, false };
 
-        while (bCheck[0] && bCheck[1])
+        Vector3 dir = startPos - transform.position;
+
+        while (dir.sqrMagnitude < followMarginRange * followMarginRange)
         {
-            Vector3 dir = startPos - transform.position;
-
-            if (dir.sqrMagnitude < followMarginRange * followMarginRange) {
-                MovementUtil.Move(transform, transform.position, startPos, followSpeed * Time.deltaTime);
-            }
-            else {
-                bCheck[0] = true;
-            }
-
-            if (dir != Vector3.zero) {
-                MovementUtil.Rotate(transform, dir, yRotSpeed * Time.deltaTime);
-            }
-            else {
-                bCheck[1] = true;
-            }
+            MovementUtil.Move(transform, transform.position, startPos, followSpeed * Time.deltaTime);
 
             yield return delay;
         }
