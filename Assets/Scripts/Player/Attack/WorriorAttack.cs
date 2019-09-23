@@ -7,30 +7,40 @@ public class WorriorAttack : PlayerAttack
     {
         if (manager.targetEnemy != null)
         {
-            if (DetectUtil.AABBDetect(sight, manager.targetEnemy.hitCol))
+            if (DetectUtil.AABBDetect(sight, manager.targetEnemy.hitCol) && timer[0].notInCool)
             {
-                if (timer[0].notInCool)
-                {
-                    control.isMovable = false;
+                TimerUtil.TimerRemainResetToCool(timer[0]);
 
-                    manager.anim.SetInteger("skill", 0);
-
-                    // 여기부터 추후 Main에 삽입
-                    TimerUtil.TimerRemainResetToCool(timer[0]);
-
-                    // Enemy에게 Hit 판정 내리기
-                    manager.targetEnemy.hitCol.transform.root.gameObject.SetActive(false);
-
-                    Debug.Log(manager.targetEnemy.hitCol.transform.root.name + "에게 공격 성공함");
-
-                    control.pointer.SetState(PointState.DISABLE);
-
-                    manager.TargetDestroy();
-                }
+                control.MoveStop();
+                manager.anim.SetInteger("skill", 0);
+            }
+            else
+            {
+                control.MoveRestart();
+                manager.anim.SetInteger("skill", -1);
             }
         }
+        else
+        {
+            manager.anim.SetInteger("skill", -1);
+        }
     }
-    public override void Skill_Auto_Main() { }
+    public override void Skill_Auto_Main()
+    {
+        // Enemy에게 Hit 판정 내리기
+        manager.targetEnemy.hp -= 10.0f;
+        Debug.Log("Current Enemy HP : " + manager.targetEnemy.hp);
+
+        if (manager.targetEnemy.hp <= 0.0f)
+        {
+            manager.targetEnemy.hitCol.transform.root.gameObject.SetActive(false);
+
+            Debug.Log(manager.targetEnemy.hitCol.transform.root.name + "에게 공격 성공함");
+
+            manager.TargetDestroy();
+            manager.anim.SetInteger("skill", -1);
+        }
+    }
     public override void Skill_1_Anim() { }
     public override void Skill_1_Main() { }
     public override void Skill_2_Anim() { }

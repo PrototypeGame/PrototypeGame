@@ -188,6 +188,8 @@ public class PlayerControl : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.S))
             {
                 // Move Cancel
+                pointer.SetState(PointState.DISABLE);
+                manager.anim.SetInteger("speed", 0);
                 isMovable = false;
 
                 // Force Cancel
@@ -213,10 +215,23 @@ public class PlayerControl : MonoBehaviour
 
             if (dir.sqrMagnitude < 0.1f * 0.1f)
             {
+                pointer.SetState(PointState.DISABLE);
                 manager.anim.SetInteger("speed", 0);
                 isMovable = false;
             }
         }
+    }
+
+    public void MoveStop()
+    {
+        manager.anim.SetInteger("speed", 0);
+        isMovable = false;
+    }
+
+    public void MoveRestart()
+    {
+        manager.anim.SetInteger("speed", 1);
+        isMovable = true;
     }
 
     private void TargetFollowLock()

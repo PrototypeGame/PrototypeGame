@@ -13,7 +13,7 @@ public class MovementUtil
 
     public static void Move(Transform target, Vector3 curPos, Vector3 destPos, float moveSpeed)
     {
-        target.Translate(Vector3.MoveTowards(curPos, destPos, moveSpeed));
+        target.position = Vector3.MoveTowards(curPos, destPos, moveSpeed);
     }
 
     public static void Rotate(Transform target, Vector3 destRot, float rotateSpeed)

@@ -145,11 +145,17 @@ public class PlayerManager : MonoBehaviour
 
     public void TargetDestroy()
     {
-        targetEnemy = null;
-        isTargeted = false;
+        if (enemys.Remove(targetEnemy))
+        {
+            enemyNum--;
 
-        enemyNum--;
-        enemys.Remove(targetEnemy);
+            EnemyManager temp = targetEnemy;
+
+            targetEnemy = null;
+            isTargeted = false;
+
+            Destroy(temp);
+        }
     }
 
     //private bool FindEnemyInRange(Vector3 findPivot, float range)
