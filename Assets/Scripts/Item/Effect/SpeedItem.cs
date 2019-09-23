@@ -32,7 +32,7 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
 
     public void ItemEffects()
     {
-        targetData.moveSpeed *= speedMultiple;
+        targetData.MoveSpeed *= speedMultiple;
 
         StartCoroutine("ReleaseEffects");
     }
@@ -44,7 +44,7 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
 
         yield return new WaitForSeconds(remainSecond);
 
-        targetData.moveSpeed /= speedMultiple;
+        targetData.MoveSpeed /= speedMultiple;
 
         Destroy(gameObject);
     }

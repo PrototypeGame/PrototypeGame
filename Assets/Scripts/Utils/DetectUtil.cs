@@ -10,7 +10,7 @@ public class DetectUtil
         sight.aspect = aspect;
     }
 
-    public static bool Detect(Camera sight, Collider col)
+    public static bool AABBDetect(Camera sight, Collider col)
     {
         if (col == null)
             return false;

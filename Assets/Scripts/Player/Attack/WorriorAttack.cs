@@ -3,32 +3,40 @@ using System.Collections;
 
 public class WorriorAttack : PlayerAttack
 {
-    public override void Skill_Auto()
+    public override void Skill_Auto_Anim()
     {
-        if (manager.isTargeted)
+        if (manager.targetEnemy != null)
         {
-            if (DetectUtil.Detect(sight, manager.targetEnemy.hitCol))
+            if (DetectUtil.AABBDetect(sight, manager.targetEnemy.hitCol))
             {
-                if (timer[0].notInCool && !skillAutoOnGoing)
+                if (timer[0].notInCool)
                 {
                     control.isMovable = false;
-                    skillAutoOnGoing = true;
+
+                    manager.anim.SetInteger("skill", 0);
+
+                    // 여기부터 추후 Main에 삽입
                     TimerUtil.TimerRemainResetToCool(timer[0]);
 
                     // Enemy에게 Hit 판정 내리기
-                    manager.anim.SetInteger("skill", 0);
-
                     manager.targetEnemy.hitCol.transform.root.gameObject.SetActive(false);
 
                     Debug.Log(manager.targetEnemy.hitCol.transform.root.name + "에게 공격 성공함");
 
-                    skillAutoOnGoing = false;
+                    control.pointer.SetState(PointState.DISABLE);
+
+                    manager.TargetDestroy();
                 }
             }
         }
     }
-    public override void Skill_Slot_1() { }
-    public override void Skill_Slot_2() { }
-    public override void Skill_Slot_3() { }
-    public override void Skill_Ultimate() { }
+    public override void Skill_Auto_Main() { }
+    public override void Skill_1_Anim() { }
+    public override void Skill_1_Main() { }
+    public override void Skill_2_Anim() { }
+    public override void Skill_2_Main() { }
+    public override void Skill_3_Anim() { }
+    public override void Skill_3_Main() { }
+    public override void Skill_Ultimate_Anim() { }
+    public override void Skill_Ultimate_Main() { }
 }

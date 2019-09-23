@@ -41,6 +41,17 @@ public class PlayerControl : MonoBehaviour
     {
         TimerUtil.TimerOnGoing(dashDelay);
 
+        KeyInputControl();
+        TargetFollowLock();
+    }
+
+    private void FixedUpdate()
+    {
+        MoveToPoint();
+    }
+
+    private void KeyInputControl()
+    {
         if (Input.anyKey)
         {
             // 혼합 컨트롤 1
@@ -186,17 +197,11 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        MoveToPoint();
-        DetectRotate();
-    }
-
     private void MoveToPoint()
     {
         if (isMovable)
         {
-            MovementUtil.Move(rigid, transform.position, destPoint, manager.data.moveSpeed * Time.deltaTime);
+            MovementUtil.Move(rigid, transform.position, destPoint, manager.data.MoveSpeed * Time.deltaTime);
 
             Vector3 dir = destPoint - transform.position;
             dir.y = 0.0f;
@@ -214,20 +219,19 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    private void DetectRotate()
+    private void TargetFollowLock()
     {
-        // 탐지가 활성화 되어있으면 탐지가 되면 정지
-        if (manager.DetectEnemy())
+        if (manager.isTargeted)
         {
-            isMovable = false;
-
-            Vector3 dir = manager.targetEnemy.transform.position - transform.position;
-            dir.y = 0.0f;
-
-            if (dir != Vector3.zero)
-            {
-                MovementUtil.Rotate(transform, dir, rotateSpeed * Time.deltaTime * 100);
-            }
+            // Target Enemy의 위치를 destPoint로 지정
+            destPoint = manager.targetEnemy.transform.position;
+            pointer.SetPosition(manager.targetEnemy.transform.position, true);
+        }
+        else
+        {
+            // Target이 해제되면 TargetEnemy를 null
+            if (manager.targetEnemy != null)
+                manager.targetEnemy = null;
         }
     }
 }

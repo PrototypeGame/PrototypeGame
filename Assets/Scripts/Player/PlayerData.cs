@@ -1,96 +1,102 @@
 ﻿using UnityEngine;
+using Random = UnityEngine.Random;
 using System;
 using System.Collections;
 
-public enum SetStat
-{
-    PLUS, MINUS, SET
-}
-
 [Serializable]
-public class PlayerData
+public class PlayerData : StatusBase
 {
-    [Header("Movement Status")]
-    public float moveSpeed;
+    public StatusBase skillStatFix;
+    public StatusBase itemStatFix;
 
-    [Header("Basic Status")]
-    public float strength;
-    public float dexterity;
-    public float intellect;
-    
-    [Header("Variable Status")]
-    public float health;
-    //public float healthRecycle;
-    [Space(10)]
-    public float magicPoint;
-    //public float magicPointRecycle;
-    [Space(10)]
-    public float attackMinPower;
-    public float attackMaxPower;
-    public float criticalDamage;
-    public float attackSpeed;
-    [Space(10)]
-    public float armor;
-    [Space(10)]
-    public float avoidRate;
-
-    public PlayerData SetStrength(float setPoint, SetStat setter)
+    public PlayerData SetStrength(float setPoint)
     {
-        switch (setter)
-        {
-            case SetStat.PLUS:
-                strength += setPoint;
-                break;
-            case SetStat.MINUS:
-                strength -= setPoint;
-                break;
-            case SetStat.SET:
-                strength = setPoint;
-                break;
-            default:
-                break;
-        }
+        Strength = setPoint;
         return this;
     }
-    public PlayerData SetDexterity(float setPoint, SetStat setter)
+    public PlayerData AddStrength(float addPoint)
     {
-        switch (setter)
-        {
-            case SetStat.PLUS:
-                dexterity += setPoint;
-                break;
-            case SetStat.MINUS:
-                dexterity -= setPoint;
-                break;
-            case SetStat.SET:
-                dexterity = setPoint;
-                break;
-            default:
-                break;
-        }
+        Strength += addPoint;
         return this;
     }
-    public PlayerData SetIntellect(float setPoint, SetStat setter)
+    public PlayerData SetDexterity(float setPoint)
     {
-        switch (setter)
-        {
-            case SetStat.PLUS:
-                intellect += setPoint;
-                break;
-            case SetStat.MINUS:
-                intellect -= setPoint;
-                break;
-            case SetStat.SET:
-                intellect = setPoint;
-                break;
-            default:
-                break;
-        }
+        Dexterity = setPoint;
+        return this;
+    }
+    public PlayerData AddDexterity(float addPoint)
+    {
+        Dexterity += addPoint;
+        return this;
+    }
+    public PlayerData SetIntellect(float setPoint)
+    {
+        Intellect = setPoint;
+        return this;
+    }
+    public PlayerData AddIntellect(float addPoint)
+    {
+        Intellect += addPoint;
         return this;
     }
 
-    //public float SetHealth()
-    //{
-    //    health = 100 + (25 * strength) + 
-    //}
+    public PlayerData SetMoveSpeed()
+    {
+        MoveSpeed = (BasicMoveSpeed * (1.0f + skillStatFix.MoveSpeed));
+        return this;
+    }
+
+    public PlayerData SetHealth()
+    {
+        Health = (100 + (25 * Strength) + skillStatFix.Health) * (1.0f + (skillStatFix.Health / 100.0f));
+        return this;
+    }
+
+    public PlayerData SetMagicPoint()
+    {
+        MagicPoint = ((15.0f * Intellect) + skillStatFix.MagicPoint) * (1.0f + (skillStatFix.MagicPoint / 100.0f));
+        return this;
+    }
+
+    public PlayerData SetAttackMinPower()
+    {
+        AttackMinPower = ((BasicAttackPower * 1.35f) + skillStatFix.AttackMinPower) * (1.0f + (skillStatFix.AttackMinPower / 100.0f));
+        return this;
+    }
+
+    public PlayerData SetAttackMaxPower()
+    {
+        AttackMaxPower = ((BasicAttackPower * 2.25f) + skillStatFix.AttackMaxPower) * (1.0f + (skillStatFix.AttackMaxPower / 100.0f));
+        return this;
+    }
+
+    public PlayerData SetFinalAttackDamage()
+    {
+        FinalAttackDamage = Random.Range(AttackMinPower, AttackMaxPower);
+        return this;
+    }
+
+    public PlayerData SetAttackSpeed()
+    {
+        AttackSpeed = (BasicAttackSpeed / (1.0f + (0.02f * Dexterity) + skillStatFix.AttackSpeed));
+        return this;
+    }
+
+    public PlayerData SetCriticalDamage()
+    {
+        CriticalDamage = (FinalAttackDamage * Random.Range(1.5f, 2.0f));
+        return this;
+    }
+
+    public PlayerData SetArmor()
+    {
+        Armor = (-2.0f + (0.3f * Dexterity) + skillStatFix.Armor) * (1.0f + (skillStatFix.Armor / 100.0f));
+        return this;
+    }
+
+    public PlayerData SetAvoidRate()
+    {
+        AvoidRate = (((0.25f * Dexterity) + skillStatFix.AvoidRate) * 0.01f);
+        return this;
+    }
 }
