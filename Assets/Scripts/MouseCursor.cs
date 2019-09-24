@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-enum MouseState
-{
-    MOVE, ATTACK, ITEM
-}
+public enum MouseState { MOVE, ATTACK, ITEM }
 
 public class MouseCursor : MonoBehaviour
 {
-    public Texture2D cursor;
-    public Texture2D[] cursorSprites;
+    public Texture2D mouseCursorTexture;
+    public Texture2D[] mouseCursorTextures;
+
+    public MouseState startCursorState;
+    public MouseState currentCursorState;
+
+    private Dictionary<MouseState, Texture2D> mouseCursors = new Dictionary<MouseState, Texture2D>();
 
     public bool fixPointIsCenter;
     public Vector2 fixPointAdjust;
@@ -19,56 +21,42 @@ public class MouseCursor : MonoBehaviour
 
     private void Awake()
     {
-        StartCoroutine("SetCursor", cursorSprites[(int)MouseState.MOVE]);
+        InitMousePointer();
+        SetMouseCursor(startCursorState);
     }
 
-    private void Update()
+    private void InitMousePointer()
     {
-        CheckCursorPoint();
+        mouseCursors.Add(MouseState.MOVE, mouseCursorTextures[(int)MouseState.MOVE]);
+        mouseCursors.Add(MouseState.ATTACK, mouseCursorTextures[(int)MouseState.ATTACK]);
+        mouseCursors.Add(MouseState.ITEM, mouseCursorTextures[(int)MouseState.ITEM]);
     }
 
-    private IEnumerator SetCursor(Texture2D setCur)
+    public void SetMouseCursor(MouseState stat)
     {
-        cursor = setCur;
+        currentCursorState = stat;
+        mouseCursorTexture = mouseCursors[stat];
 
+        if (mouseCursorTexture != null)
+            StartCoroutine(SetCursorTexture(mouseCursorTexture));
+    }
+
+    private IEnumerator SetCursorTexture(Texture2D setCur)
+    {
         yield return new WaitForEndOfFrame();
 
         if (fixPointIsCenter)
         {
-            hotspot.x = cursor.width / 2;
-            hotspot.y = cursor.height / 2;
+            hotspot.x = mouseCursorTexture.width / 2;
+            hotspot.y = mouseCursorTexture.height / 2;
         }
         else
         {
             hotspot = fixPointAdjust;
         }
 
-        Cursor.SetCursor(cursor, hotspot, CursorMode.Auto);
+        Cursor.SetCursor(mouseCursorTexture, hotspot, CursorMode.Auto);
 
         yield break;
-    }
-
-    private void CheckCursorPoint()
-    {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit, 1000))
-        {
-            Collider col = hit.collider;
-
-            if (col.CompareTag("Floor"))
-            {
-                StartCoroutine("SetCursor", cursorSprites[(int)MouseState.MOVE]);
-            }
-            else if (col.CompareTag("Enemy"))
-            {
-                StartCoroutine("SetCursor", cursorSprites[(int)MouseState.ATTACK]);
-            }
-            else if (col.CompareTag("Item"))
-            {
-                StartCoroutine("SetCursor", cursorSprites[(int)MouseState.ITEM]);
-            }
-        }
     }
 }

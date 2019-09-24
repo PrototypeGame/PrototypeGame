@@ -5,7 +5,7 @@ public enum SkillType { ACTIVE, PASSIVE }
 public enum SkillRare { NORMAL, ULTIMATE }
 public enum SkillTarget { PLAYER_OWN = 1, PLAYER_OTHER = 2, ENEMY = 4, ONLY_BOSS = 8 }
 
-public class SkillBase
+public class SkillData
 {
     [SerializeField]
     private int skillIndex;

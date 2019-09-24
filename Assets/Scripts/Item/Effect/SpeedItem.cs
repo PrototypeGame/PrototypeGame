@@ -8,15 +8,15 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
     private PlayerData targetData;
 
     private Renderer itemRender;
-    private Collider itemCollider;
+    private Collider[] itemColliders;
 
     public float speedMultiple;
     public float remainSecond;
 
     public void Awake()
     {
-        itemRender = GetComponent<Renderer>();
-        itemCollider = GetComponent<Collider>();
+        itemRender = GetComponentInChildren<Renderer>();
+        itemColliders = GetComponents<Collider>();
     }
 
     public void OnTriggerEnter(Collider other)
@@ -40,7 +40,8 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
     public IEnumerator ReleaseEffects()
     {
         itemRender.enabled = false;
-        itemCollider.enabled = false;
+        foreach (var item in itemColliders)
+            item.enabled = false;
 
         yield return new WaitForSeconds(remainSecond);
 
