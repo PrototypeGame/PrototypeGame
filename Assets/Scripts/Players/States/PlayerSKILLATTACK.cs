@@ -4,15 +4,31 @@ using UnityEngine;
 
 public class PlayerSKILLATTACK : PlayerFSMState
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override void Awake()
     {
-        
+        base.Awake();
+
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void FSMStart()
     {
-        
+        base.FSMStart();
+
+
+    }
+
+    public override void FSMUpdate()
+    {
+        base.FSMUpdate();
+
+
+    }
+
+    public override void FSMFixedUpdate()
+    {
+        base.FSMFixedUpdate();
+
+
     }
 }
