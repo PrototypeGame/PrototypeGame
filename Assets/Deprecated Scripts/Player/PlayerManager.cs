@@ -7,7 +7,7 @@ using Debug = UnityEngine.Debug;
 
 public class PlayerManager : MonoBehaviour
 {
-    public PlayerData data;
+    public PlayerStatusData data;
     private PlayerControl control;
 
     public Animator anim;

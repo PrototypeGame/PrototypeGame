@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpeedItem : MonoBehaviour, IEffectItemBase
 {
     private PlayerManager target;
-    private PlayerData targetData;
+    private PlayerStatusData targetData;
 
     private Renderer itemRender;
     private Collider[] itemColliders;
