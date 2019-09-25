@@ -50,7 +50,7 @@ public class FollowCamera : MonoBehaviour
 
         while (dir.sqrMagnitude < followMarginRange * followMarginRange)
         {
-            MovementUtil.Move(transform, transform.position, startPos, followSpeed * Time.deltaTime);
+            MovementUtil.PointMove(transform, transform.position, startPos, followSpeed * Time.deltaTime);
 
             yield return delay;
         }

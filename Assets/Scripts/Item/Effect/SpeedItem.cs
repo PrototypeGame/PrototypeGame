@@ -24,7 +24,7 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             target = other.transform.root.GetComponent<PlayerManager>();
-            targetData = target.data;
+            //targetData = target.data;
 
             ItemEffects();
         }

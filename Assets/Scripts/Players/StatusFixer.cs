@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using UnityEngine;
 
+[Serializable]
 public class StatusFixer : MonoBehaviour
 {
     // Variables

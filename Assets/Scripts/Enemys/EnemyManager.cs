@@ -17,7 +17,7 @@ public class EnemyManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovementUtil.Move(transform, transform.position, points[curPoint], 2.0f * Time.deltaTime);
+        MovementUtil.PointMove(transform, transform.position, points[curPoint], 2.0f * Time.deltaTime);
 
         Vector3 dir = points[curPoint] - transform.position;
         dir.y = 0.0f;

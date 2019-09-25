@@ -9,25 +9,37 @@ public enum PlayerableCharacterState
 
 public class PlayerFSMManager : MonoBehaviour
 {
+    // Player Status Data
+    public PlayerStatusManager status;
+
     // FSM Manage Variables
     private Dictionary<PlayerableCharacterState, PlayerFSMState> playerStates;
 
     public PlayerableCharacterState startState;
     [SerializeField]
     private PlayerableCharacterState currentState;
-    [SerializeField]
+    //[SerializeField]
     private PlayerFSMState currentFSMAction;
 
     // Player Component Variables
-    private Transform transf;
-    private Rigidbody rigid;
+    public Transform transf;
+    public Rigidbody rigid;
 
     // Player Custom Class Variables
     [HideInInspector]
     public PlayerAnimatorController animCtrl;
+    public PlayerTimerManager timeManager;
+
+    // Key Inputs
+    public KeyCode[] moveKeys = new KeyCode[4];
+    public KeyCode[] attackKeys = new KeyCode[1];
+    public KeyCode[] skillKeys = new KeyCode[4];
 
     private void Awake()
     {
+        status = GetComponent<PlayerStatusManager>();
+        status?.InitAllStatus();
+
         playerStates = new Dictionary<PlayerableCharacterState, PlayerFSMState>();
         CurrentState = startState;
 
@@ -37,6 +49,9 @@ public class PlayerFSMManager : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
 
         animCtrl = GetComponentInChildren<PlayerAnimatorController>();
+        timeManager = GetComponent<PlayerTimerManager>();
+
+        InitKeys();
     }
 
     private void Start()
@@ -48,6 +63,8 @@ public class PlayerFSMManager : MonoBehaviour
     private void Update()
     {
         CurrentFSMAction.FSMUpdate();
+
+        timeManager.TimerUpdate();
     }
 
     private void FixedUpdate()
@@ -63,6 +80,24 @@ public class PlayerFSMManager : MonoBehaviour
         playerStates[PlayerableCharacterState.SKILLATTACK] = GetComponent<PlayerSKILLATTACK>();
         playerStates[PlayerableCharacterState.DAMAGE] = GetComponent<PlayerDAMAGE>();
         playerStates[PlayerableCharacterState.DEAD] = GetComponent<PlayerDEAD>();
+    }
+
+    private void InitKeys()
+    {
+        // Move Key
+        moveKeys[0] = KeyCode.LeftArrow;
+        moveKeys[1] = KeyCode.RightArrow;
+        moveKeys[2] = KeyCode.DownArrow;
+        moveKeys[3] = KeyCode.UpArrow;
+
+        // Attack Key
+        attackKeys[0] = KeyCode.A;
+
+        // Skill Key
+        skillKeys[0] = KeyCode.Q;
+        skillKeys[1] = KeyCode.W;
+        skillKeys[2] = KeyCode.E;
+        skillKeys[3] = KeyCode.R;
     }
 
     public PlayerFSMState CurrentFSMAction

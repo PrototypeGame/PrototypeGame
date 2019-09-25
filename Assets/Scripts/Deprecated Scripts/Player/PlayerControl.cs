@@ -203,7 +203,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (isMovable)
         {
-            MovementUtil.Move(rigid, transform.position, destPoint, manager.data.MoveSpeed * Time.deltaTime);
+            //MovementUtil.Move(rigid, transform.position, destPoint, manager.data.MoveSpeed * Time.deltaTime);
 
             Vector3 dir = destPoint - transform.position;
             dir.y = 0.0f;

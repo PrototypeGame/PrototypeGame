@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class PlayerFSMState : MonoBehaviour
 {
-    private PlayerFSMManager manager;
+    protected PlayerFSMManager manager;
 
     public string stateName;
 
-    protected virtual void Awake()
+    private void Awake()
     {
         manager = GetComponent<PlayerFSMManager>();
     }
 
-    public virtual void FSMStart()
+    public virtual void FSMStart() { }
+    public virtual void FSMUpdate() { }
+    public virtual void FSMFixedUpdate() { }
+
+    public virtual void FSMAnimationPlay()
     {
         // Play Animation
         manager.animCtrl.DefaultPlayOnStateChange(manager.CurrentState);
     }
-    public virtual void FSMUpdate() { }
-    public virtual void FSMFixedUpdate() { }
 }

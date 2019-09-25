@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class PlayerDEAD : PlayerFSMState
 {
-    protected override void Awake()
-    {
-        base.Awake();
-
-
-    }
-
     public override void FSMStart()
     {
         base.FSMStart();
@@ -30,5 +23,10 @@ public class PlayerDEAD : PlayerFSMState
         base.FSMFixedUpdate();
 
 
+    }
+
+    public override void FSMAnimationPlay()
+    {
+        base.FSMAnimationPlay();
     }
 }

@@ -3,7 +3,12 @@ using System.Collections;
 
 public class MovementUtil
 {
-    public static void Move(Rigidbody rigid, Vector3 curPos, Vector3 destPos, float moveSpeed)
+    public static void VectorMove(Rigidbody rigid, Vector3 direc, float moveSpeed)
+    {
+        rigid.position += direc * moveSpeed * Time.deltaTime;
+    }
+
+    public static void PointMove(Rigidbody rigid, Vector3 curPos, Vector3 destPos, float moveSpeed)
     {
         destPos.y = curPos.y;
 
@@ -11,7 +16,7 @@ public class MovementUtil
         rigid.MovePosition(deltaMove);
     }
 
-    public static void Move(Transform target, Vector3 curPos, Vector3 destPos, float moveSpeed)
+    public static void PointMove(Transform target, Vector3 curPos, Vector3 destPos, float moveSpeed)
     {
         target.position = Vector3.MoveTowards(curPos, destPos, moveSpeed);
     }

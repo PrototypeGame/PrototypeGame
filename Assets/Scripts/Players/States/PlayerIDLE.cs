@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class PlayerIDLE : PlayerFSMState
 {
-    protected override void Awake()
-    {
-        base.Awake();
-
-
-    }
-
     public override void FSMStart()
     {
         base.FSMStart();
@@ -22,7 +15,18 @@ public class PlayerIDLE : PlayerFSMState
     {
         base.FSMUpdate();
 
-
+        // Move Check
+        if (PlayerInputController.CheckInputSignal(manager.moveKeys))
+        {
+            Debug.Log("[DEBUG] Move Input detected");
+            manager.SetPlayerState(PlayerableCharacterState.MOVE);
+        }
+        // Attack Check
+        else if (PlayerInputController.CheckInputSignal(manager.attackKeys))
+        {
+            Debug.Log("[DEBUG] Attack Input detected");
+            manager.SetPlayerState(PlayerableCharacterState.NORMALATTACK);
+        }
     }
 
     public override void FSMFixedUpdate()
@@ -30,5 +34,10 @@ public class PlayerIDLE : PlayerFSMState
         base.FSMFixedUpdate();
 
 
+    }
+
+    public override void FSMAnimationPlay()
+    {
+        base.FSMAnimationPlay();
     }
 }

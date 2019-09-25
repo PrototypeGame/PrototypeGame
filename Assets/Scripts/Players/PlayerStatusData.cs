@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 [Serializable]
-public class PlayerStatusData
+public class PlayerStatusData : MonoBehaviour
 {
     // Variables
     [SerializeField] private float strength;
@@ -78,16 +77,6 @@ public class PlayerStatusData
         get => attackMaxPower;
         set => attackMaxPower = value;
     }
-    /// <summary> 최종 공격력 [Min: attackMinPower (inclusive) / Max: attackMaxPower (inclusive)] </summary>
-    public float FinalAttackDamage
-    {
-        get => Random.Range(AttackMinPower, AttackMaxPower);
-    }
-    /// <summary> 치명타 피해 </summary>
-    public float CriticalDamage
-    {
-        get => FinalAttackDamage * Random.Range(1.5f, 2.0f);
-    }
 
     /// <summary> 캐릭터 공격 속도 </summary>
     public float MainCharAttackSpeed
@@ -126,55 +115,5 @@ public class PlayerStatusData
     {
         get => avoidRate;
         set => avoidRate = value;
-    }
-
-    public StatusFixer skillStatFix;
-
-    public PlayerStatusData SetMoveSpeed()
-    {
-        MoveSpeed = (MoveSpeedByJob * (1.0f + skillStatFix.MoveSpeed));
-        return this;
-    }
-
-    public PlayerStatusData SetHealth()
-    {
-        Health = (100 + (25 * Strength) + skillStatFix.Health) * (1.0f + (skillStatFix.Health / 100.0f));
-        return this;
-    }
-
-    public PlayerStatusData SetMagicPoint()
-    {
-        MagicPoint = ((15.0f * Intellect) + skillStatFix.MagicPoint) * (1.0f + (skillStatFix.MagicPoint / 100.0f));
-        return this;
-    }
-
-    public PlayerStatusData SetAttackMinPower()
-    {
-        AttackMinPower = ((MainCharAttackPower * 1.35f) + skillStatFix.AttackMinPower) * (1.0f + (skillStatFix.AttackMinPower / 100.0f));
-        return this;
-    }
-
-    public PlayerStatusData SetAttackMaxPower()
-    {
-        AttackMaxPower = ((MainCharAttackPower * 2.25f) + skillStatFix.AttackMaxPower) * (1.0f + (skillStatFix.AttackMaxPower / 100.0f));
-        return this;
-    }
-
-    public PlayerStatusData SetAttackSpeed()
-    {
-        AttackSpeed = (MainCharAttackSpeed / (1.0f + (0.02f * Dexterity) + skillStatFix.AttackSpeed));
-        return this;
-    }
-
-    public PlayerStatusData SetArmor()
-    {
-        Armor = (-2.0f + (0.3f * Dexterity) + skillStatFix.Armor) * (1.0f + (skillStatFix.Armor / 100.0f));
-        return this;
-    }
-
-    public PlayerStatusData SetAvoidRate()
-    {
-        AvoidRate = (((0.25f * Dexterity) + skillStatFix.AvoidRate) * 0.01f);
-        return this;
     }
 }

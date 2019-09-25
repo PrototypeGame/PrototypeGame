@@ -7,7 +7,7 @@ using Debug = UnityEngine.Debug;
 
 public class PlayerManager : MonoBehaviour
 {
-    public PlayerStatusData data;
+    //public PlayerStatusData data;
     private PlayerControl control;
 
     public Animator anim;
@@ -71,34 +71,34 @@ public class PlayerManager : MonoBehaviour
 
     private void InitStatus()
     {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-
-        Debug.Log("Player Status Setting Now...");
-
-        data.SetMoveSpeed();
-        Debug.Log("MoveSpeed : " + data.MoveSpeed);
-
-        data.SetHealth();
-        Debug.Log("Health : " + data.Health);
-        data.SetMagicPoint();
-        Debug.Log("MagicPoint : " + data.MagicPoint);
-
-        data.SetAttackMinPower();
-        Debug.Log("AttackMinPower : " + data.AttackMinPower);
-        data.SetAttackMaxPower();
-        Debug.Log("AttackMaxPower : " + data.AttackMaxPower);
-
-        data.SetAttackSpeed();
-        Debug.Log("AttackSpeed : " + data.AttackSpeed);
-
-        data.SetArmor();
-        Debug.Log("Armor : " + data.Armor);
-        data.SetAvoidRate();
-        Debug.Log("AvoidRate : " + data.AvoidRate);
-
-        sw.Stop();
-        Debug.Log("Status Setting End - During Time : " + sw.ElapsedMilliseconds.ToString() + " ms");
+        //Stopwatch sw = new Stopwatch();
+        //sw.Start();
+        //
+        //Debug.Log("Player Status Setting Now...");
+        //
+        //data.SetMoveSpeed();
+        //Debug.Log("MoveSpeed : " + data.MoveSpeed);
+        //
+        //data.SetHealth();
+        //Debug.Log("Health : " + data.Health);
+        //data.SetMagicPoint();
+        //Debug.Log("MagicPoint : " + data.MagicPoint);
+        //
+        //data.SetAttackMinPower();
+        //Debug.Log("AttackMinPower : " + data.AttackMinPower);
+        //data.SetAttackMaxPower();
+        //Debug.Log("AttackMaxPower : " + data.AttackMaxPower);
+        //
+        //data.SetAttackSpeed();
+        //Debug.Log("AttackSpeed : " + data.AttackSpeed);
+        //
+        //data.SetArmor();
+        //Debug.Log("Armor : " + data.Armor);
+        //data.SetAvoidRate();
+        //Debug.Log("AvoidRate : " + data.AvoidRate);
+        //
+        //sw.Stop();
+        //Debug.Log("Status Setting End - During Time : " + sw.ElapsedMilliseconds.ToString() + " ms");
     }
 
     private RaycastHit hit;
