@@ -8,6 +8,7 @@ public class PlayerTimerManager : MonoBehaviour
 
     private void Awake()
     {
+        normalAttackTimer = new TimerUtil();
         skillAttackTimers = new TimerUtil[4];
     }
 
@@ -16,9 +17,12 @@ public class PlayerTimerManager : MonoBehaviour
         // Normal Attack Delay Timer
         TimerUtil.TimerOnGoing(normalAttackTimer);
         // Skill Cool Timer
-        foreach (var item in skillAttackTimers)
+        if (skillAttackTimers.Length > 0)
         {
-            TimerUtil.TimerOnGoing(item);
+            foreach (var item in skillAttackTimers)
+            {
+                TimerUtil.TimerOnGoing(item);
+            }
         }
     }
 }

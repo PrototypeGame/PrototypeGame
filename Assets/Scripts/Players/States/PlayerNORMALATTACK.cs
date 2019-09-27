@@ -10,6 +10,7 @@ public class PlayerNORMALATTACK : PlayerFSMState
         
         if (manager.timeManager.normalAttackTimer.notInCool)
         {
+            TimerUtil.TimerRemainResetToCool(manager.timeManager.normalAttackTimer);
             // TODO: 에니메이션 공격 재생 버그 수정
             Debug.Log("[DEBUG] Normal Attack Animation Played");
             base.FSMAnimationPlay();

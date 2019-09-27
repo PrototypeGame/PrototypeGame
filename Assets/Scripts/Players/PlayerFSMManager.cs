@@ -31,9 +31,9 @@ public class PlayerFSMManager : MonoBehaviour
     public PlayerTimerManager timeManager;
 
     // Key Inputs
-    public KeyCode[] moveKeys = new KeyCode[4];
-    public KeyCode[] attackKeys = new KeyCode[1];
-    public KeyCode[] skillKeys = new KeyCode[4];
+    public GameKeyPreset[] moveKeys = new GameKeyPreset[4];
+    public GameKeyPreset[] attackKeys = new GameKeyPreset[1];
+    public GameKeyPreset[] skillKeys = new GameKeyPreset[4];
 
     private void Awake()
     {
@@ -85,19 +85,19 @@ public class PlayerFSMManager : MonoBehaviour
     private void InitKeys()
     {
         // Move Key
-        moveKeys[0] = KeyCode.LeftArrow;
-        moveKeys[1] = KeyCode.RightArrow;
-        moveKeys[2] = KeyCode.DownArrow;
-        moveKeys[3] = KeyCode.UpArrow;
+        moveKeys[0] = GameKeyPreset.LeftArrow;
+        moveKeys[1] = GameKeyPreset.RightArrow;
+        moveKeys[2] = GameKeyPreset.DownArrow;
+        moveKeys[3] = GameKeyPreset.UpArrow;
 
         // Attack Key
-        attackKeys[0] = KeyCode.A;
+        attackKeys[0] = GameKeyPreset.NormalAttack;
 
         // Skill Key
-        skillKeys[0] = KeyCode.Q;
-        skillKeys[1] = KeyCode.W;
-        skillKeys[2] = KeyCode.E;
-        skillKeys[3] = KeyCode.R;
+        skillKeys[0] = GameKeyPreset.Skill_1;
+        skillKeys[1] = GameKeyPreset.Skill_2;
+        skillKeys[2] = GameKeyPreset.Skill_3;
+        skillKeys[3] = GameKeyPreset.Skill_Ultimate;
     }
 
     public PlayerFSMState CurrentFSMAction

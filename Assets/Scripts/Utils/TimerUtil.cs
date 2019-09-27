@@ -6,13 +6,6 @@ using UnityEngine;
 [Serializable]
 public class TimerUtil
 {
-    [HideInInspector]
-    public bool notInCool = true;
-
-    public float timeCool;
-    [HideInInspector]
-    public float remainTime = 0.0f;
-
     public static void TimerOnGoing(TimerUtil timer)
     {
         if (timer.remainTime > 0)

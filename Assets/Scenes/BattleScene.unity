@@ -944,7 +944,7 @@ MonoBehaviour:
   transf: {fileID: 1587002572}
   rigid: {fileID: 1587002573}
   animCtrl: {fileID: 0}
-  timeManager: {fileID: 0}
+  timeManager: {fileID: 1587002582}
   moveKeys: 00000000000000000000000000000000
   attackKeys: 00000000
   skillKeys: 00000000000000000000000000000000
@@ -991,19 +991,7 @@ MonoBehaviour:
     notInCool: 1
     timeCool: 1
     remainTime: 0
-  skillAttackTimers:
-  - notInCool: 0
-    timeCool: 0
-    remainTime: 0
-  - notInCool: 0
-    timeCool: 0
-    remainTime: 0
-  - notInCool: 0
-    timeCool: 0
-    remainTime: 0
-  - notInCool: 0
-    timeCool: 0
-    remainTime: 0
+  skillAttackTimers: []
 --- !u!1 &1626780963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1014,8 +1002,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1626780964}
   - component: {fileID: 1626780965}
+  - component: {fileID: 1626780966}
   m_Layer: 0
-  m_Name: Cursor Manager
+  m_Name: GameManage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1056,6 +1045,18 @@ MonoBehaviour:
   currentCursorState: 0
   fixPointIsCenter: 0
   fixPointAdjust: {x: 0, y: 0}
+--- !u!114 &1626780966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626780963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6235d294c99934b4a80d93059a1358ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1650664001
 GameObject:
   m_ObjectHideFlags: 0

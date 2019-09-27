@@ -3,11 +3,11 @@ using System.Collections;
 
 public class PlayerInputController
 {
-    public static bool CheckInputSignal(KeyCode[] inputKeys)
+    public static bool CheckInputSignal(GameKeyPreset[] inputKeys)
     {
         foreach (var item in inputKeys)
         {
-            if (Input.GetKey(item))
+            if (GameKey.GetKey(item))
                 return true;
         }
         return false;
@@ -15,11 +15,37 @@ public class PlayerInputController
 
     public static float HorizontalInputValue()
     {
-        return Input.GetAxisRaw("Horizontal");
+        if (!GameKey.GetKey(GameKeyPreset.LeftArrow) && GameKey.GetKey(GameKeyPreset.RightArrow))
+        {
+            return 1.0f;
+        }
+        if (GameKey.GetKey(GameKeyPreset.LeftArrow) && GameKey.GetKey(GameKeyPreset.RightArrow))
+        {
+            return 0.0f;
+        }
+        if (GameKey.GetKey(GameKeyPreset.LeftArrow) && !GameKey.GetKey(GameKeyPreset.RightArrow))
+        {
+            return -1.0f;
+        }
+
+        return 0.0f;
     }
 
     public static float VerticalInputValue()
     {
-        return Input.GetAxisRaw("Vertical");
+        if (!GameKey.GetKey(GameKeyPreset.DownArrow) && GameKey.GetKey(GameKeyPreset.UpArrow))
+        {
+            return 1.0f;
+        }
+        if (GameKey.GetKey(GameKeyPreset.DownArrow) && GameKey.GetKey(GameKeyPreset.UpArrow))
+        {
+            return 0.0f;
+        }
+        if (GameKey.GetKey(GameKeyPreset.DownArrow) && !GameKey.GetKey(GameKeyPreset.UpArrow))
+        {
+            return -1.0f;
+        }
+
+        return 0.0f;
     }
 }
