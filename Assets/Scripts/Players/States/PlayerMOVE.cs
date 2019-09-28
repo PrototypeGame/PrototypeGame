@@ -7,9 +7,14 @@ public class PlayerMOVE : PlayerFSMState
     private float horizMoveValue = 0.0f;
     private float vertMoveValue = 0.0f;
 
-    private float rotateSpeed = 8.0f;
+    private float rotateSpeed = 15.0f;
 
     private Vector3 moveDirection = Vector3.zero;
+
+    private void OnEnable()
+    {
+
+    }
 
     public override void FSMStart()
     {
@@ -25,19 +30,30 @@ public class PlayerMOVE : PlayerFSMState
         // Move Check
         if (PlayerInputController.CheckInputSignal(manager.moveKeys))
         {
+            Debug.Log("[DEBUG] Move Input detected");
             InputValueUpdate();
-            MoveRotate();
+        }
+        else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+        {
+            Debug.Log("[DEBUG] Dash Input detected");
+            manager.SetPlayerState(PlayableCharacterState.DASH);
         }
         // Attack Check
         else if (PlayerInputController.CheckInputSignal(manager.attackKeys))
         {
             Debug.Log("[DEBUG] Attack Input detected");
-            manager.SetPlayerState(PlayerableCharacterState.NORMALATTACK);
+            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
+        }
+        else if (PlayerInputController.CheckInputSignal(manager.skillKeys))
+        {
+            Debug.Log("[DEBUG] Skill Input detected");
+            manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
+            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(PlayerInputController.ReturnInputKey(manager.skillKeys));
         }
         else
         {
             Debug.Log("[DEBUG] Move Input not detected");
-            manager.SetPlayerState(PlayerableCharacterState.IDLE);
+            manager.SetPlayerState(PlayableCharacterState.IDLE);
         }
     }
 
@@ -45,7 +61,7 @@ public class PlayerMOVE : PlayerFSMState
     {
         base.FSMFixedUpdate();
 
-
+        MoveRotate();
     }
 
     private void InputValueUpdate()
@@ -62,10 +78,5 @@ public class PlayerMOVE : PlayerFSMState
     {
         MovementUtil.VectorMove(manager.rigid, moveDirection, manager.status.MoveSpeed);
         MovementUtil.Rotate(manager.transf, moveDirection, rotateSpeed);
-    }
-
-    public override void FSMAnimationPlay()
-    {
-        base.FSMAnimationPlay();
     }
 }

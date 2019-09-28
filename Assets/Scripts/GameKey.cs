@@ -16,15 +16,17 @@ public class KeyData
 
 public enum GameKeyPreset
 {
+    NONE, 
     LeftArrow, RightArrow, UpArrow, DownArrow, Dash,
-    NormalAttack, Skill_1, Skill_2, Skill_3, Skill_Ultimate
+    NormalAttack, Skill_1, Skill_2, Skill_3, Skill_Ultimate, 
+    ITEM_1, ITEM_2, ITEM_3, ITEM_4, ITEM_5, ITEM_6
 }
 
 public class GameKey : MonoBehaviour
 {
-    private static Dictionary<GameKeyPreset, KeyData> GameKeys;
+    public static Dictionary<GameKeyPreset, KeyData> GameKeys;
 
-    GameKey()
+    private void Awake()
     {
         GameKeys = new Dictionary<GameKeyPreset, KeyData>();
 
@@ -33,6 +35,8 @@ public class GameKey : MonoBehaviour
 
     private void InitKeySetting()
     {
+        GameKeys[GameKeyPreset.NONE] = new KeyData(KeyCode.None);
+
         GameKeys[GameKeyPreset.LeftArrow] = new KeyData(KeyCode.LeftArrow);
         GameKeys[GameKeyPreset.RightArrow] = new KeyData(KeyCode.RightArrow);
         GameKeys[GameKeyPreset.DownArrow] = new KeyData(KeyCode.DownArrow);
@@ -46,6 +50,13 @@ public class GameKey : MonoBehaviour
         GameKeys[GameKeyPreset.Skill_2] = new KeyData(KeyCode.W);
         GameKeys[GameKeyPreset.Skill_3] = new KeyData(KeyCode.E);
         GameKeys[GameKeyPreset.Skill_Ultimate] = new KeyData(KeyCode.R);
+
+        GameKeys[GameKeyPreset.ITEM_1] = new KeyData(KeyCode.Alpha1);
+        GameKeys[GameKeyPreset.ITEM_2] = new KeyData(KeyCode.Alpha2);
+        GameKeys[GameKeyPreset.ITEM_3] = new KeyData(KeyCode.Alpha3);
+        GameKeys[GameKeyPreset.ITEM_4] = new KeyData(KeyCode.Alpha4);
+        GameKeys[GameKeyPreset.ITEM_5] = new KeyData(KeyCode.Alpha5);
+        GameKeys[GameKeyPreset.ITEM_6] = new KeyData(KeyCode.Alpha6);
     }
 
     public static bool GetKeyDown(GameKeyPreset key)

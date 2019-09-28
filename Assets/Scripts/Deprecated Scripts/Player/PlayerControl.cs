@@ -21,7 +21,7 @@ public class PlayerControl : MonoBehaviour
 
     private Rigidbody rigid;
 
-    public TimerUtil dashDelay;
+    public GameTimer dashDelay;
 
     private RaycastHit hit;
 
@@ -39,7 +39,7 @@ public class PlayerControl : MonoBehaviour
 
     private void Update()
     {
-        TimerUtil.TimerOnGoing(dashDelay);
+        TimerUtil.TimerCyclePlay(dashDelay);
 
         KeyInputControl();
         TargetFollowLock();
@@ -169,11 +169,11 @@ public class PlayerControl : MonoBehaviour
             // 키보드 컨트롤 5
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (dashDelay.notInCool)
+                if (!TimerUtil.IsOnCoolTime(dashDelay))
                 {
                     if (RayUtil.FireRay(ref hit, manager.floorLayer))
                     {
-                        TimerUtil.TimerRemainResetToCool(dashDelay);
+                        TimerUtil.TimerReset(dashDelay);
                         isMovable = false;
 
                         Vector3 dashPos = hit.point - transform.position;

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f95ff99a72a374445933a17f4cb96533
+guid: 236f43cb1cbb7ce429b0a353b2ab8e27
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -24,10 +24,11 @@ ModelImporter:
     100036: Object012
     100038: Object013
     100040: Object014
-    100042: Tube002
-    100044: Tube003
-    100046: Tube004
-    100048: Tube005
+    100042: Object015
+    100044: Tube002
+    100046: Tube003
+    100048: Tube004
+    100050: Tube005
     400000: Box004
     400002: Box005
     400004: Box008
@@ -49,10 +50,11 @@ ModelImporter:
     400036: Object012
     400038: Object013
     400040: Object014
-    400042: Tube002
-    400044: Tube003
-    400046: Tube004
-    400048: Tube005
+    400042: Object015
+    400044: Tube002
+    400046: Tube003
+    400048: Tube004
+    400050: Tube005
     2100000: 'Material #25'
     2300000: Box004
     2300002: Box005
@@ -74,10 +76,11 @@ ModelImporter:
     2300034: Object012
     2300036: Object013
     2300038: Object014
-    2300040: Tube002
-    2300042: Tube003
-    2300044: Tube004
-    2300046: Tube005
+    2300040: Object015
+    2300042: Tube002
+    2300044: Tube003
+    2300046: Tube004
+    2300048: Tube005
     3300000: Box004
     3300002: Box005
     3300004: Box008
@@ -98,34 +101,36 @@ ModelImporter:
     3300034: Object012
     3300036: Object013
     3300038: Object014
-    3300040: Tube002
-    3300042: Tube003
-    3300044: Tube004
-    3300046: Tube005
-    4300000: Box005
-    4300002: Tube002
-    4300004: Tube003
-    4300006: Tube004
-    4300008: Box004
-    4300010: Cylinder004
-    4300012: Box008
-    4300014: Cylinder011
-    4300016: Tube005
-    4300018: Object001
-    4300020: Object002
-    4300022: Object003
+    3300040: Object015
+    3300042: Tube002
+    3300044: Tube003
+    3300046: Tube004
+    3300048: Tube005
+    4300000: Object015
+    4300002: Box009
+    4300004: Object014
+    4300006: Object013
+    4300008: Object012
+    4300010: Object011
+    4300012: Object010
+    4300014: Object009
+    4300016: Object008
+    4300018: Object007
+    4300020: Object006
+    4300022: Object005
     4300024: Object004
-    4300026: Object005
-    4300028: Object006
-    4300030: Object007
-    4300032: Object008
-    4300034: Object009
-    4300036: Object010
-    4300038: Object011
-    4300040: Object012
-    4300042: Object013
-    4300044: Object014
-    4300046: Box009
+    4300026: Object003
+    4300028: Object002
+    4300030: Object001
+    4300032: Tube005
+    4300034: Cylinder011
+    4300036: Box008
+    4300038: Cylinder004
+    4300040: Box004
+    4300042: Tube004
+    4300044: Tube003
+    4300046: Tube002
+    4300048: Box005
   externalObjects: {}
   materials:
     importMaterials: 1

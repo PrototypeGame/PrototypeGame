@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class StateSwitchableCollection
+{
+    public bool isMovable;
+    public bool isAttackable;
+}
+
 public class PlayerFSMState : MonoBehaviour
 {
     protected PlayerFSMManager manager;
+
+    public StateSwitchableCollection stateSwitch;
 
     public string stateName;
 
@@ -16,10 +24,4 @@ public class PlayerFSMState : MonoBehaviour
     public virtual void FSMStart() { }
     public virtual void FSMUpdate() { }
     public virtual void FSMFixedUpdate() { }
-
-    public virtual void FSMAnimationPlay()
-    {
-        // Play Animation
-        manager.animCtrl.DefaultPlayOnStateChange(manager.CurrentState);
-    }
 }

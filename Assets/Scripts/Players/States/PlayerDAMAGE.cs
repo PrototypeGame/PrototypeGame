@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class PlayerDAMAGE : PlayerFSMState
 {
+    private void OnEnable()
+    {
+
+    }
+
     public override void FSMStart()
     {
         base.FSMStart();
@@ -23,10 +28,5 @@ public class PlayerDAMAGE : PlayerFSMState
         base.FSMFixedUpdate();
 
 
-    }
-
-    public override void FSMAnimationPlay()
-    {
-        base.FSMAnimationPlay();
     }
 }

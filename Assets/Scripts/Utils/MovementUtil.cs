@@ -26,10 +26,14 @@ public class MovementUtil
         target.rotation = Quaternion.RotateTowards(target.rotation, Quaternion.LookRotation(destRot), rotateSpeed);
     }
 
+    public static void RotateLook(Transform target, Vector3 destRot)
+    {
+        target.rotation = Quaternion.LookRotation(destRot);
+    }
+
     public static void ForceDashMove(Rigidbody rigid, Transform trans, Vector3 dashDir, float dashPower, ForceMode mode)
     {
-        rigid.AddForce(dashDir * dashPower, mode);
-        trans.rotation = Quaternion.LookRotation(dashDir);
+        rigid.AddRelativeForce(dashDir * dashPower, mode);
     }
 
     public static void TeleportMove(Transform trans, Vector3 teleDir, float telePower)

@@ -16,7 +16,7 @@ public class PlayerAttack : MonoBehaviour
     public float attackLength;
 
     [SerializeField]
-    public TimerUtil[] timer;
+    public GameTimer[] timer;
 
     protected virtual void Awake()
     {
@@ -42,7 +42,7 @@ public class PlayerAttack : MonoBehaviour
     {
         foreach (var item in timer)
         {
-            TimerUtil.TimerOnGoing(item);
+            TimerUtil.TimerCyclePlay(item);
         }
     }
 
@@ -53,37 +53,37 @@ public class PlayerAttack : MonoBehaviour
             // 키보드 컨트롤 1
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                if (timer[1].notInCool)
+                if (!TimerUtil.IsOnCoolTime(timer[1]))
                 {
-                    TimerUtil.TimerRemainResetToCool(timer[1]);
+                    TimerUtil.TimerReset(timer[1]);
                     Skill_1_Anim();
                 }
             }
             // 키보드 컨트롤 2
             else if (Input.GetKeyDown(KeyCode.W))
             {
-                if (timer[2].notInCool)
+                if (!TimerUtil.IsOnCoolTime(timer[2]))
                 {
-                    TimerUtil.TimerRemainResetToCool(timer[2]);
-                    Skill_2_Anim();
+                    TimerUtil.TimerReset(timer[2]);
+                    Skill_1_Anim();
                 }
             }
             // 키보드 컨트롤 3
             else if (Input.GetKeyDown(KeyCode.E))
             {
-                if (timer[3].notInCool)
+                if (!TimerUtil.IsOnCoolTime(timer[3]))
                 {
-                    TimerUtil.TimerRemainResetToCool(timer[3]);
-                    Skill_3_Anim();
+                    TimerUtil.TimerReset(timer[3]);
+                    Skill_1_Anim();
                 }
             }
             // 키보드 컨트롤 4
             else if (Input.GetKeyDown(KeyCode.R))
             {
-                if (timer[4].notInCool)
+                if (!TimerUtil.IsOnCoolTime(timer[4]))
                 {
-                    TimerUtil.TimerRemainResetToCool(timer[4]);
-                    Skill_Ultimate_Anim();
+                    TimerUtil.TimerReset(timer[4]);
+                    Skill_1_Anim();
                 }
             }
         }

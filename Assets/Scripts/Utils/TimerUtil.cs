@@ -6,22 +6,28 @@ using UnityEngine;
 [Serializable]
 public class TimerUtil
 {
-    public static void TimerOnGoing(TimerUtil timer)
+    public static void TimerCyclePlay(GameTimer timer)
     {
-        if (timer.remainTime > 0)
+        if (timer.timer < timer.coolTime)
         {
-            timer.remainTime -= Time.deltaTime;
+            timer.timer += Time.deltaTime;
         }
         else
         {
-            timer.remainTime = 0.0f;
-            timer.notInCool = true;
+            if (timer.timer != timer.coolTime)
+            {
+                timer.timer = timer.coolTime;
+            }
         }
     }
 
-    public static void TimerRemainResetToCool(TimerUtil timer)
+    public static bool IsOnCoolTime(GameTimer timer)
     {
-        timer.remainTime = timer.timeCool;
-        timer.notInCool = false;
+        return timer.timer < timer.coolTime;
+    }
+
+    public static void TimerReset(GameTimer timer)
+    {
+        timer.timer = 0.0f;
     }
 }

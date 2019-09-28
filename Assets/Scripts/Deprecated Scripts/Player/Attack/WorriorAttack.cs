@@ -7,9 +7,9 @@ public class WorriorAttack : PlayerAttack
     {
         if (manager.targetEnemy != null)
         {
-            if (DetectUtil.AABBDetect(sight, manager.targetEnemy.hitCol) && timer[0].notInCool)
+            if (DetectUtil.AABBDetect(sight, manager.targetEnemy.hitCol) && !TimerUtil.IsOnCoolTime(timer[0]))
             {
-                TimerUtil.TimerRemainResetToCool(timer[0]);
+                TimerUtil.TimerReset(timer[0]);
 
                 control.MoveStop();
                 manager.anim.SetInteger("skill", 0);
