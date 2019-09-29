@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpeedItem : MonoBehaviour, IEffectItemBase
 {
-    private PlayerManager target;
+   // private PlayerManager target;
     private PlayerStatusData targetData;
 
     private Renderer itemRender;
@@ -23,7 +23,7 @@ public class SpeedItem : MonoBehaviour, IEffectItemBase
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            target = other.transform.root.GetComponent<PlayerManager>();
+            //target = other.transform.root.GetComponent<PlayerManager>();
             //targetData = target.data;
 
             ItemEffects();
