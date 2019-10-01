@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerInputController
+public class InputControlUtil
 {
     public static bool CheckInputSignal(GameKeyPreset[] inputKeys)
     {

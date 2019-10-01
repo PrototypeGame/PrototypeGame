@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public enum SkillType { TYPE_DAMAGE, TYPE_BUFF, TYPE_DEBUFF }
@@ -7,6 +8,7 @@ public enum SkillTarget { PLAYER_OWN = 1, PLAYER_OTHER = 2, ENEMY = 4, ONLY_BOSS
 public enum SkillGauge { NORMAL_GAUGE, SKILL_GAUGE }
 public enum SkillCCType {  }
 
+[Serializable]
 public class SkillData
 {
     [SerializeField] private int skillIndex;

@@ -9,10 +9,13 @@ public enum PlayableCharacterState
 
 public class PlayerFSMManager : MonoBehaviour
 {
-
     public Damageable damage;
-    // Player Status Data
-    public PlayerStatusManager status;
+
+    // Manager Scripts
+    public PlayerTimerManager timeManager;
+    public PlayerStatusManager statusManager;
+    public PlayerSkillManager skillManager;
+    public PlayerInputManager inputManager;
 
     // FSM Manage Variables
     private Dictionary<PlayableCharacterState, PlayerFSMState> playerStates = new Dictionary<PlayableCharacterState, PlayerFSMState>();
@@ -28,21 +31,19 @@ public class PlayerFSMManager : MonoBehaviour
     // Player Custom Class Variables
     [HideInInspector]
     public PlayerAnimatorController animCtrl;
-    public PlayerTimerManager timeManager;
-
-    // Key Inputs
-    public GameKeyPreset[] moveKeys = new GameKeyPreset[4];
-    public GameKeyPreset[] attackKeys = new GameKeyPreset[1];
-    public GameKeyPreset[] skillKeys = new GameKeyPreset[4];
-    public GameKeyPreset[] itemUseKeys = new GameKeyPreset[6];
-
-
+    
     private void Awake()
     {
-        status = GetComponent<PlayerStatusManager>();
-        InitPlayerDefaultStatus();
+        statusManager = GetComponent<PlayerStatusManager>();
+        timeManager = GetComponent<PlayerTimerManager>();
+        skillManager = GetComponent<PlayerSkillManager>();
+        // InputManager GameObject
+        inputManager = FindObjectOfType<PlayerInputManager>();
 
-        startState = PlayableCharacterState.IDLE;
+        InitPlayerDefaultStatus();
+        InitPlayerDefaultTimer();
+        InitPlayerDefaultSkill();
+        InitPlayerDefaultKey();
 
         InitPlayerStates();
 
@@ -50,9 +51,6 @@ public class PlayerFSMManager : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
 
         animCtrl = GetComponentInChildren<PlayerAnimatorController>();
-        timeManager = GetComponent<PlayerTimerManager>();
-
-        InitKeys();
     }
 
     private void Start()
@@ -68,9 +66,9 @@ public class PlayerFSMManager : MonoBehaviour
         timeManager.TimerUpdate();
 
         // Item Use Check
-        if (PlayerInputController.CheckInputSignal(itemUseKeys))
+        if (InputControlUtil.CheckInputSignal(inputManager.itemUseKeys))
         {
-            ItemUse(PlayerInputController.ReturnInputKey(itemUseKeys));
+            ItemUse(InputControlUtil.ReturnInputKey(inputManager.itemUseKeys));
         }
     }
 
@@ -81,18 +79,69 @@ public class PlayerFSMManager : MonoBehaviour
 
     private void InitPlayerDefaultStatus()
     {
-        status.Strength = 10.0f;
-        status.Dexterity = 7.0f;
-        status.Intellect = 7.0f;
+        statusManager.Strength = 10.0f;
+        statusManager.Dexterity = 7.0f;
+        statusManager.Intellect = 7.0f;
 
-        status.MoveSpeedByJob = 5.0f;
-        status.MainCharAttackPower = 10.0f;
-        status.MainCharAttackSpeed = 5.0f;
+        statusManager.MoveSpeedByJob = 5.0f;
+        statusManager.MainCharAttackPower = 10.0f;
+        statusManager.MainCharAttackSpeed = 5.0f;
 
-        status.Health = 100.0f;
-        status.MagicPoint = 40.0f;
+        statusManager.Health = 100.0f;
+        statusManager.MagicPoint = 40.0f;
 
-        status?.InitAllStatus();
+        statusManager?.InitAllStatus();
+    }
+
+    private void InitPlayerDefaultTimer()
+    {
+        timeManager.normalAttackTimer.coolTime = 1.0f;
+
+        timeManager.skillAttackTimers[0].coolTime = 1.0f;
+        timeManager.skillAttackTimers[1].coolTime = 1.0f;
+        timeManager.skillAttackTimers[2].coolTime = 1.0f;
+        timeManager.skillAttackTimers[3].coolTime = 1.0f;
+
+        timeManager.dashTimer.coolTime = 2.0f;
+
+        // TODO: 추후에 ITEM MANAGE CLASS에서 정보 불러오기
+        timeManager.itemUseTimer[0].coolTime = 1.0f;
+        timeManager.itemUseTimer[1].coolTime = 1.0f;
+        timeManager.itemUseTimer[2].coolTime = 1.0f;
+        timeManager.itemUseTimer[3].coolTime = 1.0f;
+        timeManager.itemUseTimer[4].coolTime = 1.0f;
+        timeManager.itemUseTimer[5].coolTime = 1.0f;
+    }
+
+    private void InitPlayerDefaultSkill()
+    {
+
+    }
+
+    private void InitPlayerDefaultKey()
+    {
+        // Move Key
+        inputManager.moveKeys[0] = GameKeyPreset.LeftArrow;
+        inputManager.moveKeys[1] = GameKeyPreset.RightArrow;
+        inputManager.moveKeys[2] = GameKeyPreset.DownArrow;
+        inputManager.moveKeys[3] = GameKeyPreset.UpArrow;
+
+        // Attack Key
+        inputManager.attackKeys[0] = GameKeyPreset.NormalAttack;
+
+        // Skill Key
+        inputManager.skillKeys[0] = GameKeyPreset.Skill_1;
+        inputManager.skillKeys[1] = GameKeyPreset.Skill_2;
+        inputManager.skillKeys[2] = GameKeyPreset.Skill_3;
+        inputManager.skillKeys[3] = GameKeyPreset.Skill_Ultimate;
+
+        // Item Key
+        inputManager.itemUseKeys[0] = GameKeyPreset.ITEM_1;
+        inputManager.itemUseKeys[1] = GameKeyPreset.ITEM_2;
+        inputManager.itemUseKeys[2] = GameKeyPreset.ITEM_3;
+        inputManager.itemUseKeys[3] = GameKeyPreset.ITEM_4;
+        inputManager.itemUseKeys[4] = GameKeyPreset.ITEM_5;
+        inputManager.itemUseKeys[5] = GameKeyPreset.ITEM_6;
     }
 
     private void InitPlayerStates()
@@ -104,47 +153,8 @@ public class PlayerFSMManager : MonoBehaviour
         playerStates[PlayableCharacterState.SKILLATTACK] = GetComponent<PlayerSKILLATTACK>();
         playerStates[PlayableCharacterState.DAMAGE] = GetComponent<PlayerDAMAGE>();
         playerStates[PlayableCharacterState.DEAD] = GetComponent<PlayerDEAD>();
-    }
 
-    private void InitKeys()
-    {
-        // Move Key
-        moveKeys[0] = GameKeyPreset.LeftArrow;
-        moveKeys[1] = GameKeyPreset.RightArrow;
-        moveKeys[2] = GameKeyPreset.DownArrow;
-        moveKeys[3] = GameKeyPreset.UpArrow;
-
-        // Attack Key
-        attackKeys[0] = GameKeyPreset.NormalAttack;
-
-        // Skill Key
-        skillKeys[0] = GameKeyPreset.Skill_1;
-        skillKeys[1] = GameKeyPreset.Skill_2;
-        skillKeys[2] = GameKeyPreset.Skill_3;
-        skillKeys[3] = GameKeyPreset.Skill_Ultimate;
-
-        // Item Key
-        itemUseKeys[0] = GameKeyPreset.ITEM_1;
-        itemUseKeys[1] = GameKeyPreset.ITEM_2;
-        itemUseKeys[2] = GameKeyPreset.ITEM_3;
-        itemUseKeys[3] = GameKeyPreset.ITEM_4;
-        itemUseKeys[4] = GameKeyPreset.ITEM_5;
-        itemUseKeys[5] = GameKeyPreset.ITEM_6;
-
-        Debug.Log("----- 키 설정 -----");
-        foreach (var item in moveKeys)
-        {
-            Debug.Log(item + " - 정상등록됨");
-        }
-        foreach (var item in attackKeys)
-        {
-            Debug.Log(item + " - 정상등록됨");
-        }
-        foreach (var item in skillKeys)
-        {
-            Debug.Log(item + " - 정상등록됨");
-        }
-        Debug.Log("----- 키 체크완료 -----");
+        startState = PlayableCharacterState.IDLE;
     }
 
     public void SetCurrentFSMAction(PlayerFSMState value, bool enable)

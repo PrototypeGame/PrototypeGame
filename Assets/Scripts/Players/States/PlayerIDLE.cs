@@ -21,7 +21,7 @@ public class PlayerIDLE : PlayerFSMState
         base.FSMUpdate();
 
         // Move Check
-        if (PlayerInputController.CheckInputSignal(manager.moveKeys))
+        if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
         {
             Debug.Log("[DEBUG] Move Input detected");
             manager.SetPlayerState(PlayableCharacterState.MOVE);
@@ -32,16 +32,16 @@ public class PlayerIDLE : PlayerFSMState
             manager.SetPlayerState(PlayableCharacterState.DASH);
         }
         // Attack Check
-        else if (PlayerInputController.CheckInputSignal(manager.attackKeys))
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
         {
             Debug.Log("[DEBUG] Attack Input detected");
             manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
         }
-        else if (PlayerInputController.CheckInputSignal(manager.skillKeys))
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.skillKeys))
         {
             Debug.Log("[DEBUG] Skill Input detected");
             manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
-            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(PlayerInputController.ReturnInputKey(manager.skillKeys));
+            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
         }
     }
 

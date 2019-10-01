@@ -7,7 +7,7 @@ public class PlayerMOVE : PlayerFSMState
     private float horizMoveValue = 0.0f;
     private float vertMoveValue = 0.0f;
 
-    private float rotateSpeed = 150.0f;
+    private float rotateSpeed = 25.0f;
 
     private Vector3 moveDirection = Vector3.zero;
 
@@ -28,27 +28,31 @@ public class PlayerMOVE : PlayerFSMState
         base.FSMUpdate();
 
         // Move Check
-        if (PlayerInputController.CheckInputSignal(manager.moveKeys))
+        if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
         {
+            if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+            {
+                if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
+                {
+                    //Debug.Log("[DEBUG] Dash Input detected");
+                    manager.SetPlayerState(PlayableCharacterState.DASH);
+                }
+            }
+
             //Debug.Log("[DEBUG] Move Input detected");
             InputValueUpdate();
         }
-        else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
-        {
-            //Debug.Log("[DEBUG] Dash Input detected");
-            manager.SetPlayerState(PlayableCharacterState.DASH);
-        }
         // Attack Check
-        else if (PlayerInputController.CheckInputSignal(manager.attackKeys))
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
         {
            // Debug.Log("[DEBUG] Attack Input detected");
             manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
         }
-        else if (PlayerInputController.CheckInputSignal(manager.skillKeys))
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.skillKeys))
         {
            // Debug.Log("[DEBUG] Skill Input detected");
             manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
-            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(PlayerInputController.ReturnInputKey(manager.skillKeys));
+            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
         }
         else
         {
@@ -66,8 +70,8 @@ public class PlayerMOVE : PlayerFSMState
 
     private void InputValueUpdate()
     {
-        horizMoveValue = PlayerInputController.HorizontalInputValue();
-        vertMoveValue = PlayerInputController.VerticalInputValue();
+        horizMoveValue = InputControlUtil.HorizontalInputValue();
+        vertMoveValue = InputControlUtil.VerticalInputValue();
 
         moveDirection.x = horizMoveValue;
         moveDirection.z = vertMoveValue;
@@ -76,7 +80,7 @@ public class PlayerMOVE : PlayerFSMState
 
     private void MoveRotate()
     {
-        MovementUtil.VectorMove(manager.rigid, moveDirection, manager.status.MoveSpeed);
+        MovementUtil.VectorMove(manager.rigid, moveDirection, manager.statusManager.MoveSpeed);
         MovementUtil.Rotate(manager.transf, moveDirection, rotateSpeed);
     }
 }

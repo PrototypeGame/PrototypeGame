@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class PlayerSKILLATTACK : PlayerFSMState
 {
-    private Action skillDelegate;
-
     private void OnEnable()
     {
 
@@ -33,81 +31,44 @@ public class PlayerSKILLATTACK : PlayerFSMState
 
     public void SkillSelectRun(GameKeyPreset skillKey)
     {
-        switch (PlayerInputController.ReturnInputKey(manager.skillKeys))
+        switch (InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys))
         {
             case GameKeyPreset.Skill_1:
-                skillDelegate = Skill_1_Anim;
+                manager.skillManager.activatedSkill = manager.skillManager.normalSkill;
                 break;
             case GameKeyPreset.Skill_2:
-                skillDelegate = Skill_2_Anim;
+                manager.skillManager.activatedSkill = null;
                 break;
             case GameKeyPreset.Skill_3:
-                skillDelegate = Skill_3_Anim;
+                manager.skillManager.activatedSkill = null;
                 break;
             case GameKeyPreset.Skill_Ultimate:
-                skillDelegate = Skill_Ultimate_Anim;
+                manager.skillManager.activatedSkill = null;
                 break;
             default:
+                manager.skillManager.activatedSkill = null;
                 break;
         }
 
-        skillDelegate?.Invoke();
-    }
-
-    private void Skill_1_Anim()
-    {
-        if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[0]))
+        if (manager.skillManager.activatedSkill != null)
         {
-            TimerUtil.TimerReset(manager.timeManager.skillAttackTimers[0]);
-            Debug.Log("Skill 1");
+            manager.skillManager.activatedSkillIndex = manager.skillManager.activatedSkill.applyData.SkillIndex;
+            manager.skillManager.activatedSkillName = manager.skillManager.activatedSkill.applyData.SkillName;
 
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
+            SkillPlay();
         }
         else
         {
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
+            manager.skillManager.activatedSkillIndex = -1;
+            manager.skillManager.activatedSkillName = "NONE";
         }
     }
-    private void Skill_2_Anim()
-    {
-        if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[1]))
-        {
-            TimerUtil.TimerReset(manager.timeManager.skillAttackTimers[1]);
-            Debug.Log("Skill 2");
 
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-        else
-        {
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-    }
-    private void Skill_3_Anim()
+    public void SkillPlay()
     {
-        if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[2]))
+        if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[manager.skillManager.activatedSkillIndex]))
         {
-            TimerUtil.TimerReset(manager.timeManager.skillAttackTimers[2]);
-            Debug.Log("Skill 3");
-
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-        else
-        {
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-    }
-    private void Skill_Ultimate_Anim()
-    {
-        if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[3]))
-        {
-            TimerUtil.TimerReset(manager.timeManager.skillAttackTimers[3]);
-            Debug.Log("Skill Ultimate");
-
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-        else
-        {
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
+            manager.skillManager.activatedSkill?.PlaySkillAnimation();
         }
     }
 }

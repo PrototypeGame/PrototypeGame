@@ -14,18 +14,8 @@ public class PlayerDASH : PlayerFSMState
     {
         base.FSMStart();
 
-        if (TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
-        {
-            Debug.Log("[DEBUG] Dash Cool is not Complete");
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-        else
-        {
-            Debug.Log("[DEBUG] Dash Input detected");
-            DashMove();
-
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
+        Debug.Log("[DEBUG] Dash Input detected");
+        DashMove();
     }
 
     public override void FSMUpdate()
@@ -37,5 +27,14 @@ public class PlayerDASH : PlayerFSMState
     {
         TimerUtil.TimerReset(manager.timeManager.dashTimer);
         MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
+
+        if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
+        {
+            manager.SetPlayerState(PlayableCharacterState.MOVE);
+        }
+        else
+        {
+            manager.SetPlayerState(PlayableCharacterState.IDLE);
+        }
     }
 }

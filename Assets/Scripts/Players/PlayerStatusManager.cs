@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEditor;
 
 [Serializable]
 public class PlayerStatusManager : PlayerStatusData
@@ -76,5 +77,25 @@ public class PlayerStatusManager : PlayerStatusData
     {
         AvoidRate = (((0.25f * Dexterity) + (skillFix != null ? skillFix.AvoidRate : 0.0f)) * 0.01f);
         return this;
+    }
+}
+
+[CustomEditor (typeof(PlayerStatusManager))]
+public class PlayerStatusManagerInspector : Editor
+{
+    SerializedProperty healthProperty;
+
+    private void OnEnable()
+    {
+        healthProperty = serializedObject.FindProperty("health");
+    }
+
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+
+        serializedObject.Update();
+
+        serializedObject.ApplyModifiedProperties();
     }
 }
