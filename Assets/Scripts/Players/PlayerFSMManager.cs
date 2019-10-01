@@ -9,6 +9,8 @@ public enum PlayableCharacterState
 
 public class PlayerFSMManager : MonoBehaviour
 {
+
+    public Damageable damage;
     // Player Status Data
     public PlayerStatusManager status;
 
@@ -33,6 +35,7 @@ public class PlayerFSMManager : MonoBehaviour
     public GameKeyPreset[] attackKeys = new GameKeyPreset[1];
     public GameKeyPreset[] skillKeys = new GameKeyPreset[4];
     public GameKeyPreset[] itemUseKeys = new GameKeyPreset[6];
+
 
     private void Awake()
     {
@@ -82,7 +85,7 @@ public class PlayerFSMManager : MonoBehaviour
         status.Dexterity = 7.0f;
         status.Intellect = 7.0f;
 
-        status.MoveSpeedByJob = 10.0f;
+        status.MoveSpeedByJob = 5.0f;
         status.MainCharAttackPower = 10.0f;
         status.MainCharAttackSpeed = 5.0f;
 
@@ -156,7 +159,7 @@ public class PlayerFSMManager : MonoBehaviour
         {
             item.Value.enabled = false;
         }
-
+        currentState = stat;
         SetCurrentFSMAction(playerStates[stat], true);
         currentFSMAction.FSMStart();
     }
