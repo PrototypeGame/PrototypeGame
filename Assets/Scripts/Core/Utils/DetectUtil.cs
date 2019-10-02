@@ -10,7 +10,7 @@ public class DetectUtil
     }
     public static Collider[] DetectObjectsWithPhysicsSphere(Vector3 center, float radius, LayerMask[] masks)
     {
-        List<Collider> detectObjects;
+        List<Collider> detectObjects = null;
         foreach (LayerMask mask in masks)
         {
             detectObjects.AddRange(Physics.OverlapSphere(center, radius, mask));
