@@ -14,10 +14,11 @@ public class Earthquake : AttackActionBase
     // Start is called before the first frame update
     void Awake()
     {
-       // mTran = GetComponent<Transform>();
+        mTran = transform.root;
+
         projection.gameObject.SetActive(false);
 
-        projection.aspectRatio = 0.1f;
+        projection.aspectRatio = 0.01f;
         projection.orthographicSize = attackRange;
         ratioPerSec = (1.0f / activeTime);
     }
@@ -30,7 +31,7 @@ public class Earthquake : AttackActionBase
         {
             projection.aspectRatio += ratioPerSec * Time.deltaTime;
 
-            if (projection.aspectRatio >= 1.0f)
+            if (projection.aspectRatio >= 0.75f)
             {
                 projection.aspectRatio = 0.1f;
                 projection.gameObject.SetActive(false);
@@ -44,7 +45,7 @@ public class Earthquake : AttackActionBase
         Vector3 dir = Target.position - mTran.position;
         dir.y = 0.0f;
 
-        transform.rotation = Quaternion.LookRotation(dir);
+        mTran.rotation = Quaternion.LookRotation(dir);
         projection.gameObject.SetActive(true);
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RushAttack : AttackActionBase
 {
+    public Projector projection;
     public Transform Target;
     public Transform mTran;
 
@@ -14,18 +15,34 @@ public class RushAttack : AttackActionBase
     private float rockStartY = 0.0f;
 
     Vector3 temp;
-    // Start is called before the first frame update
+
     void Awake()
     {
-       // mTran = GetComponent<Transform>();
+        mTran = transform.root;
+
+        projection.gameObject.SetActive(false);
+
+        projection.aspectRatio = 0.01f;
+        projection.orthographicSize = attackRange;
+        ratioPerSec = (1.0f / activeTime);
     }
 
-    // Update is called once per frame
     void Update()
     {
-       // transform.position = mTran.position;
-    }
+        transform.position = mTran.position;
+        if (projection.gameObject.activeSelf)
+        {
+            projection.aspectRatio += ratioPerSec * Time.deltaTime;
 
+            if (projection.aspectRatio >= 0.75f)
+            {
+                projection.aspectRatio = 0.1f;
+                projection.gameObject.SetActive(false);
+                StartCoroutine(Rush());
+            }
+        }
+    }
+     
     public override void ExcuteSkill()
     {
         Debug.Log("RushAttack");
@@ -34,7 +51,7 @@ public class RushAttack : AttackActionBase
         dir.y = 0.0f;
 
         mTran.rotation = Quaternion.LookRotation(dir);
-        StartCoroutine(Rush());
+        projection.gameObject.SetActive(true);
     }
 
     IEnumerator Rush()
@@ -47,6 +64,5 @@ public class RushAttack : AttackActionBase
             yield return null;
         }
         yield return null;
-        Debug.Log("And");
     }
 }

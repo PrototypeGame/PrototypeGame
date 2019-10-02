@@ -24,19 +24,20 @@ namespace Boss
 
     public class BossMonsterBase : MonoBehaviour
     {
-        public int bossHealth;
+        public int curHP;
+        public int maxHP;
         public float moveSpeed;
 
         private bool isDead = false;
 
         public void OnDamage(int damage)
         {
-            bossHealth -= damage;
+            curHP -= damage;
         }
 
         public bool OnDead()
         {
-            if (bossHealth <= 0)
+            if (curHP <= 0)
                 return true;
 
             return false;

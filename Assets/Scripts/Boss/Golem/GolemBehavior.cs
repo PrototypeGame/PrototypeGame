@@ -7,6 +7,7 @@ namespace Boss
 {
     public class BossPattern
     {
+        public int nextPatternHp;
         public int[] weight;
         public AttackActionBase[] skill;
     }
@@ -23,12 +24,14 @@ namespace Boss
             RockThrow
         };
 
-        public int phase = 1;
+        [SerializeField]
+        private int phase = 1;
 
         public float excuteSkillTiem = 1.5f;
         public float idleWaitTime = 1.5f;
         public float castingRisesTime = 3.0f;
         public float attackCastingRises = 0.1f;
+        public float jointExceptDistance = 10.0f;
         public Transform[] playerTransforms; // 유저들의 위치
         public BossPattern[] patterns;
         public UnityEngine.Events.UnityEvent camShake;
@@ -36,7 +39,6 @@ namespace Boss
 
         private float castingGauge = 0.0f;
         private Transform closePlayerTrans; // 가까운 유저의 위치
-        private Dictionary<GolemSkill, AttackActionBase> skills;
         private Transform bossTrans;
         private Animator anim;
         private Root ai;
@@ -48,15 +50,13 @@ namespace Boss
 
             MovingObjectSMB<GolemBehavior>.Initialize(anim, this);
 
-            //skills = new Dictionary<GolemSkill, AttackActionBase>();
-            //skills.Add(GolemSkill.RockfallRain, GetComponent<RockfallRain>());
-
             #region Pattern
             patterns = new BossPattern[3];
             BossPattern phase = new BossPattern();
 
             phase.weight = new int[] { 3, 5, 8, 10 };
             phase.skill = new AttackActionBase[4];
+            phase.nextPatternHp = maxHP/2;
             phase.skill[0] = (GetComponentInChildren<Earthquake>());
             phase.skill[1] = (GetComponentInChildren<RushAttack>());
             phase.skill[2] = (GetComponentInChildren<RockDrop>());
@@ -65,6 +65,7 @@ namespace Boss
 
             phase = new BossPattern();
             phase.weight = new int[] { 2, 4, 7, 10 };
+            phase.nextPatternHp = maxHP/5;
             phase.skill = new AttackActionBase[4];
             phase.skill[0] = (GetComponentInChildren<RushAttack>());
             phase.skill[1] = (GetComponentInChildren<ShockWave>());
@@ -82,26 +83,28 @@ namespace Boss
             patterns[2] = phase;
             #endregion
 
+            #region Behavior Tree
             ai = new Root();
             ai.AddBranch(
                 new Action(ClosePlayerResearch),
                 new Repeat(patterns.Length).AddBranch(
 
-                    new While(NotDead).AddBranch(
+                    new While(ReplacePattern).AddBranch(
                         new ConditionalBranch(CastingSuccess).AddBranch(
                             new SetBool(anim, "Run", false),
                             new Wait(excuteSkillTiem),
                             new SetTrigger(anim, "Skill"),
-                            new Wait(1.5f),
+                            new Wait(1.3f),
                             new Action(ExcuteSkill),
                             new WaitAnimationAnd(anim, "Idle"),
                             new Wait(idleWaitTime),
+                            new Action(ClosePlayerResearch),
                             new Action(ResetCastingGage)
                             ),
 
                         new SetBool(anim, "Run"),
 
-                        new ConditionalBranch(MeleeAttack).AddBranch(
+                        new ConditionalBranch(MeleeAttackCheak).AddBranch(
                             new SetBool(anim, "Run", false),
                             new SetTrigger(anim, "MeleeAttack"),
                             new WaitAnimationAnd(anim, "Idle"),
@@ -111,8 +114,11 @@ namespace Boss
                     )
                 ),
                 new SetTrigger(anim, "Dead"),
+                new Wait(4.0f),
+                new Action(()=> { Destroy(this.gameObject); }),
                 new Abort()
             );
+            #endregion
         }
 
         private void Update()
@@ -121,25 +127,24 @@ namespace Boss
             CastingSuccess();
         }
 
-        public bool NotDead()
+        public bool ReplacePattern()
         {
+            if (OnDead())
+                return false;
+
+            if (curHP <= patterns[phase - 1].nextPatternHp)
+            {
+                phase++;
+                PDebug.Log($"{phase} 페이즈 시작");
+                return false;
+            }
+
             return true;
         }
 
         public void ExcuteSkill()
         {
-            switch (phase)
-            {
-                case 1:
-                    RandomSkillSelect(patterns[phase - 1]);
-                    break;
-                case 2:
-                    RandomSkillSelect(patterns[phase - 1]);
-                    break;
-                case 3:
-                    RandomSkillSelect(patterns[phase - 1]);
-                    break;
-            }
+            RandomSkillSelect(patterns[phase - 1]);
             camShake.Invoke();
         }
 
@@ -168,6 +173,7 @@ namespace Boss
             pattern.skill[curPattern].ExcuteSkill();
         }
 
+        // 가장 가까운 플레이어 검색
         public void ClosePlayerResearch()
         {
             float distanceTemp = 1000.0f;
@@ -183,13 +189,21 @@ namespace Boss
             }
         }
 
+        // 플레이어와의 거리 계산
+        public Vector3 DirectionFromPlayer()
+        {
+            Vector3 dir = closePlayerTrans.position - bossTrans.position;
+            dir.y = 0;
+            return dir;
+        }
+
+        // 플레이어 쫒기
         public void TracingClosePlayer()
         {
             Vector3 destination = closePlayerTrans.position;
             destination.y = bossTrans.position.y;
 
-            Vector3 dir = closePlayerTrans.position - bossTrans.position;
-            dir.y = 0.0f;
+            Vector3 dir = DirectionFromPlayer();
 
             bossTrans.position = Vector3.MoveTowards(bossTrans.position, destination, moveSpeed * Time.deltaTime);
 
@@ -201,12 +215,12 @@ namespace Boss
         }
 
         // 공격이 판정됬을때
-        public bool MeleeAttack()
+        public bool MeleeAttackCheak()
         {
-            Vector3 dir = closePlayerTrans.position - bossTrans.position;
-
+            Vector3 dir = DirectionFromPlayer();
             if (dir.sqrMagnitude < 4.0f * 4.0f)
             {
+                transform.rotation = Quaternion.LookRotation(dir);
                 return true;
             }
 
@@ -225,6 +239,7 @@ namespace Boss
             return false;
         }
 
+        // 캐스팅 리셋
         public void ResetCastingGage()
         {
             castingGauge = 0;
