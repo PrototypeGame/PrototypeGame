@@ -18,15 +18,25 @@ public class FollowCamera : MonoBehaviour
     /////////////////////////////////
     // Shake Cam Value
     /////////////////////////////////
-    [Range(0, 2)]
+    [Range(0, 1.5f)]
     public float ShakeRadius = 0.3f;
     public float ShakeTime = 0.5f;
 
     private Vector2 shakeValue;
+    private Vector3 pos;
     private float time;
     /////////////////////////////////
 
-    private float followMarginRange = 0.05f;    
+    private float followMarginRange = 0.05f;
+
+    private void Awake()
+    {
+        if (followTarget == null)
+        {
+            followTarget = GameObject.FindGameObjectWithTag("Player").transform.root;
+        }
+        shakeValue = Vector2.zero;
+    }
 
     private void Start()
     {
@@ -35,29 +45,29 @@ public class FollowCamera : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 followPos = new Vector3(followTarget.position.x + shakeValue.x, yFollowHeight + shakeValue.y, followTarget.position.z - zFollowDist);
-
-        if (Vector3.Distance(transform.position, followPos) >= followMarginRange)
+        if ((followTarget.position - transform.position).sqrMagnitude >= followMarginRange * followMarginRange)
         {
-            transform.position = Vector3.Lerp(transform.position, followPos, followSpeed * Time.deltaTime);
+            pos.x = Mathf.Lerp(transform.position.x, followTarget.position.x, followSpeed * Time.deltaTime);
+            pos.y = Mathf.Lerp(transform.position.y, yFollowHeight, followSpeed * Time.deltaTime);
+            pos.z = Mathf.Lerp(transform.position.z, followTarget.position.z - zFollowDist, followSpeed * Time.deltaTime);
         }
+
+        pos.x += shakeValue.x;
+        pos.y += shakeValue.y;
+
+        transform.position = pos;
     }
 
     Vector3 startPos;
 
     private IEnumerator StartFollowTarget()
     {
-        if (followTarget == null)
-        {
-            followTarget = GameObject.FindGameObjectWithTag("Player").transform.root;
-        }
-
         startPos = new Vector3(followTarget.position.x, yFollowHeight, followTarget.position.z - zFollowDist);
-        Debug.Log("Start Moving");
+        //Debug.Log("Start Moving");
 
         WaitForSeconds delay = new WaitForSeconds(0.002f);
 
-        bool[] bCheck = new bool[2] { false, false };
+        //bool[] bCheck = new bool[2] { false, false };
 
         Vector3 dir = startPos - transform.position;
 
@@ -67,7 +77,7 @@ public class FollowCamera : MonoBehaviour
 
             yield return delay;
         }
-        Debug.Log("End Moving");
+        //Debug.Log("End Moving");
 
         yield break;
     }
@@ -86,8 +96,6 @@ public class FollowCamera : MonoBehaviour
         while (time <= ShakeTime)
         {
             shakeValue = (Vector2)UnityEngine.Random.insideUnitCircle * ShakeRadius;
-            //startPos.x += shakeValue.x;
-            //startPos.y += shakeValue.y;
             time += Time.deltaTime;
             yield return null;
         }

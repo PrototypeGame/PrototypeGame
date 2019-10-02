@@ -39,47 +39,43 @@ namespace Boss
 
         IEnumerator Skill()
         {
+            RendomPoint(DropCount);
             for (int i = 0; i < DropCount; i++)
             {
                 rockPool[i].gameObject.SetActive(true);
-                rockPool[i].transform.position = RendomPoint(i);
+                rockPool[i].transform.position = tempV[i];
                 yield return wait;
             }
+            tempV.Clear();
         }
 
-        public Vector3 RendomPoint(int i)
+        private List<Vector3> tempV = new List<Vector3>();
+        public void RendomPoint(int DropCount)
         {
-            float x = 0;
-            float z = 0;
-            if (i < DropCount * 0.25f)
-            {
-                x = Random.Range(-9.0f, -2.0f);
-                z = Random.Range(2.0f, 9.0f);
-            }
-
-            else if (i < DropCount * 0.5f)
-            {
-                x = Random.Range(2.0f, 9.0f);
-                z = Random.Range(2.0f, 9.0f);
-            }
-
-            else if (i < DropCount * 0.75f)
-            {
-                x = Random.Range(2.0f, 9.0f);
-                z = Random.Range(-9.0f, -2.0f);
-            }
-
-            else
-            {
-                x = Random.Range(-9.0f, -2.0f);
-                z = Random.Range(-9.0f, -2.0f);
-            }
-
             Vector3 retVal;
-            retVal.x = x;
-            retVal.y = 1;
-            retVal.z = z;
-            return retVal;
+            bool cheak;
+            for (int i = 0; i < DropCount; i++)
+            {
+                do
+                {
+                    cheak = false;
+                    Vector2 ranV = Random.insideUnitCircle * 12.3f;
+
+                    retVal.x = ranV.x;
+                    retVal.y = 1;
+                    retVal.z = ranV.y;
+                    for (int c = 0; c < tempV.Count; c++)
+                    {
+                        if ((tempV[c] - retVal).sqrMagnitude <= 3.0f * 3.0f)
+                        {
+                            cheak |= true;
+                        }
+                    }
+
+                } while (cheak);
+
+                tempV.Add(retVal);
+            }
         }
     }
 }

@@ -290,7 +290,6 @@ namespace AI
         {
             this.anim = anim;
             this.hashId = Animator.StringToHash(para);
-            Debug.Log("a: " + hashId);
         }
 
         public override BTState Tick()
