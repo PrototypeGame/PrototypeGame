@@ -20,7 +20,7 @@ public class PlayerMOVE : PlayerFSMState
     {
         base.FSMStart();
 
-
+        manager.animManager.PlayAnimation(PlayableCharacterState.MOVE);
     }
 
     public override void FSMUpdate()

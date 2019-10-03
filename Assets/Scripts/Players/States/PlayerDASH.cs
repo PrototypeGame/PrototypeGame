@@ -15,7 +15,7 @@ public class PlayerDASH : PlayerFSMState
         base.FSMStart();
 
         Debug.Log("[DEBUG] Dash Input detected");
-        DashMove();
+        StartCoroutine(DashMove());
     }
 
     public override void FSMUpdate()
@@ -23,10 +23,26 @@ public class PlayerDASH : PlayerFSMState
         base.FSMUpdate();
     }
 
-    private void DashMove()
+    private IEnumerator DashMove()
     {
-        TimerUtil.TimerReset(manager.timeManager.dashTimer);
-        MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
+        if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
+        {
+            TimerUtil.TimerReset(manager.timeManager.dashTimer);
+            MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
+
+            manager.animManager.PlayAnimation(PlayableCharacterState.DASH);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        FSMNextState();
+
+        yield return null;
+    }
+
+    public override void FSMNextState()
+    {
+        base.FSMNextState();
 
         if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
         {

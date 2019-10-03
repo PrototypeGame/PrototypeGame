@@ -16,6 +16,7 @@ public class PlayerFSMManager : MonoBehaviour
     public PlayerStatusManager statusManager;
     public PlayerSkillManager skillManager;
     public PlayerInputManager inputManager;
+    public PlayerAnimatorManager animManager;
 
     // FSM Manage Variables
     private Dictionary<PlayableCharacterState, PlayerFSMState> playerStates = new Dictionary<PlayableCharacterState, PlayerFSMState>();
@@ -27,10 +28,6 @@ public class PlayerFSMManager : MonoBehaviour
     // Player Component Variables
     public Transform transf;
     public Rigidbody rigid;
-
-    // Player Custom Class Variables
-    [HideInInspector]
-    public PlayerAnimatorController animCtrl;
     
     private void Awake()
     {
@@ -44,18 +41,17 @@ public class PlayerFSMManager : MonoBehaviour
         InitPlayerDefaultTimer();
         InitPlayerDefaultSkill();
         InitPlayerDefaultKey();
-
         InitPlayerStates();
 
         transf = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody>();
 
-        animCtrl = GetComponentInChildren<PlayerAnimatorController>();
+        animManager = GetComponentInChildren<PlayerAnimatorManager>();
     }
 
     private void Start()
     {
-        // Awake에 넣으면 PlayerAnimatorController에서 Animator를 불러오는 시기와 겹쳐 정상적으로 작동하지 않음
+        // Awake에 넣으면 PlayerAnimatorManager에서 Animator를 불러오는 시기와 겹쳐 정상적으로 작동하지 않음
         SetPlayerState(startState);
     }
 
@@ -92,7 +88,6 @@ public class PlayerFSMManager : MonoBehaviour
 
         statusManager?.InitAllStatus();
     }
-
     private void InitPlayerDefaultTimer()
     {
         timeManager.normalAttackTimer.coolTime = 1.0f;
@@ -112,12 +107,10 @@ public class PlayerFSMManager : MonoBehaviour
         timeManager.itemUseTimer[4].coolTime = 1.0f;
         timeManager.itemUseTimer[5].coolTime = 1.0f;
     }
-
     private void InitPlayerDefaultSkill()
     {
 
     }
-
     private void InitPlayerDefaultKey()
     {
         // Move Key
@@ -143,7 +136,6 @@ public class PlayerFSMManager : MonoBehaviour
         inputManager.itemUseKeys[4] = GameKeyPreset.ITEM_5;
         inputManager.itemUseKeys[5] = GameKeyPreset.ITEM_6;
     }
-
     private void InitPlayerStates()
     {
         playerStates[PlayableCharacterState.IDLE] = GetComponent<PlayerIDLE>();
@@ -155,12 +147,7 @@ public class PlayerFSMManager : MonoBehaviour
         playerStates[PlayableCharacterState.DEAD] = GetComponent<PlayerDEAD>();
 
         startState = PlayableCharacterState.IDLE;
-    }
-
-    public void SetCurrentFSMAction(PlayerFSMState value, bool enable)
-    {
-        currentFSMAction = value;
-        currentFSMAction.enabled = enable;
+        currentState = startState;
     }
 
     public void SetPlayerState(PlayableCharacterState stat)
@@ -170,7 +157,9 @@ public class PlayerFSMManager : MonoBehaviour
             item.Value.enabled = false;
         }
         currentState = stat;
-        SetCurrentFSMAction(playerStates[stat], true);
+        playerStates[stat].enabled = true;
+
+        currentFSMAction = playerStates[stat];
         currentFSMAction.FSMStart();
     }
 

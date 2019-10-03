@@ -24,4 +24,5 @@ public class PlayerFSMState : MonoBehaviour
     public virtual void FSMStart() { }
     public virtual void FSMUpdate() { }
     public virtual void FSMFixedUpdate() { }
+    public virtual void FSMNextState() { }
 }
