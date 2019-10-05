@@ -71,4 +71,9 @@ public class PlayerSKILLATTACK : PlayerFSMState
             manager.skillManager.activatedSkill?.PlaySkillAnimation();
         }
     }
+
+    public override void FSMNextState()
+    {
+
+    }
 }

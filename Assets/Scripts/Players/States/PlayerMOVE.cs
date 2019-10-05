@@ -27,6 +27,8 @@ public class PlayerMOVE : PlayerFSMState
     {
         base.FSMUpdate();
 
+        FSMNextState();
+
         // Move Check
         if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
         {
@@ -39,25 +41,7 @@ public class PlayerMOVE : PlayerFSMState
                 }
             }
 
-            //Debug.Log("[DEBUG] Move Input detected");
             InputValueUpdate();
-        }
-        // Attack Check
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
-        {
-           // Debug.Log("[DEBUG] Attack Input detected");
-            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
-        }
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.skillKeys))
-        {
-           // Debug.Log("[DEBUG] Skill Input detected");
-            manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
-            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
-        }
-        else
-        {
-            //Debug.Log("[DEBUG] Move Input not detected");
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
         }
     }
 
@@ -66,6 +50,27 @@ public class PlayerMOVE : PlayerFSMState
         base.FSMFixedUpdate();
 
         MoveRotate();
+    }
+
+    public override void FSMNextState()
+    {
+        // Attack Check
+        if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
+        {
+            // Debug.Log("[DEBUG] Attack Input detected");
+            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
+        }
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.skillKeys))
+        {
+            // Debug.Log("[DEBUG] Skill Input detected");
+            manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
+            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
+        }
+        else if (InputControlUtil.ReturnInputKey() == GameKeyPreset.NONE)
+        {
+            //Debug.Log("[DEBUG] Move Input not detected");
+            manager.SetPlayerState(PlayableCharacterState.IDLE);
+        }
     }
 
     private void InputValueUpdate()

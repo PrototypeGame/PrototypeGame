@@ -21,7 +21,7 @@ public class InputControlUtil
         {
             if (GameKey.GetKey(item))
             {
-                Debug.Log(item.ToString() + "이 탐지됨");
+                //Debug.Log(item.ToString() + "이 탐지됨");
                 return item;
             }
         }
@@ -34,7 +34,7 @@ public class InputControlUtil
         {
             if (GameKey.GetKey(item))
             {
-                Debug.Log(item.ToString() + "이 탐지됨");
+                //Debug.Log(item.ToString() + "이 탐지됨");
                 return item;
             }
         }

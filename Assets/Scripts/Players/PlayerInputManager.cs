@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerInputManager : MonoBehaviour
 {
     public GameKeyPreset[] moveKeys;
+    public GameKeyPreset dashKey;
     public GameKeyPreset[] attackKeys;
     public GameKeyPreset[] skillKeys;
     public GameKeyPreset[] itemUseKeys;

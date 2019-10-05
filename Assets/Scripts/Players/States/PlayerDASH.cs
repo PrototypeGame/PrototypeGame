@@ -14,7 +14,6 @@ public class PlayerDASH : PlayerFSMState
     {
         base.FSMStart();
 
-        Debug.Log("[DEBUG] Dash Input detected");
         StartCoroutine(DashMove());
     }
 

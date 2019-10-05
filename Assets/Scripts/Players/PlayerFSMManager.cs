@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Boss;
 
 public enum PlayableCharacterState
 {
@@ -28,7 +29,12 @@ public class PlayerFSMManager : MonoBehaviour
     // Player Component Variables
     public Transform transf;
     public Rigidbody rigid;
-    
+
+    // Boss Register
+    public BossMonsterBase[] boss;
+
+    // Enemy Register
+
     private void Awake()
     {
         statusManager = GetComponent<PlayerStatusManager>();
@@ -36,6 +42,7 @@ public class PlayerFSMManager : MonoBehaviour
         skillManager = GetComponent<PlayerSkillManager>();
         // InputManager GameObject
         inputManager = FindObjectOfType<PlayerInputManager>();
+        animManager = GetComponentInChildren<PlayerAnimatorManager>();
 
         InitPlayerDefaultStatus();
         InitPlayerDefaultTimer();
@@ -46,7 +53,7 @@ public class PlayerFSMManager : MonoBehaviour
         transf = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody>();
 
-        animManager = GetComponentInChildren<PlayerAnimatorManager>();
+        boss = FindObjectsOfType<BossMonsterBase>();
     }
 
     private void Start()
@@ -72,6 +79,8 @@ public class PlayerFSMManager : MonoBehaviour
     {
         currentFSMAction?.FSMFixedUpdate();
     }
+
+    #region Init States
 
     private void InitPlayerDefaultStatus()
     {
@@ -150,6 +159,8 @@ public class PlayerFSMManager : MonoBehaviour
         currentState = startState;
     }
 
+    #endregion
+
     public void SetPlayerState(PlayableCharacterState stat)
     {
         foreach (var item in playerStates)
@@ -161,6 +172,18 @@ public class PlayerFSMManager : MonoBehaviour
 
         currentFSMAction = playerStates[stat];
         currentFSMAction.FSMStart();
+    }
+
+    public List<Transform> GetBossRootLocation()
+    {
+        List<Transform> tempBossTransf = null;
+
+        foreach (var item in boss)
+        {
+            tempBossTransf.Add(item.transform.root);
+        }
+
+        return tempBossTransf;
     }
 
     public void ItemUse(GameKeyPreset itemKey)
