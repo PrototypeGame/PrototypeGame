@@ -37,7 +37,7 @@ public class PlayerAnimatorManager : MonoBehaviour
         anim.SetInteger(hashState, (int)state);
     }
 
-    public void LinkNextNormalAttack()
+    public void LinkNextNormalAttackStack()
     {
         anim.SetTrigger(hashAttackLink);
     }
@@ -48,9 +48,31 @@ public class PlayerAnimatorManager : MonoBehaviour
         canNormalAttackLinkCheck = true;
     }
 
-    public void EndNormalAttackStack()
+    public void CheckNormalAttackLinked()
     {
         isEndNormalAttack = true;
+
+        if (isLinked)
+        {
+            Debug.Log("[디버그][PlayerAnimatorManager.cs] 일반 공격 링크됨");
+
+            normalAttackStack++;
+            isEndNormalAttack = false;
+            isLinked = false;
+
+            LinkNextNormalAttackStack();
+
+            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
+        }
+        else
+        {
+            normalAttackStack = 1;
+
+            Debug.Log("[디버그][PlayerAnimatorManager.cs] 링크 중단, 일반 공격 스택 : " + normalAttackStack);
+
+            TimerUtil.TimerReset(manager.timeManager.normalAttackTimer);
+            manager.SetPlayerState(PlayableCharacterState.IDLE);
+        }
 
         canNormalAttackLinkCheck = false;
     }

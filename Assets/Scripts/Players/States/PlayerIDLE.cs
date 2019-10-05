@@ -25,17 +25,8 @@ public class PlayerIDLE : PlayerFSMState
 
     public override void FSMNextState()
     {
-        // Move Check
-        if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
-        {
-            manager.SetPlayerState(PlayableCharacterState.MOVE);
-        }
-        else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
-        {
-            manager.SetPlayerState(PlayableCharacterState.DASH);
-        }
         // Attack Check
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
+        if (InputControlUtil.CheckInputSignalDown(manager.inputManager.attackKeys))
         {
             manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
         }
@@ -43,6 +34,15 @@ public class PlayerIDLE : PlayerFSMState
         {
             manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
             ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
+        }
+        // Move Check
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
+        {
+            manager.SetPlayerState(PlayableCharacterState.MOVE);
+        }
+        else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+        {
+            manager.SetPlayerState(PlayableCharacterState.DASH);
         }
     }
 }

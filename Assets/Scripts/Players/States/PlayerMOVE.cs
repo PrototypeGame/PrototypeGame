@@ -27,33 +27,6 @@ public class PlayerMOVE : PlayerFSMState
     {
         base.FSMUpdate();
 
-        FSMNextState();
-
-        // Move Check
-        if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
-        {
-            if (GameKey.GetKeyDown(GameKeyPreset.Dash))
-            {
-                if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
-                {
-                    //Debug.Log("[DEBUG] Dash Input detected");
-                    manager.SetPlayerState(PlayableCharacterState.DASH);
-                }
-            }
-
-            InputValueUpdate();
-        }
-    }
-
-    public override void FSMFixedUpdate()
-    {
-        base.FSMFixedUpdate();
-
-        MoveRotate();
-    }
-
-    public override void FSMNextState()
-    {
         // Attack Check
         if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
         {
@@ -66,11 +39,32 @@ public class PlayerMOVE : PlayerFSMState
             manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
             ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
         }
-        else if (InputControlUtil.ReturnInputKey() == GameKeyPreset.NONE)
+        // Move Check
+        else if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
+        {
+            if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+            {
+                if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
+                {
+                    //Debug.Log("[DEBUG] Dash Input detected");
+                    manager.SetPlayerState(PlayableCharacterState.DASH);
+                }
+            }
+
+            InputValueUpdate();
+        }
+        else
         {
             //Debug.Log("[DEBUG] Move Input not detected");
             manager.SetPlayerState(PlayableCharacterState.IDLE);
         }
+    }
+
+    public override void FSMFixedUpdate()
+    {
+        base.FSMFixedUpdate();
+
+        MoveRotate();
     }
 
     private void InputValueUpdate()

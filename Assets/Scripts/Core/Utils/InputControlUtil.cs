@@ -15,6 +15,18 @@ public class InputControlUtil
         return false;
     }
 
+    public static bool CheckInputSignalDown(GameKeyPreset[] inputKeys)
+    {
+        foreach (var item in inputKeys)
+        {
+            if (GameKey.GetKeyDown(item))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static GameKeyPreset ReturnInputKey()
     {
         foreach (var item in GameKey.GameKeys.Keys)
