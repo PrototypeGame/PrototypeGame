@@ -16,7 +16,6 @@ public class PlayerFSMManager : MonoBehaviour
     public PlayerTimerManager timeManager;
     public PlayerStatusManager statusManager;
     public PlayerSkillManager skillManager;
-    public PlayerInputManager inputManager;
     public PlayerAnimatorManager animManager;
 
     // FSM Manage Variables
@@ -31,7 +30,9 @@ public class PlayerFSMManager : MonoBehaviour
     public Rigidbody rigid;
 
     // Boss Register
+    public int bossNum;
     public BossMonsterBase[] boss;
+    //public Transform[] bossTransf;
 
     // Enemy Register
 
@@ -40,20 +41,19 @@ public class PlayerFSMManager : MonoBehaviour
         statusManager = GetComponent<PlayerStatusManager>();
         timeManager = GetComponent<PlayerTimerManager>();
         skillManager = GetComponent<PlayerSkillManager>();
-        // InputManager GameObject
-        inputManager = FindObjectOfType<PlayerInputManager>();
         animManager = GetComponentInChildren<PlayerAnimatorManager>();
 
         InitPlayerDefaultStatus();
         InitPlayerDefaultTimer();
         InitPlayerDefaultSkill();
-        InitPlayerDefaultKey();
         InitPlayerStates();
 
         transf = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody>();
 
         boss = FindObjectsOfType<BossMonsterBase>();
+        bossNum = boss.Length;
+        //bossTransf = BossUtil.InitBossTransform(boss);
     }
 
     private void Start()
@@ -69,10 +69,13 @@ public class PlayerFSMManager : MonoBehaviour
         timeManager.TimerUpdate();
 
         // Item Use Check
-        if (InputControlUtil.CheckInputSignal(inputManager.itemUseKeys))
+        if (GameKey.GetKeys(GameKey.itemUseKeys))
         {
-            ItemUse(InputControlUtil.ReturnInputKey(inputManager.itemUseKeys));
+            ItemUse(GameKey.ReturnInputKey(GameKey.itemUseKeys));
         }
+
+        //DEBUG
+        //DetectUtil.DebugDrawAngle(BossUtil.GetBossLocations(boss), transf, 60.0f, 10.0f);
     }
 
     private void FixedUpdate()
@@ -118,32 +121,8 @@ public class PlayerFSMManager : MonoBehaviour
     }
     private void InitPlayerDefaultSkill()
     {
-
-    }
-    private void InitPlayerDefaultKey()
-    {
-        // Move Key
-        inputManager.moveKeys[0] = GameKeyPreset.LeftArrow;
-        inputManager.moveKeys[1] = GameKeyPreset.RightArrow;
-        inputManager.moveKeys[2] = GameKeyPreset.DownArrow;
-        inputManager.moveKeys[3] = GameKeyPreset.UpArrow;
-
-        // Attack Key
-        inputManager.attackKeys[0] = GameKeyPreset.NormalAttack;
-
-        // Skill Key
-        inputManager.skillKeys[0] = GameKeyPreset.Skill_1;
-        inputManager.skillKeys[1] = GameKeyPreset.Skill_2;
-        inputManager.skillKeys[2] = GameKeyPreset.Skill_3;
-        inputManager.skillKeys[3] = GameKeyPreset.Skill_Ultimate;
-
-        // Item Key
-        inputManager.itemUseKeys[0] = GameKeyPreset.ITEM_1;
-        inputManager.itemUseKeys[1] = GameKeyPreset.ITEM_2;
-        inputManager.itemUseKeys[2] = GameKeyPreset.ITEM_3;
-        inputManager.itemUseKeys[3] = GameKeyPreset.ITEM_4;
-        inputManager.itemUseKeys[4] = GameKeyPreset.ITEM_5;
-        inputManager.itemUseKeys[5] = GameKeyPreset.ITEM_6;
+        // Normal Attack Info
+        skillManager.normalSkillStack = 0;
     }
     private void InitPlayerStates()
     {
@@ -172,18 +151,6 @@ public class PlayerFSMManager : MonoBehaviour
 
         currentFSMAction = playerStates[stat];
         currentFSMAction.FSMStart();
-    }
-
-    public List<Transform> GetBossRootLocation()
-    {
-        List<Transform> tempBossTransf = null;
-
-        foreach (var item in boss)
-        {
-            tempBossTransf.Add(item.transform.root);
-        }
-
-        return tempBossTransf;
     }
 
     public void ItemUse(GameKeyPreset itemKey)

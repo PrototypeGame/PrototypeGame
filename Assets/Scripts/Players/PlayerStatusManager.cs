@@ -79,23 +79,3 @@ public class PlayerStatusManager : PlayerStatusData
         return this;
     }
 }
-
-[CustomEditor (typeof(PlayerStatusManager))]
-public class PlayerStatusManagerInspector : Editor
-{
-    SerializedProperty healthProperty;
-
-    private void OnEnable()
-    {
-        healthProperty = serializedObject.FindProperty("health");
-    }
-
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-
-        serializedObject.Update();
-
-        serializedObject.ApplyModifiedProperties();
-    }
-}

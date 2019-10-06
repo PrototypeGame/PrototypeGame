@@ -1,79 +1,82 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Animator))]
 public class PlayerAnimatorManager : MonoBehaviour
 {
-    [SerializeField] private Animator anim;
-    [SerializeField] private PlayerFSMManager manager;
+    private PlayerFSMManager manager;
+
+    public Animator anim;
+
+    private WaitForEndOfFrame waitAnimFrame;
 
     #region Animator State Hash
 
-    private readonly int hashState = Animator.StringToHash("state");
-    private readonly int hashAttackLink = Animator.StringToHash("attackLink");
+    public readonly int hashState = Animator.StringToHash("state");
+    public readonly int hashAttackLink = Animator.StringToHash("attackLink");
 
     #endregion
 
-    public bool isLinked = false;
-
-    #region Normal Attack Link Check
-
-    public int normalAttackStack;
-
-    public bool isEndNormalAttack = false;
-    public bool canNormalAttackLinkCheck = false;
-
-    #endregion
+    public bool isAnimating = false;
 
     private void Awake()
     {
-        anim = GetComponent<Animator>();
         manager = GetComponentInParent<PlayerFSMManager>();
 
-        normalAttackStack = 1;
+        anim = GetComponent<Animator>();
+
+        waitAnimFrame = new WaitForEndOfFrame();
     }
 
-    public void PlayAnimation(PlayableCharacterState state)
+    public void PlayStateAnim(PlayableCharacterState enumState)
     {
-        anim.SetInteger(hashState, (int)state);
+        StartCoroutine(AnimCoroutine(hashState, (int)enumState));
+    }
+    public void PlayLinkAnim()
+    {
+        StartCoroutine(AnimCoroutine(hashAttackLink));
     }
 
-    public void LinkNextNormalAttackStack()
+    #region Animation Coroutine
+
+    private IEnumerator AnimCoroutine(int hash)
     {
-        anim.SetTrigger(hashAttackLink);
+        anim.SetTrigger(hash);
+        yield return waitAnimFrame;
+    }
+    private IEnumerator AnimCoroutine(int hash, bool isEnable)
+    {
+        anim.SetTrigger(hash);
+        yield return waitAnimFrame;
+    }
+    private IEnumerator AnimCoroutine(int hash, int value)
+    {
+        anim.SetInteger(hash, value);
+        yield return waitAnimFrame;
+    }
+    private IEnumerator AnimCoroutine(int hash, float value)
+    {
+        anim.SetFloat(hash, value);
+        yield return waitAnimFrame;
     }
 
-    public void AllowCheckNormalAttackLink()
+    #endregion
+
+    public void StartAnimationSection()
     {
-        Debug.Log("[디버그][PlayerAnimatorManager.cs] 일반 공격 스택 링크 체크 가능 (Animation Event)");
-        canNormalAttackLinkCheck = true;
+        Debug.Log("[" + GetType().Name + "] " + "Animation Start");
+        isAnimating = true;
     }
 
-    public void CheckNormalAttackLinked()
+    public void EndAnimationSection()
     {
-        isEndNormalAttack = true;
+        Debug.Log("[" + GetType().Name + "] " + "Animation End");
+        isAnimating = false;
+    }
 
-        if (isLinked)
-        {
-            Debug.Log("[디버그][PlayerAnimatorManager.cs] 일반 공격 링크됨");
-
-            normalAttackStack++;
-            isEndNormalAttack = false;
-            isLinked = false;
-
-            LinkNextNormalAttackStack();
-
-            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
-        }
-        else
-        {
-            normalAttackStack = 1;
-
-            Debug.Log("[디버그][PlayerAnimatorManager.cs] 링크 중단, 일반 공격 스택 : " + normalAttackStack);
-
-            TimerUtil.TimerReset(manager.timeManager.normalAttackTimer);
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
-
-        canNormalAttackLinkCheck = false;
+    public void ApplyNormalAttackInAnim()
+    {
+        Debug.Log("공격 적용 In 애니메이션");
+        StartCoroutine(manager.skillManager.NormalAttack());
     }
 }

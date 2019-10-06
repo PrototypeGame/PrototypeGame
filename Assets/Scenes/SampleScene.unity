@@ -195,7 +195,6 @@ GameObject:
   - component: {fileID: 47462947}
   - component: {fileID: 47462946}
   - component: {fileID: 47462945}
-  - component: {fileID: 47462948}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -250,23 +249,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &47462948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 47462944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e786ec6a5a04183499bbd7a7958c28f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveKeys: 00000000000000000000000000000000
-  dashKey: 0
-  attackKeys: 00000000
-  skillKeys: 00000000000000000000000000000000
-  itemUseKeys: 000000000000000000000000000000000000000000000000
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,11 +1280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 0}
-  manager: {fileID: 0}
-  isLinked: 0
-  normalAttackStack: 0
-  isEndNormalAttack: 0
-  canNormalAttackLinkCheck: 0
+  isAnimating: 0
 --- !u!1 &439566545
 GameObject:
   m_ObjectHideFlags: 0
@@ -2520,7 +2498,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1165807330}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0.04, z: 5.53}
+  m_LocalPosition: {x: 3.75, y: 0.04, z: 5.53}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 1840136026}
@@ -10442,13 +10420,13 @@ MonoBehaviour:
   timeManager: {fileID: 7446084077761523170}
   statusManager: {fileID: 0}
   skillManager: {fileID: 0}
-  inputManager: {fileID: 0}
   animManager: {fileID: 0}
   startState: 0
   currentState: 0
   currentFSMAction: {fileID: 0}
   transf: {fileID: 7446084077761523192}
   rigid: {fileID: 7446084077761523193}
+  bossNum: 0
   boss: []
 --- !u!114 &7446084077761523169
 MonoBehaviour:
@@ -10524,7 +10502,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c934ed8ac225bf948a8555640c86701a, type: 3}
   m_Name: 
@@ -10538,7 +10516,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99da0c3b8e86a6a468b00314529069ae, type: 3}
   m_Name: 
@@ -10551,7 +10529,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 937b1018ddbbe0943a14d9d76a2714dd, type: 3}
   m_Name: 
@@ -10564,7 +10542,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b6131781fcd89e4096b6f3bc96b465e, type: 3}
   m_Name: 
@@ -10577,7 +10555,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 020a87765e0766a418e0fba2007bcef2, type: 3}
   m_Name: 
@@ -10591,7 +10569,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -6}
+  m_LocalPosition: {x: -5.07, y: 0, z: -0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 397071911}
@@ -10621,7 +10599,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63764b18d4d582d4a8465e8f0013e834, type: 3}
   m_Name: 
@@ -10681,44 +10659,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19e18f0f684b86a41b948228f080b664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activatedSkill:
-    applyData:
-      skillIndex: 0
-      skillName: 
-      skillRare: 0
-      skillSlot: 0
-      skillApplyType: 0
-      skillApplyTarget: 0
-      skillApplyRange: 0
-      skillType: 0
-      skillEffectPower: 0
-      skillCastTime: 0
-      skillUseMana: 0
-      skillReCastTime: 0
-      canSkillCancel: 0
-      skillCCType: 0
-      skillCCEffectPower: 0
-      skillCCEffectTime: 0
-  activatedSkillIndex: -1
-  activatedSkillName: 
-  normalSkill:
-    applyData:
-      skillIndex: 0
-      skillName: 
-      skillRare: 0
-      skillSlot: 0
-      skillApplyType: 0
-      skillApplyTarget: 0
-      skillApplyRange: 0
-      skillType: 0
-      skillEffectPower: 0
-      skillCastTime: 0
-      skillUseMana: 0
-      skillReCastTime: 0
-      canSkillCancel: 0
-      skillCCType: 0
-      skillCCEffectPower: 0
-      skillCCEffectTime: 0
+  normalAttackData:
+    skillIndex: 0
+    skillName: 
+    skillRare: 0
+    skillSlot: 0
+    skillApplyType: 0
+    skillApplyTarget: 0
+    skillApplyRange: 0
+    skillType: 0
+    skillEffectPower: 0
+    skillCastTime: 0
+    skillUseMana: 0
+    skillReCastTime: 0
+    canSkillCancel: 0
+    skillCCType: 0
+    skillCCEffectPower: 0
+    skillCCEffectTime: 0
+  normalSkillStack: 0
+  isLinkToNext: 0
 --- !u!114 &7446084077761523199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10726,7 +10685,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7446084077761523196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 491767617acce4a4ca6a950f79dfe7ac, type: 3}
   m_Name: 

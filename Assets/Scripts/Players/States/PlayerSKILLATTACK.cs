@@ -31,45 +31,45 @@ public class PlayerSKILLATTACK : PlayerFSMState
 
     public void SkillSelectRun(GameKeyPreset skillKey)
     {
-        switch (InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys))
-        {
-            case GameKeyPreset.Skill_1:
-                manager.skillManager.activatedSkill = manager.skillManager.normalSkill;
-                break;
-            case GameKeyPreset.Skill_2:
-                manager.skillManager.activatedSkill = null;
-                break;
-            case GameKeyPreset.Skill_3:
-                manager.skillManager.activatedSkill = null;
-                break;
-            case GameKeyPreset.Skill_Ultimate:
-                manager.skillManager.activatedSkill = null;
-                break;
-            default:
-                manager.skillManager.activatedSkill = null;
-                break;
-        }
+        //switch (GameKey.ReturnInputKey(GameKey.skillKeys))
+        //{
+        //    case GameKeyPreset.Skill_1:
+        //        manager.skillManager.activatedSkill = manager.skillManager.normalSkill;
+        //        break;
+        //    case GameKeyPreset.Skill_2:
+        //        manager.skillManager.activatedSkill = null;
+        //        break;
+        //    case GameKeyPreset.Skill_3:
+        //        manager.skillManager.activatedSkill = null;
+        //        break;
+        //    case GameKeyPreset.Skill_Ultimate:
+        //        manager.skillManager.activatedSkill = null;
+        //        break;
+        //    default:
+        //        manager.skillManager.activatedSkill = null;
+        //        break;
+        //}
 
-        if (manager.skillManager.activatedSkill != null)
-        {
-            manager.skillManager.activatedSkillIndex = manager.skillManager.activatedSkill.applyData.SkillIndex;
-            manager.skillManager.activatedSkillName = manager.skillManager.activatedSkill.applyData.SkillName;
-
-            SkillPlay();
-        }
-        else
-        {
-            manager.skillManager.activatedSkillIndex = -1;
-            manager.skillManager.activatedSkillName = "NONE";
-        }
+        //if (manager.skillManager.activatedSkill != null)
+        //{
+        //    manager.skillManager.activatedSkillIndex = manager.skillManager.activatedSkill.applyData.SkillIndex;
+        //    manager.skillManager.activatedSkillName = manager.skillManager.activatedSkill.applyData.SkillName;
+        //
+        //    SkillPlay();
+        //}
+        //else
+        //{
+        //    manager.skillManager.activatedSkillIndex = -1;
+        //    manager.skillManager.activatedSkillName = "NONE";
+        //}
     }
 
     public void SkillPlay()
     {
-        if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[manager.skillManager.activatedSkillIndex]))
-        {
-            manager.skillManager.activatedSkill?.PlaySkillAnimation();
-        }
+        //if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[manager.skillManager.activatedSkillIndex]))
+        //{
+        //    manager.skillManager.activatedSkill?.PlaySkillAnimation();
+        //}
     }
 
     public override void FSMNextState()

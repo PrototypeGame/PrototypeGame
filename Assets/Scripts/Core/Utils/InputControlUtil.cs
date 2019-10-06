@@ -3,57 +3,7 @@ using System.Collections;
 
 public class InputControlUtil
 {
-    public static bool CheckInputSignal(GameKeyPreset[] inputKeys)
-    {
-        foreach (var item in inputKeys)
-        {
-            if (GameKey.GetKey(item))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static bool CheckInputSignalDown(GameKeyPreset[] inputKeys)
-    {
-        foreach (var item in inputKeys)
-        {
-            if (GameKey.GetKeyDown(item))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static GameKeyPreset ReturnInputKey()
-    {
-        foreach (var item in GameKey.GameKeys.Keys)
-        {
-            if (GameKey.GetKey(item))
-            {
-                //Debug.Log(item.ToString() + "이 탐지됨");
-                return item;
-            }
-        }
-        return GameKeyPreset.NONE;
-    }
-
-    public static GameKeyPreset ReturnInputKey(GameKeyPreset[] inputKeys)
-    {
-        foreach (var item in inputKeys)
-        {
-            if (GameKey.GetKey(item))
-            {
-                //Debug.Log(item.ToString() + "이 탐지됨");
-                return item;
-            }
-        }
-        return GameKeyPreset.NONE;
-    }
-
-    public static float HorizontalInputValue()
+    public static float InputLeftRightValue()
     {
         if (!GameKey.GetKey(GameKeyPreset.LeftArrow) && GameKey.GetKey(GameKeyPreset.RightArrow))
         {
@@ -66,8 +16,7 @@ public class InputControlUtil
 
         return 0.0f;
     }
-
-    public static float VerticalInputValue()
+    public static float InputUpDownValue()
     {
         if (!GameKey.GetKey(GameKeyPreset.DownArrow) && GameKey.GetKey(GameKeyPreset.UpArrow))
         {

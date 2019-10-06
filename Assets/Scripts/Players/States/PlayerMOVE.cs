@@ -13,51 +13,15 @@ public class PlayerMOVE : PlayerFSMState
 
     private void OnEnable()
     {
-
-    }
-
-    public override void FSMStart()
-    {
-        base.FSMStart();
-
-        manager.animManager.PlayAnimation(PlayableCharacterState.MOVE);
+        manager.animManager.PlayStateAnim(PlayableCharacterState.MOVE);
     }
 
     public override void FSMUpdate()
     {
         base.FSMUpdate();
 
-        // Attack Check
-        if (InputControlUtil.CheckInputSignal(manager.inputManager.attackKeys))
-        {
-            // Debug.Log("[DEBUG] Attack Input detected");
-            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
-        }
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.skillKeys))
-        {
-            // Debug.Log("[DEBUG] Skill Input detected");
-            manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
-            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
-        }
-        // Move Check
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
-        {
-            if (GameKey.GetKeyDown(GameKeyPreset.Dash))
-            {
-                if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
-                {
-                    //Debug.Log("[DEBUG] Dash Input detected");
-                    manager.SetPlayerState(PlayableCharacterState.DASH);
-                }
-            }
-
-            InputValueUpdate();
-        }
-        else
-        {
-            //Debug.Log("[DEBUG] Move Input not detected");
-            manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
+        InputValueUpdate();
+        FSMNextState();
     }
 
     public override void FSMFixedUpdate()
@@ -67,10 +31,31 @@ public class PlayerMOVE : PlayerFSMState
         MoveRotate();
     }
 
+    public override void FSMNextState()
+    {
+        if (GameKey.GetKeyDown(GameKeyPreset.NormalAttack))
+        {
+            manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
+        }
+        else if (GameKey.GetKeysDown(GameKey.skillKeys))
+        {
+            manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
+        }
+        else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+        {
+            if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
+                manager.SetPlayerState(PlayableCharacterState.DASH);
+        }
+        else if (!Input.anyKey)
+        {
+            manager.SetPlayerState(PlayableCharacterState.IDLE);
+        }
+    }
+
     private void InputValueUpdate()
     {
-        horizMoveValue = InputControlUtil.HorizontalInputValue();
-        vertMoveValue = InputControlUtil.VerticalInputValue();
+        horizMoveValue = InputControlUtil.InputLeftRightValue();
+        vertMoveValue = InputControlUtil.InputUpDownValue();
 
         moveDirection.x = horizMoveValue;
         moveDirection.z = vertMoveValue;

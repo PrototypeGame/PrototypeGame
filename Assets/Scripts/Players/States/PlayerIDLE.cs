@@ -6,14 +6,7 @@ public class PlayerIDLE : PlayerFSMState
 {
     private void OnEnable()
     {
-        
-    }
-
-    public override void FSMStart()
-    {
-        base.FSMStart();
-
-        manager.animManager.PlayAnimation(PlayableCharacterState.IDLE);
+        manager.animManager.PlayStateAnim(PlayableCharacterState.IDLE);
     }
 
     public override void FSMUpdate()
@@ -25,24 +18,22 @@ public class PlayerIDLE : PlayerFSMState
 
     public override void FSMNextState()
     {
-        // Attack Check
-        if (InputControlUtil.CheckInputSignalDown(manager.inputManager.attackKeys))
+        if (GameKey.GetKeyDown(GameKeyPreset.NormalAttack))
         {
             manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
         }
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.skillKeys))
+        if (GameKey.GetKeysDown(GameKey.skillKeys))
         {
             manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
-            ((manager.currentFSMAction) as PlayerSKILLATTACK).SkillSelectRun(InputControlUtil.ReturnInputKey(manager.inputManager.skillKeys));
         }
-        // Move Check
-        else if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
+        if (GameKey.GetKeys(GameKey.moveKeys))
         {
             manager.SetPlayerState(PlayableCharacterState.MOVE);
         }
-        else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+        if (GameKey.GetKeyDown(GameKeyPreset.Dash))
         {
-            manager.SetPlayerState(PlayableCharacterState.DASH);
+            if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
+                manager.SetPlayerState(PlayableCharacterState.DASH);
         }
     }
 }

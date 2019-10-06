@@ -169,15 +169,22 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.08094609
-        functionName: AllowCheckNormalAttackLink
+      - time: 0
+        functionName: StartAnimationSection
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 1
-        functionName: CheckNormalAttackLinked
+      - time: 0.5806791
+        functionName: ApplyNormalAttackInAnim
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.9216102
+        functionName: EndAnimationSection
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -211,15 +218,22 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.08050848
-        functionName: AllowCheckNormalAttackLink
+      - time: 0
+        functionName: StartAnimationSection
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 1
-        functionName: CheckNormalAttackLinked
+      - time: 0.74890625
+        functionName: ApplyNormalAttackInAnim
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.9216102
+        functionName: EndAnimationSection
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -252,7 +266,28 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0
+        functionName: StartAnimationSection
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.83068556
+        functionName: ApplyNormalAttackInAnim
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 1
+        functionName: EndAnimationSection
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

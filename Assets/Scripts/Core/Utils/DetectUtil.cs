@@ -19,7 +19,7 @@ public class DetectUtil
         return detectObjects.ToArray();
     }
 
-    public static List<Transform> DetectObjectsTransformWithAngle(List<Transform> transfList, Transform player, float detectAngle, float detectDistance)
+    public static Transform[] DetectObjectsTransformWithAngle(Transform[] transfList, Transform player, float detectAngle, float detectDistance)
     {
         Vector3 _leftBoundary = MathUtil.AngleToDirectionVector(-detectAngle * 0.5f, player.eulerAngles.y);
         Vector3 _rightBoundary = MathUtil.AngleToDirectionVector(detectAngle * 0.5f, player.eulerAngles.y);
@@ -28,22 +28,48 @@ public class DetectUtil
         Debug.DrawRay(player.position + player.up, _rightBoundary.normalized * detectDistance, Color.red);
 
         // 범위 내의 Enemy들 Detect
-        List<Transform> targets = null;
+        List<Transform> targets = new List<Transform>();
+        int len = transfList.Length;
 
-        foreach (var item in transfList)
+        int num = 0;
+
+        for (int i = 0; i < len; i++)
         {
-            if (Vector3.Distance(player.position, item.position) <= detectDistance)
+            if (Vector3.Distance(player.position, transfList[i].position) <= detectDistance)
             {
-                float enemyAngle = MathUtil.DirectionVectorToAngle(player.position, item.position, player.forward);
+                float enemyAngle = MathUtil.DirectionVectorToAngle(player.position, transfList[i].position, player.forward);
                 // TODO: HERE
                 if (enemyAngle < detectAngle * 0.5f)
                 {
-                    targets.Add(item);
-                    Debug.DrawRay(player.position + player.up, item.position - player.position + player.up, Color.blue);
+                    num++;
+                    targets.Add(transfList[i]);
+                    Debug.DrawRay(player.position + player.up, transfList[i].position - player.position + player.up, Color.blue);
                 }
             }
         }
 
-        return targets;
+        return targets.ToArray();
+    }
+
+    public static void DebugDrawAngle(Transform[] transfList, Transform player, float detectAngle, float detectDistance)
+    {
+        Vector3 _leftBoundary = MathUtil.AngleToDirectionVector(-detectAngle * 0.5f, player.eulerAngles.y);
+        Vector3 _rightBoundary = MathUtil.AngleToDirectionVector(detectAngle * 0.5f, player.eulerAngles.y);
+
+        Debug.DrawRay(player.position + player.up, _leftBoundary.normalized * detectDistance, Color.red);
+        Debug.DrawRay(player.position + player.up, _rightBoundary.normalized * detectDistance, Color.red);
+
+        for (int i = 0; i < transfList.Length; i++)
+        {
+            if (Vector3.Distance(player.position, transfList[i].position) <= detectDistance)
+            {
+                float enemyAngle = MathUtil.DirectionVectorToAngle(player.position, transfList[i].position, player.forward);
+                // TODO: HERE
+                if (enemyAngle < detectAngle * 0.5f)
+                {
+                    Debug.DrawRay(player.position + player.up, transfList[i].position - player.position + player.up, Color.blue);
+                }
+            }
+        }
     }
 }

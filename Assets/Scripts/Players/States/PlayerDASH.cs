@@ -7,19 +7,7 @@ public class PlayerDASH : PlayerFSMState
 
     private void OnEnable()
     {
-
-    }
-
-    public override void FSMStart()
-    {
-        base.FSMStart();
-
         StartCoroutine(DashMove());
-    }
-
-    public override void FSMUpdate()
-    {
-        base.FSMUpdate();
     }
 
     private IEnumerator DashMove()
@@ -27,29 +15,21 @@ public class PlayerDASH : PlayerFSMState
         if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
         {
             TimerUtil.TimerReset(manager.timeManager.dashTimer);
+
             MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
+            manager.animManager.PlayStateAnim(PlayableCharacterState.DASH);
 
-            manager.animManager.PlayAnimation(PlayableCharacterState.DASH);
-
-            yield return new WaitForEndOfFrame();
+            yield return new WaitWhile(() => manager.animManager.isAnimating);
         }
 
         FSMNextState();
-
-        yield return null;
     }
 
     public override void FSMNextState()
     {
-        base.FSMNextState();
-
-        if (InputControlUtil.CheckInputSignal(manager.inputManager.moveKeys))
-        {
+        if (GameKey.GetKeys(GameKey.moveKeys))
             manager.SetPlayerState(PlayableCharacterState.MOVE);
-        }
         else
-        {
             manager.SetPlayerState(PlayableCharacterState.IDLE);
-        }
     }
 }
