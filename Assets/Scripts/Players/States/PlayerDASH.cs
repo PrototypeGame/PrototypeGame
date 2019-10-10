@@ -12,15 +12,13 @@ public class PlayerDASH : PlayerFSMState
 
     private IEnumerator DashMove()
     {
-        if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
-        {
-            TimerUtil.TimerReset(manager.timeManager.dashTimer);
+        TimerUtil.TimerReset(manager.timeManager.dashTimer);
 
-            MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
-            manager.animManager.PlayStateAnim(PlayableCharacterState.DASH);
+        MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
+        manager.visualManager.PlayStateAnim(PlayableCharacterState.DASH);
+        manager.visualManager.ActiveEffect(EffectOffset.DASH);
 
-            yield return new WaitWhile(() => manager.animManager.isAnimating);
-        }
+        yield return new WaitWhile(() => manager.visualManager.isAnimating);
 
         FSMNextState();
     }

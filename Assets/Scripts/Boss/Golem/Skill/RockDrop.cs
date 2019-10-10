@@ -8,26 +8,28 @@ namespace Boss
     {
         public GameObject rockOb;
         public Transform target;
-        public float fallSpeed = 50.0f; // 투사체 속도
-        public float activeTime = 2;
 
-        private RockDropping rock;  
+        private GolemBehavior golem;
+
+        private GameObject rock;  
         // Start is called before the first frame update
         void Awake()
         {
-            rock = Instantiate(rockOb).GetComponent<RockDropping>();
+            golem = transform.root.GetComponent<GolemBehavior>();
+            rock = Instantiate(rockOb);
             rock.hideFlags = HideFlags.HideInHierarchy;
-            rock.gameObject.SetActive(false);
-            rock.Initialize(attackRange, fallSpeed, activeTime, minDamage, maxDamage);
+            rock.SetActive(false);
         }
 
-        public override void ExcuteSkill()
+        public override void ExcuteSkill(int damage)
         {
-            Debug.Log("RockDrop");
             if (!rock.gameObject.activeSelf)
             {
-                rock.transform.position = target.position;
-                rock.gameObject.SetActive(true);
+                Vector3 temp = target.position;
+                temp.y = 30.0f;
+                rock.GetComponentInChildren<RockRockScript>().SetRockInfo(golem, damage * skillFactor);
+                rock.transform.position = temp;
+                rock.SetActive(true);
             }
         }
     }

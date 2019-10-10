@@ -52,8 +52,8 @@ public class FollowCamera : MonoBehaviour
             pos.z = Mathf.Lerp(transform.position.z, followTarget.position.z - zFollowDist, followSpeed * Time.deltaTime);
         }
 
-        pos.x += shakeValue.x;
-        pos.y += shakeValue.y;
+        pos.x += shakeValue.x + atkSakeVec.x;
+        pos.y += shakeValue.y + atkSakeVec.y;
 
         transform.position = pos;
     }
@@ -101,5 +101,28 @@ public class FollowCamera : MonoBehaviour
         }
         shakeValue.x = 0;
         shakeValue.y = 0;
+    }
+
+    // Attack Shake
+    Vector2 atkSakeVec;
+    float atkShakeTime;
+    public void AttackShake()
+    {
+        StartCoroutine(AttackShakeCamera());
+    }
+
+    WaitForSeconds atkWaitTime = new WaitForSeconds(0.015f);
+    IEnumerator AttackShakeCamera()
+    {
+        atkShakeTime = 0;
+        yield return atkWaitTime;
+        while (atkShakeTime <= 0.05f)
+        {
+            atkSakeVec = (Vector2)UnityEngine.Random.insideUnitCircle * 0.3f;
+            atkShakeTime += Time.deltaTime;
+            yield return null;
+        }
+        atkSakeVec.x = 0;
+        atkSakeVec.y = 0;
     }
 }

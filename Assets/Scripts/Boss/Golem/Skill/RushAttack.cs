@@ -2,67 +2,90 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RushAttack : AttackActionBase
+namespace Boss
 {
-    public Projector projection;
-    public Transform Target;
-    public Transform mTran;
-
-    public float activeTime = 2;
-    public float RushSpeed = 10.0f;
-
-    private float ratioPerSec = 0.0f;
-    private float rockStartY = 0.0f;
-
-    Vector3 temp;
-
-    void Awake()
+    public class RushAttack : AttackActionBase
     {
-        mTran = transform.root;
+        public Projector projection;
+        public GolemBehavior golem;
 
-        projection.gameObject.SetActive(false);
+        public float activeTime = 2;
+        public float RushSpeed = 10.0f;
 
-        projection.aspectRatio = 0.01f;
-        projection.orthographicSize = attackRange;
-        ratioPerSec = (1.0f / activeTime);
-    }
+        private float ratioPerSec = 0.0f;
+        private float rockStartY = 0.0f;
+        private Collider collider;
 
-    void Update()
-    {
-        transform.position = mTran.position;
-        if (projection.gameObject.activeSelf)
+        Vector3 temp;
+
+        void Awake()
         {
-            projection.aspectRatio += ratioPerSec * Time.deltaTime;
+            golem = transform.root.GetComponent<GolemBehavior>();
+            collider = GetComponent<Collider>();
+            collider.enabled = false;
+            projection.gameObject.SetActive(false);
 
-            if (projection.aspectRatio >= 0.75f)
+            projection.aspectRatio = 0.01f;
+            projection.orthographicSize = attackRange;
+            ratioPerSec = (1.0f / activeTime);
+        }
+
+        void Update()
+        {
+            transform.position = golem.trans.position;
+            if (projection.gameObject.activeSelf)
             {
-                projection.aspectRatio = 0.1f;
-                projection.gameObject.SetActive(false);
-                StartCoroutine(Rush());
+                projection.aspectRatio += ratioPerSec * Time.deltaTime;
+
+                if (projection.aspectRatio >= 0.75f)
+                {
+                    projection.aspectRatio = 0.1f;
+                    projection.gameObject.SetActive(false);
+                    StartCoroutine(Rush());
+                }
             }
         }
-    }
-     
-    public override void ExcuteSkill()
-    {
-        Debug.Log("RushAttack");
-        temp = Target.position;
-        Vector3 dir = Target.position - mTran.position;
-        dir.y = 0.0f;
 
-        mTran.rotation = Quaternion.LookRotation(dir);
-        projection.gameObject.SetActive(true);
-    }
 
-    IEnumerator Rush()
-    {
-        Vector3 dir = mTran.position - temp;
-        while (dir.sqrMagnitude > 0.2f * 0.2f)
+        public override void ExcuteSkill(int damage)
         {
-            mTran.position = Vector3.MoveTowards(mTran.position, temp, RushSpeed * Time.deltaTime);
-            dir = mTran.position - temp;
+            temp = golem.closePlayerTrans.position;
+
+            Vector3 dir = golem.closePlayerTrans.position - golem.trans.position;
+            dir.y = 0.0f;
+            golem.trans.rotation = Quaternion.LookRotation(dir);
+            sumDamage = damage * skillFactor;
+            projection.gameObject.SetActive(true);
+        }
+
+        private int sumDamage = 0;
+
+        IEnumerator Rush()
+        {
+            Vector3 dir = golem.trans.position - temp;
+            collider.enabled = true;
+            while (dir.sqrMagnitude > 0.2f * 0.2f)
+            {
+                golem.trans.position = Vector3.MoveTowards(golem.trans.position, temp, RushSpeed * Time.deltaTime);
+                dir = golem.trans.position - temp;
+                yield return null;
+            }
+            collider.enabled = false;
+            golem.attackFlag = true;
             yield return null;
         }
-        yield return null;
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.CompareTag("Player"))
+            {
+                if (golem.attackFlag)
+                {
+                    golem.playerOnDamage.Invoke(sumDamage);
+                    other.gameObject.GetComponent<PlayerFSMManager>().RigHit(other.transform.position - golem.trans.position);
+                    golem.attackFlag = false;
+                }
+            }
+        }
     }
 }

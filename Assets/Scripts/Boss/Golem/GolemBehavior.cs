@@ -5,96 +5,110 @@ using AI;
 
 namespace Boss
 {
+    public enum GolemSkill
+    {
+        Earthquake,
+        RushAttack,
+        RockDrop,
+        ShockWave,
+        RockfallRain,
+        RockThrow
+    };
+
     public class BossPattern
     {
         public int nextPatternHp;
         public int[] weight;
-        public AttackActionBase[] skill;
+        public GolemSkill[] skillKinds;
     }
 
     public class GolemBehavior : BossMonsterBase
     {
-        public enum GolemSkill
-        {
-            Earthquake,
-            RushAttack,
-            RockDrop,
-            ShockWave,
-            RockfallRain,
-            RockThrow
-        };
-
-        [SerializeField]
-        private int phase = 1;
-
-        public float excuteSkillTiem = 1.5f;
+        public int phase = 1;
+        public float excuteSkillTime = 1.5f;
         public float idleWaitTime = 1.5f;
         public float castingRisesTime = 3.0f;
         public float attackCastingRises = 0.1f;
         public float jointExceptDistance = 10.0f;
         public Transform[] playerTransforms; // 유저들의 위치
-        public BossPattern[] patterns;
         public UnityEngine.Events.UnityEvent camShake;
+        public Damageable playerOnDamage;
 
+        // Hide
+        public Transform trans;
+        public Transform closePlayerTrans; // 가까운 유저의 위치
+        public bool attackFlag = true;
 
+        private float angleRange = 160f;
+        private float distance = 3.6f;
+        private BossPattern[] patterns;
+        private GolemSkill curSkill;
+        private GolemSkill select;
+        private Dictionary<GolemSkill, AttackActionBase> skills;
         private float castingGauge = 0.0f;
-        private Transform closePlayerTrans; // 가까운 유저의 위치
-        private Transform bossTrans;
         private Animator anim;
         private Root ai;
 
         private void Awake()
         {
-            bossTrans = GetComponent<Transform>();
-            anim = GetComponent<Animator>();
+            trans = GetComponent<Transform>();
+            anim = GetComponentInChildren<Animator>();
+            stats = GetComponent<BossStat>();
+
+            stats.RefreshAllStats(startSTR, startDEX, startINT, startLevel, moveSpeed);
+            curHP = stats.HP;
+
+            playerOnDamage.AddListener(playerTransforms[0].GetComponent<PlayerFSMManager>().OnDamage);
+            //playerOnDamage = playerTransforms[0].GetComponent
 
             MovingObjectSMB<GolemBehavior>.Initialize(anim, this);
+
+            // 보스 스킬 추가
+            skills = new Dictionary<GolemSkill, AttackActionBase>();
+            skills.Add(GolemSkill.Earthquake, GetComponentInChildren<Earthquake>());
+            skills.Add(GolemSkill.RushAttack, GetComponentInChildren<RushAttack>());
+            skills.Add(GolemSkill.RockDrop, GetComponentInChildren<RockDrop>());
+            skills.Add(GolemSkill.ShockWave, GetComponentInChildren<ShockWave>());
+            skills.Add(GolemSkill.RockfallRain, GetComponentInChildren<RockfallRain>());
+            skills.Add(GolemSkill.RockThrow, GetComponentInChildren<RockThrow>());
 
             #region Pattern
             patterns = new BossPattern[3];
             BossPattern phase = new BossPattern();
 
             phase.weight = new int[] { 3, 5, 8, 10 };
-            phase.skill = new AttackActionBase[4];
-            phase.nextPatternHp = maxHP/2;
-            phase.skill[0] = (GetComponentInChildren<Earthquake>());
-            phase.skill[1] = (GetComponentInChildren<RushAttack>());
-            phase.skill[2] = (GetComponentInChildren<RockDrop>());
-            phase.skill[3] = (GetComponentInChildren<ShockWave>());
+            // 수정 필요
+            phase.skillKinds = new GolemSkill[] { GolemSkill.Earthquake, GolemSkill.RushAttack, GolemSkill.RockDrop, GolemSkill.ShockWave };
+            phase.nextPatternHp = stats.HP / 2;
             patterns[0] = phase;
 
             phase = new BossPattern();
             phase.weight = new int[] { 2, 4, 7, 10 };
-            phase.nextPatternHp = maxHP/5;
-            phase.skill = new AttackActionBase[4];
-            phase.skill[0] = (GetComponentInChildren<RushAttack>());
-            phase.skill[1] = (GetComponentInChildren<ShockWave>());
-            phase.skill[2] = (GetComponentInChildren<RockfallRain>());
-            phase.skill[3] = (GetComponentInChildren<RockThrow>());
+            phase.skillKinds = new GolemSkill[] { GolemSkill.RushAttack, GolemSkill.ShockWave, GolemSkill.RockfallRain, GolemSkill.RockThrow };
+            phase.nextPatternHp = stats.HP / 5;
             patterns[1] = phase;
 
             phase = new BossPattern();
             phase.weight = new int[] { 1, 2, 6, 10 };
-            phase.skill = new AttackActionBase[4];
-            phase.skill[0] = (GetComponentInChildren<RushAttack>());
-            phase.skill[1] = (GetComponentInChildren<ShockWave>());
-            phase.skill[2] = (GetComponentInChildren<RockfallRain>());
-            phase.skill[3] = (GetComponentInChildren<RockThrow>());
+            phase.skillKinds = new GolemSkill[] { GolemSkill.RushAttack, GolemSkill.ShockWave, GolemSkill.RockfallRain, GolemSkill.RockThrow };
             patterns[2] = phase;
             #endregion
 
             #region Behavior Tree
             ai = new Root();
             ai.AddBranch(
+                new SetTrigger(anim, "Skill"),
+                new WaitAnimationAnd(anim, "Idle"),
+                new Wait(1.0f),
                 new Action(ClosePlayerResearch),
                 new Repeat(patterns.Length).AddBranch(
 
                     new While(ReplacePattern).AddBranch(
                         new ConditionalBranch(CastingSuccess).AddBranch(
-                            new SetBool(anim, "Run", false),
-                            new Wait(excuteSkillTiem),
+                            new SetBool(anim, "Move", false),
+                            new Wait(excuteSkillTime),
+                            new Action(RandomSkillSelect),
                             new SetTrigger(anim, "Skill"),
-                            new Wait(1.3f),
                             new Action(ExcuteSkill),
                             new WaitAnimationAnd(anim, "Idle"),
                             new Wait(idleWaitTime),
@@ -102,10 +116,10 @@ namespace Boss
                             new Action(ResetCastingGage)
                             ),
 
-                        new SetBool(anim, "Run"),
+                        new SetBool(anim, "Move"),
 
                         new ConditionalBranch(MeleeAttackCheak).AddBranch(
-                            new SetBool(anim, "Run", false),
+                            new SetBool(anim, "Move", false),
                             new SetTrigger(anim, "MeleeAttack"),
                             new WaitAnimationAnd(anim, "Idle"),
                             new Wait(idleWaitTime),
@@ -114,8 +128,6 @@ namespace Boss
                     )
                 ),
                 new SetTrigger(anim, "Dead"),
-                new Wait(4.0f),
-                new Action(()=> { Destroy(this.gameObject); }),
                 new Abort()
             );
             #endregion
@@ -123,10 +135,14 @@ namespace Boss
 
         private void Update()
         {
-            ai.Tick();
-            CastingSuccess();
+            if (isGame)
+            {
+                ai.Tick();
+                CastingSuccess();
+            }
         }
 
+        // 페이즈 제설정
         public bool ReplacePattern()
         {
             if (OnDead())
@@ -134,8 +150,11 @@ namespace Boss
 
             if (curHP <= patterns[phase - 1].nextPatternHp)
             {
+                if (phase == 2)
+                {
+                    stats.RefreshAllStats(15, 15, 15, 1, moveSpeed);
+                }
                 phase++;
-                PDebug.Log($"{phase} 페이즈 시작");
                 return false;
             }
 
@@ -144,33 +163,44 @@ namespace Boss
 
         public void ExcuteSkill()
         {
-            RandomSkillSelect(patterns[phase - 1]);
-            camShake.Invoke();
+            skills[curSkill].ExcuteSkill(CalDamage());
         }
 
-        private int curPattern = 1;
-        int select = 0;
-        public void RandomSkillSelect(BossPattern pattern)
+        public void RandomSkillSelect()
         {
-            while (curPattern == select)
+            BossPattern pattern = patterns[phase - 1];
+            do
             {
                 int randV = Random.Range(0, 100);
 
                 if (pattern.weight[0] * 10 >= randV)
-                    select = 0;
+                    select = pattern.skillKinds[0];
 
                 else if (pattern.weight[1] * 10 >= randV)
-                    select = 1;
+                    select = pattern.skillKinds[1];
 
                 else if (pattern.weight[2] * 10 >= randV)
-                    select = 2;
+                    select = pattern.skillKinds[2];
 
                 else
-                    select = 3;
-            }
+                    select = pattern.skillKinds[3];
 
-            curPattern = select;
-            pattern.skill[curPattern].ExcuteSkill();
+                if (select == GolemSkill.ShockWave)
+                {
+                    if (DirectionFromPlayer().sqrMagnitude > 5.0f * 5.0f)
+                        select = curSkill;
+                }
+
+            } while (curSkill == select);
+
+            if(select == GolemSkill.RockfallRain || select == GolemSkill.RockDrop)
+                anim.SetInteger("SkillID", 3);
+            else if (select == GolemSkill.RushAttack)
+                anim.SetInteger("SkillID", 2);
+            else
+                anim.SetInteger("SkillID", 1);
+
+            curSkill = select;
         }
 
         // 가장 가까운 플레이어 검색
@@ -179,7 +209,7 @@ namespace Boss
             float distanceTemp = 1000.0f;
             for (int i = 0; i < playerTransforms.Length; i++)
             {
-                float curDis = Vector3.SqrMagnitude(playerTransforms[i].position - bossTrans.position);
+                float curDis = Vector3.SqrMagnitude(playerTransforms[i].position - trans.position);
 
                 if (curDis < distanceTemp)
                 {
@@ -192,7 +222,7 @@ namespace Boss
         // 플레이어와의 거리 계산
         public Vector3 DirectionFromPlayer()
         {
-            Vector3 dir = closePlayerTrans.position - bossTrans.position;
+            Vector3 dir = closePlayerTrans.position - trans.position;
             dir.y = 0;
             return dir;
         }
@@ -201,15 +231,15 @@ namespace Boss
         public void TracingClosePlayer()
         {
             Vector3 destination = closePlayerTrans.position;
-            destination.y = bossTrans.position.y;
+            destination.y = trans.position.y;
 
             Vector3 dir = DirectionFromPlayer();
 
-            bossTrans.position = Vector3.MoveTowards(bossTrans.position, destination, moveSpeed * Time.deltaTime);
+            trans.position = Vector3.MoveTowards(trans.position, destination, moveSpeed * Time.deltaTime);
 
             if (dir != Vector3.zero)
             {
-                bossTrans.rotation = Quaternion.RotateTowards(bossTrans.rotation,
+                trans.rotation = Quaternion.RotateTowards(trans.rotation,
                 Quaternion.LookRotation(dir), 460 * Time.deltaTime);
             }
         }
@@ -218,13 +248,33 @@ namespace Boss
         public bool MeleeAttackCheak()
         {
             Vector3 dir = DirectionFromPlayer();
-            if (dir.sqrMagnitude < 4.0f * 4.0f)
+            if (dir.sqrMagnitude < 3.5f * 3.5f)
             {
                 transform.rotation = Quaternion.LookRotation(dir);
                 return true;
             }
 
             return false;
+        }
+
+        // 근접 공격
+        public void MeleeAttack()
+        {
+            float dotValue = Mathf.Cos(Mathf.Deg2Rad * (angleRange / 2));
+            Vector3 direction = closePlayerTrans.position - transform.position;
+            if (direction.magnitude < distance)
+            {
+                if (Vector3.Dot(direction.normalized, transform.forward) > dotValue && attackFlag)
+                {
+                    attackFlag = false;
+                    playerOnDamage.Invoke(CalDamage());
+                }
+            }
+        }
+
+        public int CalDamage()
+        {
+            return Random.Range(stats.MinDamage, stats.MaxDamage);
         }
 
         // 캐스팅 여부

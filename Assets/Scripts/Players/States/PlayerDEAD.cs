@@ -6,27 +6,27 @@ public class PlayerDEAD : PlayerFSMState
 {
     private void OnEnable()
     {
-
+        StartCoroutine(DeadAnim());
     }
 
-    public override void FSMStart()
+    private IEnumerator DeadAnim()
     {
-        base.FSMStart();
+        manager.visualManager.PlayStateAnim(PlayableCharacterState.DEAD);
 
+        Debug.Log("AnimationWaiting");
+        Debug.Log("isAnimating : " + manager.visualManager.isAnimating);
+        yield return new WaitUntil(() => manager.visualManager.isAnimating);
 
-    }
+        manager.isDamageable = false;
+        Debug.Log("isDamageable : " + manager.isDamageable);
 
-    public override void FSMUpdate()
-    {
-        base.FSMUpdate();
-
-
-    }
-
-    public override void FSMFixedUpdate()
-    {
-        base.FSMFixedUpdate();
-
-
+        Debug.Log("EndWaiting");
+        Debug.Log("isAnimating : " + manager.visualManager.isAnimating);
+        yield return new WaitWhile(() => manager.visualManager.isAnimating);
+        
+        Debug.Log("EndAnimation");
+        Debug.Log("isAnimating : " + manager.visualManager.isAnimating);
+        
+        //주금
     }
 }

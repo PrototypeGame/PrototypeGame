@@ -12,7 +12,7 @@ public class PlayerTimerManager : MonoBehaviour
 
     PlayerTimerManager()
     {
-        skillAttackTimers = new GameTimer[4];
+        skillAttackTimers = new GameTimer[1];
         itemUseTimer = new GameTimer[6];
     }
 

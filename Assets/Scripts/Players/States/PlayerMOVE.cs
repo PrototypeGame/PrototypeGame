@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Boss;
 
 public class PlayerMOVE : PlayerFSMState
 {
@@ -13,7 +14,7 @@ public class PlayerMOVE : PlayerFSMState
 
     private void OnEnable()
     {
-        manager.animManager.PlayStateAnim(PlayableCharacterState.MOVE);
+        manager.visualManager.PlayStateAnim(PlayableCharacterState.MOVE);
     }
 
     public override void FSMUpdate()
@@ -37,9 +38,22 @@ public class PlayerMOVE : PlayerFSMState
         {
             manager.SetPlayerState(PlayableCharacterState.NORMALATTACK);
         }
-        else if (GameKey.GetKeysDown(GameKey.skillKeys))
+        else if (GameKey.GetKeyDown(GameKeyPreset.Skill_1))
         {
-            manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
+            if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[0]))
+            {
+                BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 120.0f, 8.0f));
+
+                if (tempAttackBoss.Length != 0)
+                {
+                    manager.skillManager.skillTargetBoss = tempAttackBoss;
+                    manager.SetPlayerState(PlayableCharacterState.SKILLATTACK);
+                }
+                else
+                {
+                    manager.skillManager.skillTargetBoss = null;
+                }
+            }
         }
         else if (GameKey.GetKeyDown(GameKeyPreset.Dash))
         {

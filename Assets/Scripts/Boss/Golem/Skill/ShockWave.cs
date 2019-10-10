@@ -2,49 +2,64 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShockWave : AttackActionBase
+namespace Boss
 {
-    public Projector attackChargingPro;
-    public Projector attackRangePro;
-    public GameObject effect;
-    public float activeTime = 2;
-
-    private float orSizePerSec = 0.0f;
-    private float rockStartY = 0.0f;
-    // Start is called before the first frame update
-    void Awake()
+    public class ShockWave : AttackActionBase
     {
-        attackChargingPro.gameObject.SetActive(false);
-        attackRangePro.gameObject.SetActive(false);
-        effect.SetActive(false);
+        public Projector attackChargingPro;
+        public Projector attackRangePro;
+        public GameObject effect;
+        public float activeTime = 2;
 
-        attackChargingPro.orthographicSize = 0.0f;
-        attackRangePro.orthographicSize = attackRange;
-        orSizePerSec = (attackRange / activeTime);
-    }
+        public GolemBehavior golem;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (attackChargingPro.gameObject.activeSelf && attackRangePro.gameObject.activeSelf)
+        private float orSizePerSec = 0.0f;
+        private float rockStartY = 0.0f;
+        private int sumDamage = 0;
+        // Start is called before the first frame update
+        void Awake()
         {
-            attackChargingPro.orthographicSize += orSizePerSec * Time.deltaTime;
+            golem = transform.root.GetComponent<GolemBehavior>();
+            attackChargingPro.gameObject.SetActive(false);
+            attackRangePro.gameObject.SetActive(false);
+            effect.SetActive(false);
+            effect.hideFlags = HideFlags.HideInHierarchy;
+            attackChargingPro.orthographicSize = 0.0f;
+            attackRangePro.orthographicSize = attackRange;
+            orSizePerSec = (attackRange / activeTime);
+        }
 
-            if (attackChargingPro.orthographicSize >= attackRange)
+        // Update is called once per frame
+        void Update()
+        {
+            if (attackChargingPro.gameObject.activeSelf && attackRangePro.gameObject.activeSelf)
             {
-                effect.SetActive(true);
-                attackChargingPro.orthographicSize = 0.0f;
-                attackChargingPro.gameObject.SetActive(false);
-                attackRangePro.gameObject.SetActive(false);
+                attackChargingPro.orthographicSize += orSizePerSec * Time.deltaTime;
+
+                if (attackChargingPro.orthographicSize >= attackRange)
+                {
+                    golem.camShake.Invoke();
+                    Vector3 temp = this.transform.position;
+                    temp.y = effect.transform.position.y;
+                    effect.transform.position = temp;
+                    effect.SetActive(true);
+                    if ((temp - golem.closePlayerTrans.position).sqrMagnitude < 9.5f * 9.5f)
+                        golem.playerOnDamage.Invoke(sumDamage);
+
+                    attackChargingPro.orthographicSize = 0.0f;
+                    attackChargingPro.gameObject.SetActive(false);
+                    attackRangePro.gameObject.SetActive(false);
+                }
             }
         }
-    }
 
-    public override void ExcuteSkill()
-    {
-        Debug.Log("ShockWave");
-        effect.SetActive(false);
-        attackChargingPro.gameObject.SetActive(true);
-        attackRangePro.gameObject.SetActive(true);
+        public override void ExcuteSkill(int damage)
+        {
+            sumDamage = damage * skillFactor;
+            effect.SetActive(false);
+            attackChargingPro.gameObject.SetActive(true);
+            attackRangePro.gameObject.SetActive(true);
+            Debug.Log("ShockWave");
+        }
     }
 }

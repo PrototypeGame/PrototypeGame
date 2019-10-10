@@ -7,9 +7,8 @@ using UnityEngine;
 // 패턴 공격 베이스 클래스
 public class AttackActionBase : MonoBehaviour
 {
-    public int minDamage = 0;
-    public int maxDamage = 0;
+    public int skillFactor = 0;
     public float attackRange = 1;
 
-    public virtual void ExcuteSkill() { } 
+    public virtual void ExcuteSkill(int damage) { } 
 }

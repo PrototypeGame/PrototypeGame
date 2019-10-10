@@ -9,6 +9,18 @@ namespace Boss
 {
     public class GolemMeleeAttackSMB : MovingObjectSMB<GolemBehavior>
     {
+        public override void OnUdate(Animator animator)
+        {
+            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.38f
+                && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.6f)
+            {
+                monoBehavior.MeleeAttack();
+            }
+        }
 
+        public override void OnExit(Animator animator)
+        {
+            monoBehavior.attackFlag = true;
+        }
     }
 }

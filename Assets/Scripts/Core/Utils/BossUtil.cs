@@ -10,11 +10,11 @@ public class BossUtil
         Transform[] tempBossLocats = new Transform[bossArray.Length];
         int len = bossArray.Length;
 
-        Debug.Log(len);
+      //  Debug.Log(len);
 
         for (int i = 0; i < len; i++)
         {
-            Debug.Log("GetBossLocations DO");
+           // Debug.Log("GetBossLocations DO");
             tempBossLocats[i] = bossArray[i].transform;
         }
 
@@ -26,11 +26,11 @@ public class BossUtil
         BossMonsterBase[] tempBossComps = new BossMonsterBase[bossList.Length];
         int len = bossList.Length;
 
-        Debug.Log(len);
+      //  Debug.Log(len);
 
         for (int i = 0; i < len; i++)
         {
-            Debug.Log("GetBossComponents DO");
+           // Debug.Log("GetBossComponents DO");
             tempBossComps[i] = bossList[i].root.gameObject.GetComponent<BossMonsterBase>();
         }
 

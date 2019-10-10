@@ -35,7 +35,7 @@ public class GameKey : MonoBehaviour
         GameKeys = new Dictionary<GameKeyPreset, KeyData>();
 
         moveKeys = new GameKeyPreset[4];
-        skillKeys = new GameKeyPreset[4];
+        skillKeys = new GameKeyPreset[1];
         itemUseKeys = new GameKeyPreset[6];
 
         InitKeyMapping();
@@ -74,13 +74,8 @@ public class GameKey : MonoBehaviour
         moveKeys[2] = GameKeyPreset.DownArrow;
         moveKeys[3] = GameKeyPreset.UpArrow;
 
-        
         skillKeys[0] = GameKeyPreset.Skill_1;
-        skillKeys[1] = GameKeyPreset.Skill_2;
-        skillKeys[2] = GameKeyPreset.Skill_3;
-        skillKeys[3] = GameKeyPreset.Skill_Ultimate;
 
-        
         itemUseKeys[0] = GameKeyPreset.ITEM_1;
         itemUseKeys[1] = GameKeyPreset.ITEM_2;
         itemUseKeys[2] = GameKeyPreset.ITEM_3;

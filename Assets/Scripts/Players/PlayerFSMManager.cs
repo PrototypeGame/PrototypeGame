@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Boss;
+using System;
 
 public enum PlayableCharacterState
 {
-    IDLE, MOVE, DASH, NORMALATTACK, SKILLATTACK, DAMAGE, DEAD
+    IDLE, MOVE, DASH, NORMALATTACK, SKILLATTACK, DAMAGE, DAMAGE_DOWN, DEAD
 }
 
 public class PlayerFSMManager : MonoBehaviour
 {
-    public Damageable damage;
-
     // Manager Scripts
     public PlayerTimerManager timeManager;
     public PlayerStatusManager statusManager;
     public PlayerSkillManager skillManager;
-    public PlayerAnimatorManager animManager;
+    public PlayerVisualManager visualManager;
 
     // FSM Manage Variables
     private Dictionary<PlayableCharacterState, PlayerFSMState> playerStates = new Dictionary<PlayableCharacterState, PlayerFSMState>();
@@ -32,20 +31,21 @@ public class PlayerFSMManager : MonoBehaviour
     // Boss Register
     public int bossNum;
     public BossMonsterBase[] boss;
-    //public Transform[] bossTransf;
 
-    // Enemy Register
+    // Damage
+    public bool isDamageable;
 
     private void Awake()
     {
         statusManager = GetComponent<PlayerStatusManager>();
         timeManager = GetComponent<PlayerTimerManager>();
         skillManager = GetComponent<PlayerSkillManager>();
-        animManager = GetComponentInChildren<PlayerAnimatorManager>();
+        visualManager = GetComponentInChildren<PlayerVisualManager>();
 
         InitPlayerDefaultStatus();
         InitPlayerDefaultTimer();
         InitPlayerDefaultSkill();
+        InitPlayerDefaultVisual();
         InitPlayerStates();
 
         transf = GetComponent<Transform>();
@@ -53,7 +53,8 @@ public class PlayerFSMManager : MonoBehaviour
 
         boss = FindObjectsOfType<BossMonsterBase>();
         bossNum = boss.Length;
-        //bossTransf = BossUtil.InitBossTransform(boss);
+
+        isDamageable = true;
     }
 
     private void Start()
@@ -74,6 +75,8 @@ public class PlayerFSMManager : MonoBehaviour
             ItemUse(GameKey.ReturnInputKey(GameKey.itemUseKeys));
         }
 
+        OnDead();
+
         //DEBUG
         //DetectUtil.DebugDrawAngle(BossUtil.GetBossLocations(boss), transf, 60.0f, 10.0f);
     }
@@ -83,16 +86,69 @@ public class PlayerFSMManager : MonoBehaviour
         currentFSMAction?.FSMFixedUpdate();
     }
 
+    /// <summary>
+    /// Add
+    /// </summary>
+    public bool OnDead()
+    {
+        if (statusManager.Health <= 0)
+        {
+            SetPlayerState(PlayableCharacterState.DEAD);
+            return true;
+        }
+        return false;
+    }
+
+    public void OnDamage(int damage)
+    {
+        if (isDamageable)
+        {
+            int da = (int)((damage) * (1.0f - ((statusManager.Armor + statusManager.Strength) * 0.001f))) - (int)statusManager.Armor;
+            SprinkleDamageText.OnDamageText(DamageType.Nomal, HitActor.Player, transf.position, da);
+            statusManager.Health -= da;
+
+            if (statusManager.Health > 0)
+                SetPlayerState(PlayableCharacterState.DAMAGE);
+        }
+    }
+
+    public void OnDamageDown(int damage, Vector3 dir)
+    {
+        if (isDamageable)
+        {
+            int da = (int)((damage) * (1.0f - ((statusManager.Armor + statusManager.Strength) * 0.001f))) - (int)statusManager.Armor;
+            SprinkleDamageText.OnDamageText(DamageType.Nomal, HitActor.Player, transf.position, da);
+            statusManager.Health -= da;
+
+            if (statusManager.Health > 0)
+            {
+                SetPlayerState(PlayableCharacterState.DAMAGE_DOWN);
+                RigHit(dir);
+            }
+        }
+    }
+
+    public void RigHit(Vector3 dir)
+    {
+        dir.y += 2.0f;
+
+        rigid.AddForce(dir * 2.0f, ForceMode.Impulse);
+    }
+
+    /// <summary>
+    /// Add
+    /// </summary>
+
     #region Init States
 
     private void InitPlayerDefaultStatus()
     {
-        statusManager.Strength = 10.0f;
-        statusManager.Dexterity = 7.0f;
-        statusManager.Intellect = 7.0f;
+        statusManager.Strength = 50.0f;
+        statusManager.Dexterity = 25.0f;
+        statusManager.Intellect = 10.0f;
 
         statusManager.MoveSpeedByJob = 5.0f;
-        statusManager.MainCharAttackPower = 10.0f;
+        statusManager.MainCharAttackPower = 35.0f;
         statusManager.MainCharAttackSpeed = 5.0f;
 
         statusManager.Health = 100.0f;
@@ -104,10 +160,7 @@ public class PlayerFSMManager : MonoBehaviour
     {
         timeManager.normalAttackTimer.coolTime = 1.0f;
 
-        timeManager.skillAttackTimers[0].coolTime = 1.0f;
-        timeManager.skillAttackTimers[1].coolTime = 1.0f;
-        timeManager.skillAttackTimers[2].coolTime = 1.0f;
-        timeManager.skillAttackTimers[3].coolTime = 1.0f;
+        timeManager.skillAttackTimers[0].coolTime = 10.0f;
 
         timeManager.dashTimer.coolTime = 2.0f;
 
@@ -123,6 +176,10 @@ public class PlayerFSMManager : MonoBehaviour
     {
         // Normal Attack Info
         skillManager.normalSkillStack = 0;
+    }
+    private void InitPlayerDefaultVisual()
+    {
+        visualManager.InitEffects();
     }
     private void InitPlayerStates()
     {

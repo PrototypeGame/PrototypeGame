@@ -10,10 +10,7 @@ namespace Boss
     {
         public override void OnUdate(Animator animator)
         {
-            if (!monoBehavior.MeleeAttackCheak())
-            {
-                monoBehavior.TracingClosePlayer();
-            }
+            monoBehavior.TracingClosePlayer();
         }
     }
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5e623ea19456acb46bd341cd16a4483d
+guid: 5f04813408c41a647acd1c196c3a9cd9
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -114,8 +114,9 @@ ModelImporter:
     400106: Bone001
     400108: //RootNode
     7400000: NORMAL_ATTACK_A
-    7400002: NORMAL_ATTACK_B
-    7400004: NORMAL_ATTACK_C
+    7400002: NORMAL_ATTACK_C
+    7400004: NORMAL_ATTACK_B
+    7400006: RETURN_TO_IDLE_FROM_NORMAL
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -149,7 +150,7 @@ ModelImporter:
       name: NORMAL_ATTACK_A
       takeName: Take 001
       firstFrame: 0
-      lastFrame: 18
+      lastFrame: 19
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -176,15 +177,15 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.5806791
-        functionName: ApplyNormalAttackInAnim
+      - time: 0.9189724
+        functionName: EndAnimationSection
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.9216102
-        functionName: EndAnimationSection
+      - time: 0.5671937
+        functionName: ApplyNormalAttackInAnim
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -197,8 +198,8 @@ ModelImporter:
     - serializedVersion: 16
       name: NORMAL_ATTACK_B
       takeName: Take 001
-      firstFrame: 18
-      lastFrame: 37
+      firstFrame: 19
+      lastFrame: 38
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -225,15 +226,15 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.74890625
-        functionName: ApplyNormalAttackInAnim
+      - time: 0.9209486
+        functionName: EndAnimationSection
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.9216102
-        functionName: EndAnimationSection
+      - time: 0.6897234
+        functionName: ApplyNormalAttackInAnim
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -246,8 +247,8 @@ ModelImporter:
     - serializedVersion: 16
       name: NORMAL_ATTACK_C
       takeName: Take 001
-      firstFrame: 37
-      lastFrame: 60
+      firstFrame: 38
+      lastFrame: 66
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -274,13 +275,6 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.83068556
-        functionName: ApplyNormalAttackInAnim
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
       - time: 1
         functionName: EndAnimationSection
         data: 
@@ -288,6 +282,41 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.48418978
+        functionName: ApplyNormalAttackInAnim
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: RETURN_TO_IDLE_FROM_NORMAL
+      takeName: Take 001
+      firstFrame: 66
+      lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

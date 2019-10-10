@@ -2,50 +2,71 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Earthquake : AttackActionBase
+namespace Boss
 {
-    public Projector projection;
-    public Transform Target;
-    public Transform mTran;
-
-    public float activeTime = 2;
-    private float ratioPerSec = 0.0f;
-
-    // Start is called before the first frame update
-    void Awake()
+    public class Earthquake : AttackActionBase
     {
-        mTran = transform.root;
+        public Projector projection;
+        public EarthquakeEffect effect;
+        public Transform Target;
+        public Transform mTran;
 
-        projection.gameObject.SetActive(false);
+        public float activeTime = 2;
+        private float ratioPerSec = 0.0f;
 
-        projection.aspectRatio = 0.01f;
-        projection.orthographicSize = attackRange;
-        ratioPerSec = (1.0f / activeTime);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        transform.position = mTran.position;
-        if (projection.gameObject.activeSelf)
+        // Start is called before the first frame update
+        void Awake()
         {
-            projection.aspectRatio += ratioPerSec * Time.deltaTime;
+            mTran = transform.root;
 
-            if (projection.aspectRatio >= 0.75f)
+            projection.gameObject.SetActive(false);
+
+            projection.aspectRatio = 0.01f;
+            projection.orthographicSize = attackRange;
+            ratioPerSec = (1.0f / activeTime);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (projection.gameObject.activeSelf)
             {
-                projection.aspectRatio = 0.1f;
-                projection.gameObject.SetActive(false);
+                Vector3 dir = Target.position - mTran.position;
+                dir.y = 0.0f;
+
+                projection.aspectRatio += ratioPerSec * Time.deltaTime;
+
+                if (projection.aspectRatio >= 0.75f)
+                {
+                    mTran.GetComponent<GolemBehavior>().camShake.Invoke();
+                    StartCoroutine(effect.efstart(sumDamage));
+                    projection.aspectRatio = 0.1f;
+                    projection.gameObject.SetActive(false);
+                }
+                else if (projection.aspectRatio <= 0.3f)
+                {
+                    effect.transform.rotation = Quaternion.LookRotation(dir);
+                    mTran.rotation = Quaternion.LookRotation(dir);
+                }
             }
         }
-    }
 
-    public override void ExcuteSkill()
-    {
-        Debug.Log("EarthQuake");
-        Vector3 dir = Target.position - mTran.position;
-        dir.y = 0.0f;
+        int sumDamage = 0;
 
-        mTran.rotation = Quaternion.LookRotation(dir);
-        projection.gameObject.SetActive(true);
+        public override void ExcuteSkill(int damage)
+        {
+            Debug.Log("EarthQuake");
+            //Vector3 dir = Target.position - mTran.position;
+            //dir.y = 0.0f;
+
+          
+
+            Vector3 temp = mTran.position;
+            temp.y = 0.0f;
+            effect.transform.position = temp;
+
+            sumDamage = damage * skillFactor;
+            projection.gameObject.SetActive(true);
+        }
     }
 }

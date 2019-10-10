@@ -2,6 +2,7 @@
 // 작성일: 2019-09-06
 // 설명: 보스 몬스터들의 베이스
 
+using System.Collections;
 using UnityEngine;
 
 // 동기화 정보
@@ -12,27 +13,34 @@ using UnityEngine;
 
 namespace Boss
 {
-    //public enum BossState
-    //{
-    //    Idle,
-    //    Tracing,
-    //    NomalAttack,
-    //    ExcuteSkill,
-    //    Grogi,
-    //    Dead
-    //};
-
     public class BossMonsterBase : MonoBehaviour
     {
+        public int startLevel;
         public int curHP;
-        public int maxHP;
-        public float moveSpeed;
+        public int startSTR;
+        public int startDEX;
+        public int startINT;
 
+        public Material bossBodyMat;
+        public float moveSpeed;
+        public BossStat stats;
         private bool isDead = false;
 
         public void OnDamage(int damage)
         {
-            curHP -= damage;
+            StartCoroutine(MatColorSet());
+            int da = (int)(damage * (1.0f - stats.PNT)) - stats.Armor;
+            SprinkleDamageText.OnDamageText(DamageType.Nomal, HitActor.Enemy, this.transform.position, da);
+            curHP -= da;
+        }
+
+        WaitForSeconds waitMat = new WaitForSeconds(0.08f);
+        Color c = new Color(1.0f, 0.7f, 0.7f);
+        IEnumerator MatColorSet()
+        {
+            bossBodyMat.color = c;
+            yield return waitMat;
+            bossBodyMat.color = Color.white;
         }
 
         public bool OnDead()
@@ -41,6 +49,13 @@ namespace Boss
                 return true;
 
             return false;
+        }
+
+        protected bool isGame = false;
+
+        public void BossStart()
+        {
+            isGame = true;
         }
     }
 }
