@@ -9,6 +9,7 @@ namespace Boss
         public Projector attackChargingPro;
         public Projector attackRangePro;
         public GameObject effect;
+        public AudioClip soundEffect;
         public float activeTime = 2;
 
         public GolemBehavior golem;
@@ -32,19 +33,20 @@ namespace Boss
         // Update is called once per frame
         void Update()
         {
-            if (attackChargingPro.gameObject.activeSelf && attackRangePro.gameObject.activeSelf)
+            if (attackChargingPro.gameObject.activeSelf && attackRangePro.gameObject.activeSelf && can)
             {
                 attackChargingPro.orthographicSize += orSizePerSec * Time.deltaTime;
 
                 if (attackChargingPro.orthographicSize >= attackRange)
                 {
                     golem.camShake.Invoke();
+                    Core.SoundManager.OneShot(soundEffect);
                     Vector3 temp = this.transform.position;
                     temp.y = effect.transform.position.y;
                     effect.transform.position = temp;
                     effect.SetActive(true);
                     if ((temp - golem.closePlayerTrans.position).sqrMagnitude < 9.5f * 9.5f)
-                        golem.playerOnDamage.Invoke(sumDamage);
+                        golem.playerOnDamageRig.Invoke(sumDamage, Vector3.zero);
 
                     attackChargingPro.orthographicSize = 0.0f;
                     attackChargingPro.gameObject.SetActive(false);
@@ -55,11 +57,22 @@ namespace Boss
 
         public override void ExcuteSkill(int damage)
         {
+            can = true;
             sumDamage = damage * skillFactor;
             effect.SetActive(false);
             attackChargingPro.gameObject.SetActive(true);
             attackRangePro.gameObject.SetActive(true);
             Debug.Log("ShockWave");
+        }
+
+        bool can = false;
+
+        public override void StopSkill()
+        {
+            can = true;
+            attackChargingPro.orthographicSize = 0.0f;
+            attackChargingPro.gameObject.SetActive(false);
+            attackRangePro.gameObject.SetActive(false);
         }
     }
 }

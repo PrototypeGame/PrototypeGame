@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5902465055066202891}
   - component: {fileID: 5436146170622880546}
   - component: {fileID: 114820815860432558}
-  - component: {fileID: 65285860501095070}
+  - component: {fileID: 8417214853027037868}
   m_Layer: 10
   m_Name: Rock
   m_TagString: Untagged
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colTag: Player
---- !u!65 &65285860501095070
-BoxCollider:
+--- !u!136 &8417214853027037868
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,6 +102,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.7889272, y: 1.7884339, z: 1.8506716}
+  m_Radius: 0.9253358
+  m_Height: 2.73
+  m_Direction: 1
   m_Center: {x: -0.028914927, y: -0.014939605, z: -0.018650321}

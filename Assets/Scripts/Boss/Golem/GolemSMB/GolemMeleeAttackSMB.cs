@@ -11,8 +11,8 @@ namespace Boss
     {
         public override void OnUdate(Animator animator)
         {
-            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.38f
-                && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.6f)
+            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.4f
+                && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.58f)
             {
                 monoBehavior.MeleeAttack();
             }

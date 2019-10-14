@@ -10,10 +10,13 @@ namespace Boss
         public EarthquakeEffect effect;
         public Transform Target;
         public Transform mTran;
+        public AudioClip soundEffect;
 
         public float activeTime = 2;
         private float ratioPerSec = 0.0f;
+        private IEnumerator coru;
 
+        private bool soundCheck = true;
         // Start is called before the first frame update
         void Awake()
         {
@@ -38,8 +41,10 @@ namespace Boss
 
                 if (projection.aspectRatio >= 0.75f)
                 {
+                    Core.SoundManager.OneShot(soundEffect);
                     mTran.GetComponent<GolemBehavior>().camShake.Invoke();
-                    StartCoroutine(effect.efstart(sumDamage));
+                    coru = effect.efstart(sumDamage);
+                    StartCoroutine(coru);
                     projection.aspectRatio = 0.1f;
                     projection.gameObject.SetActive(false);
                 }
@@ -55,18 +60,18 @@ namespace Boss
 
         public override void ExcuteSkill(int damage)
         {
-            Debug.Log("EarthQuake");
-            //Vector3 dir = Target.position - mTran.position;
-            //dir.y = 0.0f;
-
-          
-
+           
             Vector3 temp = mTran.position;
             temp.y = 0.0f;
             effect.transform.position = temp;
 
             sumDamage = damage * skillFactor;
             projection.gameObject.SetActive(true);
+        }
+
+        public override void StopSkill()
+        {
+            StopCoroutine(coru);
         }
     }
 }

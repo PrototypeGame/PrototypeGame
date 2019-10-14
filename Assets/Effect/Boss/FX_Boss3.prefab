@@ -28397,4 +28397,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colTag: 
   particle: {fileID: 6372344382722622963}
+  rockAudio: {fileID: 8300000, guid: a6ba529f6d703e14b8ca1ea9cf67abf7, type: 3}
   range: 4

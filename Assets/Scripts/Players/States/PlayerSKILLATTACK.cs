@@ -20,11 +20,9 @@ public class PlayerSKILLATTACK : PlayerFSMState
         yield return new WaitForEndOfFrame();
 
         //Debug.Log("[" + GetType().Name + "] " + "manager.animManager.isAnimating : " + manager.animManager.isAnimating + " / Animation Start Waiting");
-
         yield return new WaitUntil(() => manager.visualManager.isAnimating);
-        //manager.visualManager.isAnimating = true;
         //Debug.Log("[" + GetType().Name + "] " + "manager.animManager.isAnimating : " + manager.animManager.isAnimating + " / Animation Playing");
-
+        //
         yield return new WaitWhile(() => manager.visualManager.isAnimating);
         //Debug.Log("[" + GetType().Name + "] " + "manager.animManager.isAnimating : " + manager.animManager.isAnimating + " / End Animation");
 
@@ -33,6 +31,7 @@ public class PlayerSKILLATTACK : PlayerFSMState
 
     public override void FSMNextState()
     {
+        Debug.Log("Next");
         manager.SetPlayerState(PlayableCharacterState.IDLE);
     }
 }

@@ -6,11 +6,13 @@ namespace Boss
     public class RockRockScript : InteractCollision3D
     {
         public ParticleSystem particle;
+        public AudioClip rockAudio;
         public float range;
 
         private GolemBehavior golem;
         private int damage;
         bool damageFlag = true;
+        bool soundCheak = true;
 
         public override void OnPCollision(GameObject go)
         {
@@ -22,7 +24,12 @@ namespace Boss
                 golem.playerOnDamage.Invoke(damage);
                 damageFlag = false;
             }
-
+            if (soundCheak)
+            {
+                if(Random.Range(1,3) == 1)
+                    Core.SoundManager.OneShot(rockAudio);
+                soundCheak = false;
+            }
             StartCoroutine(ActiveAuto());
         }
 
@@ -41,6 +48,7 @@ namespace Boss
             //}
             this.transform.root.gameObject.SetActive(false);
             damageFlag = true;
+            soundCheak = true;
         }
     }
 }

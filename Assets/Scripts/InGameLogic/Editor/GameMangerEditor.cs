@@ -12,6 +12,7 @@ public class GameMangerEditor : Editor
     SerializedProperty EditorMiniute;
     SerializedProperty EditorSecond;
     SerializedProperty EditorSubCam;
+    SerializedProperty EditorSubBGM;
 
     bool mRefFold;
 
@@ -32,6 +33,7 @@ public class GameMangerEditor : Editor
         EditorMiniute = serializedObject.FindProperty("miniute");
         EditorSecond = serializedObject.FindProperty("second");
         EditorSubCam = serializedObject.FindProperty("subCam");
+        EditorSubBGM = serializedObject.FindProperty("bgm");
     }
 
     public override void OnInspectorGUI()
@@ -51,6 +53,7 @@ public class GameMangerEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.PropertyField(EditorSubCam, new GUIContent("서브 카메라"));
+        EditorGUILayout.PropertyField(EditorSubBGM, new GUIContent("배경 음악"));
 
         EditorGUI.indentLevel--;
         EditorGUILayout.EndVertical();

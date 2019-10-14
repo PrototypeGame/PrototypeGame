@@ -33,7 +33,7 @@ public class MovementUtil
 
     public static void ForceDashMove(Rigidbody rigid, Transform trans, Vector3 dashDir, float dashPower, ForceMode mode)
     {
-        rigid.AddRelativeForce(dashDir * dashPower, mode);
+        rigid.AddForce(dashDir * dashPower, mode);
     }
 
     public static void TeleportMove(Transform trans, Vector3 teleDir, float telePower)

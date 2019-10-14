@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerDASH : PlayerFSMState
 {
     public float dashPower = 10.0f;
+    Vector3 dir;
 
     private void OnEnable()
     {
@@ -12,9 +13,21 @@ public class PlayerDASH : PlayerFSMState
 
     private IEnumerator DashMove()
     {
-        TimerUtil.TimerReset(manager.timeManager.dashTimer);
+        if (GameKey.GetKeys(GameKey.moveKeys))
+        {
+            dir.x = Input.GetAxis("Horizontal");
+            dir.z = Input.GetAxis("Vertical");
+            if (Mathf.Abs(dir.x) > 0.0f && Mathf.Abs(dir.z) > 0.0f)
+            {
+                dir *= 0.5f;
+                Debug.Log(dir);
+            }
+        }
 
-        MovementUtil.ForceDashMove(manager.rigid, manager.transf, Vector3.forward, dashPower, ForceMode.Impulse);
+        TimerUtil.TimerReset(manager.timeManager.dashTimer);
+        manager.rigid.velocity = Vector3.zero;
+        manager.transf.rotation = Quaternion.LookRotation(dir);
+        MovementUtil.ForceDashMove(manager.rigid, manager.transf, dir, dashPower, ForceMode.Impulse);
         manager.visualManager.PlayStateAnim(PlayableCharacterState.DASH);
         manager.visualManager.ActiveEffect(EffectOffset.DASH);
 

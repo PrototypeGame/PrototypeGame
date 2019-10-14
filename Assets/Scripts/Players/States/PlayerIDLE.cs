@@ -27,7 +27,7 @@ public class PlayerIDLE : PlayerFSMState
         {
             if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[0]))
             {
-                BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 120.0f, 8.0f));
+                BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 360.0f, 12.0f));
 
                 if (tempAttackBoss.Length != 0)
                 {

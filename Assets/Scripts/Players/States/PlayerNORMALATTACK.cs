@@ -7,6 +7,7 @@ public class PlayerNORMALATTACK : PlayerFSMState
 {
     Coroutine playAnimRoutine;
     Coroutine inputKeyRoutine;
+    public AudioClip sound;
 
     private void OnDisable()
     {
@@ -22,6 +23,18 @@ public class PlayerNORMALATTACK : PlayerFSMState
     public override void FSMUpdate()
     {
         base.FSMUpdate();
+
+        if (GameKey.GetKeyDown(GameKeyPreset.Dash))
+        {
+            if (!TimerUtil.IsOnCoolTime(manager.timeManager.dashTimer))
+            {
+                StopCoroutine(playAnimRoutine);
+                manager.skillManager.normalSkillStack = 0;
+                manager.skillManager.isLinkToNext = false;
+                manager.visualManager.EndAnimationSection();
+                manager.SetPlayerState(PlayableCharacterState.DASH);
+            }
+        }
 
         if (manager.skillManager.normalSkillStack < 2)
         {
@@ -45,20 +58,24 @@ public class PlayerNORMALATTACK : PlayerFSMState
         // 처음 스킬 애니메이션 실행
         if (manager.skillManager.normalSkillStack == 0)
         {
+            Core.SoundManager.OneShot(sound);
+            Core.SoundManager.EffectVolume = 0.7f;
             manager.visualManager.PlayStateAnim(PlayableCharacterState.NORMALATTACK);
         }
+        
         // 두번째 스킬 애니메이션 실행
         else if (manager.skillManager.normalSkillStack > 0)
         {
+            Core.SoundManager.OneShot(sound);
+            Core.SoundManager.EffectVolume = 0.7f;
             manager.visualManager.PlayLinkAnim();
         }
-
         //Debug.Log("[" + GetType().Name + "] " + "manager.animManager.isAnimating : " + manager.animManager.isAnimating + " / Animation Start Waiting");
 
         yield return new WaitUntil(() => manager.visualManager.isAnimating);
         //Debug.Log("[" + GetType().Name + "] " + "manager.animManager.isAnimating : " + manager.animManager.isAnimating + " / Animation Playing");
 
-        BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 120.0f, 9.0f));
+        BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 120.0f, 7.0f));
 
         if (tempAttackBoss.Length != 0)
             manager.skillManager.skillTargetBoss = tempAttackBoss;
@@ -71,6 +88,8 @@ public class PlayerNORMALATTACK : PlayerFSMState
         // 마지막 스킬 애니메이션 이전에 링크가 된 경우
         if (manager.skillManager.isLinkToNext && (manager.skillManager.normalSkillStack < 2))
         {
+            Core.SoundManager.OneShot(sound);
+            Core.SoundManager.EffectVolume = 0.7f;
             manager.skillManager.normalSkillStack++;
             manager.skillManager.isLinkToNext = false;
             //Debug.Log("[" + GetType().Name + "] " + "manager.skillManager.skillStack : " + manager.skillManager.normalSkillStack + " / Play Next Animation");
@@ -83,11 +102,10 @@ public class PlayerNORMALATTACK : PlayerFSMState
         else
         {
             //Debug.Log("[" + GetType().Name + "] " + "manager.skillManager.skillStack : " + manager.skillManager.normalSkillStack + " / End Animation");
-
+            Core.SoundManager.EffectVolume = 1.0f;
             manager.skillManager.normalSkillStack = 0;
             manager.skillManager.isLinkToNext = false;
             //Debug.Log("[" + GetType().Name + "] " + "Initialized / skillStack : " + manager.skillManager.normalSkillStack + " & isLinkToNext : " + manager.skillManager.isLinkToNext);
-
             //Debug.Log("[" + GetType().Name + "] " + "Go To IDLE");
             FSMNextState();
         }

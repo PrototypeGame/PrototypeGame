@@ -16,9 +16,11 @@ public class FollowCameraEditor : Editor
 
     bool mFollowFold;
     bool mShakeFold;
+    bool mShaderFold;
 
     readonly GUIContent mFollowSet = new GUIContent("팔로우 설정");
     readonly GUIContent mShakeSet = new GUIContent("효과 설정");
+    readonly GUIContent mShaderSet = new GUIContent("쉐이더");
 
     private void OnEnable()
     {

@@ -15,6 +15,7 @@ namespace Boss
         private float ratioPerSec = 0.0f;
         private float rockStartY = 0.0f;
         private Collider collider;
+        private IEnumerator coru;
 
         Vector3 temp;
 
@@ -41,7 +42,8 @@ namespace Boss
                 {
                     projection.aspectRatio = 0.1f;
                     projection.gameObject.SetActive(false);
-                    StartCoroutine(Rush());
+                    coru = Rush();
+                    StartCoroutine(coru);
                 }
             }
         }
@@ -56,6 +58,11 @@ namespace Boss
             golem.trans.rotation = Quaternion.LookRotation(dir);
             sumDamage = damage * skillFactor;
             projection.gameObject.SetActive(true);
+        }
+
+        public override void StopSkill()
+        {
+            StopCoroutine(coru);
         }
 
         private int sumDamage = 0;
@@ -81,8 +88,7 @@ namespace Boss
             {
                 if (golem.attackFlag)
                 {
-                    golem.playerOnDamage.Invoke(sumDamage);
-                    other.gameObject.GetComponent<PlayerFSMManager>().RigHit(other.transform.position - golem.trans.position);
+                    golem.playerOnDamageRig.Invoke(sumDamage, other.transform.position - golem.trans.position);
                     golem.attackFlag = false;
                 }
             }

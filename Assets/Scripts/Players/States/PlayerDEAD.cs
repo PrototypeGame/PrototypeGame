@@ -11,7 +11,7 @@ public class PlayerDEAD : PlayerFSMState
 
     private IEnumerator DeadAnim()
     {
-        manager.visualManager.PlayStateAnim(PlayableCharacterState.DEAD);
+        manager.visualManager.PlayDeadAnim();
 
         Debug.Log("AnimationWaiting");
         Debug.Log("isAnimating : " + manager.visualManager.isAnimating);

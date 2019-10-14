@@ -23,7 +23,9 @@ public class GolemBehaviorEditor : Editor
     SerializedProperty EditorPlayerTransform;
     SerializedProperty EditorCamSakeEvent;
     SerializedProperty EditorPlayerOnDamage;
+    SerializedProperty EditorPlayerOnDamageRig;
     SerializedProperty EditorBossMaterial;
+    SerializedProperty EditorBossStartSound;
 
     bool mNomalFold;
     bool mPatternFold;
@@ -52,7 +54,9 @@ public class GolemBehaviorEditor : Editor
         EditorPlayerTransform = serializedObject.FindProperty("playerTransforms");
         EditorCamSakeEvent = serializedObject.FindProperty("camShake");
         EditorPlayerOnDamage = serializedObject.FindProperty("playerOnDamage");
+        EditorPlayerOnDamageRig = serializedObject.FindProperty("playerOnDamageRig");
         EditorBossMaterial = serializedObject.FindProperty("bossBodyMat");
+        EditorBossStartSound = serializedObject.FindProperty("soundEffect");
     }
 
     public override void OnInspectorGUI()
@@ -103,7 +107,9 @@ public class GolemBehaviorEditor : Editor
             EditorGUILayout.PropertyField(EditorPlayerTransform, true);
             EditorGUILayout.PropertyField(EditorCamSakeEvent, new GUIContent("카메라 흔들림"));
             EditorGUILayout.PropertyField(EditorPlayerOnDamage, new GUIContent("플레이어 데미지 이벤트"));
+            EditorGUILayout.PropertyField(EditorPlayerOnDamageRig, new GUIContent("플레이어 데미지(강) 이벤트"));
             EditorGUILayout.PropertyField(EditorBossMaterial, new GUIContent("보스 머티리얼"));
+            EditorGUILayout.PropertyField(EditorBossStartSound, new GUIContent("보스 시작 효과음"));
         }
 
         EditorGUI.indentLevel--;

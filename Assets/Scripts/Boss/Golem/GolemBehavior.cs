@@ -33,6 +33,7 @@ namespace Boss
         public Transform[] playerTransforms; // 유저들의 위치
         public UnityEngine.Events.UnityEvent camShake;
         public Damageable playerOnDamage;
+        public DamageableRig playerOnDamageRig;
 
         // Hide
         public Transform trans;
@@ -48,6 +49,7 @@ namespace Boss
         private float castingGauge = 0.0f;
         private Animator anim;
         private Root ai;
+        private Vector3 originPos;
 
         private void Awake()
         {
@@ -55,10 +57,13 @@ namespace Boss
             anim = GetComponentInChildren<Animator>();
             stats = GetComponent<BossStat>();
 
+            originPos = trans.position;
+
             stats.RefreshAllStats(startSTR, startDEX, startINT, startLevel, moveSpeed);
             curHP = stats.HP;
 
             playerOnDamage.AddListener(playerTransforms[0].GetComponent<PlayerFSMManager>().OnDamage);
+            playerOnDamageRig.AddListener(playerTransforms[0].GetComponent<PlayerFSMManager>().OnDamageDown);
             //playerOnDamage = playerTransforms[0].GetComponent
 
             MovingObjectSMB<GolemBehavior>.Initialize(anim, this);
@@ -98,35 +103,53 @@ namespace Boss
             ai = new Root();
             ai.AddBranch(
                 new SetTrigger(anim, "Skill"),
+                new Wait(1.2f),
+                new Action(StartSound),
                 new WaitAnimationAnd(anim, "Idle"),
-                new Wait(1.0f),
+                new Wait(0.3f),
                 new Action(ClosePlayerResearch),
                 new Repeat(patterns.Length).AddBranch(
 
                     new While(ReplacePattern).AddBranch(
-                        new ConditionalBranch(CastingSuccess).AddBranch(
-                            new SetBool(anim, "Move", false),
-                            new Wait(excuteSkillTime),
-                            new Action(RandomSkillSelect),
-                            new SetTrigger(anim, "Skill"),
-                            new Action(ExcuteSkill),
-                            new WaitAnimationAnd(anim, "Idle"),
-                            new Wait(idleWaitTime),
-                            new Action(ClosePlayerResearch),
-                            new Action(ResetCastingGage)
-                            ),
 
-                        new SetBool(anim, "Move"),
+                        new While(IsAwake).AddBranch(
+                            new ConditionalBranch(CastingSuccess).AddBranch(
+                                new SetBool(anim, "Move", false),
+                                new Wait(excuteSkillTime),
+                                new Action(RandomSkillSelect),
+                                new SetTrigger(anim, "Skill"),
+                                new Action(ExcuteSkill),
+                                new WaitAnimationAnd(anim, "Idle"),
+                                new Wait(idleWaitTime),
+                                new Action(ClosePlayerResearch),
+                                new Action(ResetCastingGage)
+                                ),
 
-                        new ConditionalBranch(MeleeAttackCheak).AddBranch(
-                            new SetBool(anim, "Move", false),
-                            new SetTrigger(anim, "MeleeAttack"),
-                            new WaitAnimationAnd(anim, "Idle"),
-                            new Wait(idleWaitTime),
-                            new Action(ClosePlayerResearch)
-                        )
-                    )
+                            new SetBool(anim, "Move"),
+
+                            new ConditionalBranch(MeleeAttackCheak).AddBranch(
+                                new SetBool(anim, "Move", false),
+                                new SetTrigger(anim, "MeleeAttack"),
+                                new WaitAnimationAnd(anim, "Idle"),
+                                new Wait(idleWaitTime),
+                                new Action(ClosePlayerResearch)
+                            )
+                        ),
+                        new Action(StopSkill),
+                        new SetTrigger(anim, "Skill", false),
+                        new SetTrigger(anim, "Move", false),
+                        new SetTrigger(anim, "Grogi"),
+                        new Wait(1.0f),
+                        new WaitAnimationAnd(anim, "Idle"),
+                        new Action(Awaking)
+                    ),
+                    new SetTrigger(anim, "Skill", false),
+                    new SetTrigger(anim, "MeleeAttack", false),
+                    new SetTrigger(anim, "Grogi", false),
+                    new SetTrigger(anim, "Move", false),
+                    new Wait(1.0f)
                 ),
+                new Action(BossEnd),
                 new SetTrigger(anim, "Dead"),
                 new Abort()
             );
@@ -145,7 +168,7 @@ namespace Boss
         // 페이즈 제설정
         public bool ReplacePattern()
         {
-            if (OnDead())
+            if (OnDead() || GameManager.CurState == GameManager.GameState.Defeat)
                 return false;
 
             if (curHP <= patterns[phase - 1].nextPatternHp)
@@ -154,6 +177,7 @@ namespace Boss
                 {
                     stats.RefreshAllStats(15, 15, 15, 1, moveSpeed);
                 }
+
                 phase++;
                 return false;
             }
@@ -164,6 +188,11 @@ namespace Boss
         public void ExcuteSkill()
         {
             skills[curSkill].ExcuteSkill(CalDamage());
+        }
+
+        public void StopSkill()
+        {
+            skills[curSkill].StopSkill();
         }
 
         public void RandomSkillSelect()
@@ -193,7 +222,9 @@ namespace Boss
 
             } while (curSkill == select);
 
-            if(select == GolemSkill.RockfallRain || select == GolemSkill.RockDrop)
+            if(select == GolemSkill.RockThrow)
+                anim.SetInteger("SkillID", 4);
+            else if(select == GolemSkill.RockfallRain || select == GolemSkill.RockDrop)
                 anim.SetInteger("SkillID", 3);
             else if (select == GolemSkill.RushAttack)
                 anim.SetInteger("SkillID", 2);
@@ -230,17 +261,19 @@ namespace Boss
         // 플레이어 쫒기
         public void TracingClosePlayer()
         {
-            Vector3 destination = closePlayerTrans.position;
-            destination.y = trans.position.y;
-
             Vector3 dir = DirectionFromPlayer();
-
-            trans.position = Vector3.MoveTowards(trans.position, destination, moveSpeed * Time.deltaTime);
-
-            if (dir != Vector3.zero)
+            if (dir.sqrMagnitude > 3.4f * 3.4f)
             {
-                trans.rotation = Quaternion.RotateTowards(trans.rotation,
-                Quaternion.LookRotation(dir), 460 * Time.deltaTime);
+                Vector3 destination = closePlayerTrans.position;
+                destination.y = trans.position.y;
+
+                trans.position = Vector3.MoveTowards(trans.position, destination, moveSpeed * Time.deltaTime);
+
+                if (dir != Vector3.zero)
+                {
+                    trans.rotation = Quaternion.RotateTowards(trans.rotation,
+                    Quaternion.LookRotation(dir), 460 * Time.deltaTime);
+                }
             }
         }
 
@@ -293,6 +326,12 @@ namespace Boss
         public void ResetCastingGage()
         {
             castingGauge = 0;
+        }
+
+        public AudioClip soundEffect;
+        public void StartSound()
+        {
+            Core.SoundManager.OneShot(soundEffect);
         }
     }
 }

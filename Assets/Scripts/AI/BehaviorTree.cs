@@ -173,6 +173,7 @@ namespace AI
 
         public override BTState Tick()
         {
+           // Debug.Log($"ConditionStart: {func.ToString().ToString()}");
             if (!tested)
                 tested = func();
             if (tested)

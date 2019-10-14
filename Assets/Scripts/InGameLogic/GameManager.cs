@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    enum GameState
+    public enum GameState
     {
         Ready,
         Intro,
@@ -32,11 +32,17 @@ public class GameManager : MonoBehaviour
     public float second;
 
     public Camera subCam;
+    public AudioClip bgm;
     public static float timeRemaining;
 
-    private static GameState state;
     public static Boss.GolemBehavior boss;
     public static PlayerFSMManager player;
+
+    private static float originTime;
+    private static GameState state;
+    private static InGameUIManager inGameUI;
+
+    public static GameState CurState { get { return state; } }
 
     void Awake()
     {
@@ -44,10 +50,21 @@ public class GameManager : MonoBehaviour
             _instance = this;
 
         timeRemaining = (miniute * 60) + (second);
+        originTime = timeRemaining;
         state = GameState.Ready;
         boss = FindObjectOfType<Boss.GolemBehavior>();
+        Debug.Log(boss);
         player = FindObjectOfType<PlayerFSMManager>();
+        inGameUI = FindObjectOfType<InGameUIManager>();
+
+
         subCam.enabled = false;
+    }
+
+    private void Start()
+    {
+        Core.SoundManager.MuteBGM = true;
+        inGameUI.RefreshUITick();
     }
 
     // Update is called once per frame
@@ -79,30 +96,45 @@ public class GameManager : MonoBehaviour
     public IEnumerator InroCut()
     {
         boss.BossStart();
+        player.awaking = false;
         yield return new WaitForSeconds(1.4f);
         Instance.subCam.GetComponent<FollowCamera>().shake();
-        yield return new WaitForSeconds(1.4f);
+        yield return new WaitForSeconds(0.6f);
+        Core.SoundManager.MuteBGM = false;
+        Core.SoundManager.SetBGM(bgm);
+        Core.SoundManager.BgmVolume = 0.3f;
+        yield return new WaitForSeconds(0.8f);
         Instance.subCam.enabled = false;
         state = GameState.Intro;
     }
 
     void GameIntro()
     {
+        player.awaking = true;
         state = GameState.Play;
     }
 
     void GamePlay()
     {
         timeRemaining -= Time.deltaTime;
+        inGameUI.RefreshUITick();
 
-        if (timeRemaining <= 0.0f || player.OnDead())
+        if (player.OnDead())
         {
+            inGameUI.faildPopup.OnFaildPoup(FaildType.PlayerDie);
+            state = GameState.Defeat;
+        }
+
+        else if (timeRemaining <= 0.0f)
+        {
+            inGameUI.faildPopup.OnFaildPoup(FaildType.TimeLimit);
             state = GameState.Defeat;
         }
 
         else if (boss.OnDead())
         {
             state = GameState.Victory;
+            inGameUI.clearPopup.OnPopup(originTime - timeRemaining);
         }
     }
 
@@ -113,6 +145,9 @@ public class GameManager : MonoBehaviour
 
     void Defeat()
     {
-
+        boss.BossEnd();
+        player.awaking = false;
+        Instance.subCam.GetComponent<FollowCamera>().followTarget = player.transf;
+        Instance.subCam.enabled = true;
     }
 }

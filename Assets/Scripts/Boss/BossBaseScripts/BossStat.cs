@@ -90,7 +90,7 @@ namespace Boss
         private void RefreshSTR()
         {
             // 체력
-            this.hp = (3000 + (100 * _str) + (_level * 1000));
+            this.hp = (4000 + (100 * _str) + (_level * 1000));
 
             // 1회 공격당 스킬 게이지
             this.asGauge = (10 + (int)(_str * 0.2f));
@@ -121,7 +121,7 @@ namespace Boss
 
         private void RefreshLEVEL()
         {
-            this.hp = this.hp = (3000 + (100 * _str) + (_level * 1000));
+            this.hp = (4000 + (100 * _str) + (_level * 1000));
         }
     }
 }

@@ -6,3 +6,9 @@ public class Damageable : UnityEvent<int>
 { 
 
 }
+
+[System.Serializable]
+public class DamageableRig : UnityEvent<int, Vector3>
+{
+
+}

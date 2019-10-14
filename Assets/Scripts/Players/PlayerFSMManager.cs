@@ -63,8 +63,13 @@ public class PlayerFSMManager : MonoBehaviour
         SetPlayerState(startState);
     }
 
+    public bool awaking = true;
+
     private void Update()
     {
+        if (!awaking)
+            return;
+
         currentFSMAction?.FSMUpdate();
 
         timeManager.TimerUpdate();
@@ -75,7 +80,7 @@ public class PlayerFSMManager : MonoBehaviour
             ItemUse(GameKey.ReturnInputKey(GameKey.itemUseKeys));
         }
 
-        OnDead();
+        //OnDead();
 
         //DEBUG
         //DetectUtil.DebugDrawAngle(BossUtil.GetBossLocations(boss), transf, 60.0f, 10.0f);
@@ -83,6 +88,9 @@ public class PlayerFSMManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!awaking)
+            return;
+
         currentFSMAction?.FSMFixedUpdate();
     }
 
@@ -101,19 +109,24 @@ public class PlayerFSMManager : MonoBehaviour
 
     public void OnDamage(int damage)
     {
+        if (!awaking)
+            return;
+
         if (isDamageable)
         {
             int da = (int)((damage) * (1.0f - ((statusManager.Armor + statusManager.Strength) * 0.001f))) - (int)statusManager.Armor;
             SprinkleDamageText.OnDamageText(DamageType.Nomal, HitActor.Player, transf.position, da);
             statusManager.Health -= da;
 
-            if (statusManager.Health > 0)
-                SetPlayerState(PlayableCharacterState.DAMAGE);
+            if (statusManager.Health > 0) SetPlayerState(PlayableCharacterState.DAMAGE);
         }
     }
 
     public void OnDamageDown(int damage, Vector3 dir)
     {
+        if (!awaking)
+            return;
+
         if (isDamageable)
         {
             int da = (int)((damage) * (1.0f - ((statusManager.Armor + statusManager.Strength) * 0.001f))) - (int)statusManager.Armor;
@@ -132,7 +145,7 @@ public class PlayerFSMManager : MonoBehaviour
     {
         dir.y += 2.0f;
 
-        rigid.AddForce(dir * 2.0f, ForceMode.Impulse);
+        rigid.AddForce(dir * 1.9f, ForceMode.Impulse);
     }
 
     /// <summary>
@@ -160,7 +173,7 @@ public class PlayerFSMManager : MonoBehaviour
     {
         timeManager.normalAttackTimer.coolTime = 1.0f;
 
-        timeManager.skillAttackTimers[0].coolTime = 10.0f;
+        timeManager.skillAttackTimers[0].coolTime = 45.0f;
 
         timeManager.dashTimer.coolTime = 2.0f;
 
@@ -189,6 +202,7 @@ public class PlayerFSMManager : MonoBehaviour
         playerStates[PlayableCharacterState.NORMALATTACK] = GetComponent<PlayerNORMALATTACK>();
         playerStates[PlayableCharacterState.SKILLATTACK] = GetComponent<PlayerSKILLATTACK>();
         playerStates[PlayableCharacterState.DAMAGE] = GetComponent<PlayerDAMAGE>();
+        playerStates[PlayableCharacterState.DAMAGE_DOWN] = GetComponent<PlayerDAMAGEDOWN>();
         playerStates[PlayableCharacterState.DEAD] = GetComponent<PlayerDEAD>();
 
         startState = PlayableCharacterState.IDLE;

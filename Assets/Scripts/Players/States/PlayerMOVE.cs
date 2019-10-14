@@ -8,7 +8,7 @@ public class PlayerMOVE : PlayerFSMState
     private float horizMoveValue = 0.0f;
     private float vertMoveValue = 0.0f;
 
-    private float rotateSpeed = 10.0f;
+    private float rotateSpeed = 20.0f;
 
     private Vector3 moveDirection = Vector3.zero;
 
@@ -42,7 +42,7 @@ public class PlayerMOVE : PlayerFSMState
         {
             if (!TimerUtil.IsOnCoolTime(manager.timeManager.skillAttackTimers[0]))
             {
-                BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 120.0f, 8.0f));
+                BossMonsterBase[] tempAttackBoss = BossUtil.GetBossComponents(DetectUtil.DetectObjectsTransformWithAngle(BossUtil.GetBossLocations(manager.boss), manager.transf, 360.0f, 12.0f));
 
                 if (tempAttackBoss.Length != 0)
                 {

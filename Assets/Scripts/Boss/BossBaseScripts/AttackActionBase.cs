@@ -10,5 +10,6 @@ public class AttackActionBase : MonoBehaviour
     public int skillFactor = 0;
     public float attackRange = 1;
 
-    public virtual void ExcuteSkill(int damage) { } 
+    public virtual void ExcuteSkill(int damage) { }
+    public virtual void StopSkill() { }
 }

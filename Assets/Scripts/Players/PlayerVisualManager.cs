@@ -18,6 +18,7 @@ public class PlayerVisualManager : MonoBehaviour
     public readonly int hashState = Animator.StringToHash("state");
     public readonly int hashAttackLink = Animator.StringToHash("attackLink");
     public readonly int hashDamage = Animator.StringToHash("damage");
+    public readonly int hashDead = Animator.StringToHash("dead");
 
     #endregion
 
@@ -71,6 +72,10 @@ public class PlayerVisualManager : MonoBehaviour
             StartCoroutine(AnimCoroutine(hashState, (int)PlayableCharacterState.DAMAGE_DOWN));
 
         StartCoroutine(AnimCoroutine(hashDamage));
+    }
+    public void PlayDeadAnim()
+    {
+        StartCoroutine(AnimCoroutine(hashDead));
     }
 
     #region Animation Coroutine

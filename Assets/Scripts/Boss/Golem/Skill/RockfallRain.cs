@@ -15,7 +15,8 @@ namespace Boss
         private GolemBehavior golem;
 
         private WaitForSeconds wait;
-        private List<GameObject> rockPool; 
+        private List<GameObject> rockPool;
+        private IEnumerator coru;
 
         // Start is called before the first frame update
         void Awake()
@@ -37,7 +38,13 @@ namespace Boss
         public override void ExcuteSkill(int damage)
         {
             golem.camShake.Invoke();
-            StartCoroutine(Skill(damage));
+            coru = Skill(damage);
+            StartCoroutine(coru);
+        }
+
+        public override void StopSkill()
+        {
+            StopCoroutine(coru);
         }
 
         IEnumerator Skill(int damage)
@@ -64,14 +71,14 @@ namespace Boss
                 do
                 {
                     cheak = false;
-                    Vector2 ranV = Random.insideUnitCircle * 13f;
+                    Vector2 ranV = Random.insideUnitCircle * 13.3f;
 
                     retVal.x = ranV.x;
                     retVal.y = 30.0f;
                     retVal.z = ranV.y;
                     for (int c = 0; c < tempV.Count; c++)
                     {
-                        if ((tempV[c] - retVal).sqrMagnitude <= 2.7f * 2.7f)
+                        if ((tempV[c] - retVal).sqrMagnitude <= 2.3f * 2.3f)
                         {
                             cheak |= true;
                         }

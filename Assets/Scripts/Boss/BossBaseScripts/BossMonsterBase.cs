@@ -21,16 +21,24 @@ namespace Boss
         public int startDEX;
         public int startINT;
 
+
         public Material bossBodyMat;
         public float moveSpeed;
         public BossStat stats;
+
         private bool isDead = false;
+        private int curGrogiGauge = 0;
+        public bool isAwake = true;
 
         public void OnDamage(int damage)
         {
+            if (!isGame)
+                return;
+
             StartCoroutine(MatColorSet());
             int da = (int)(damage * (1.0f - stats.PNT)) - stats.Armor;
             SprinkleDamageText.OnDamageText(DamageType.Nomal, HitActor.Enemy, this.transform.position, da);
+            curGrogiGauge += da;
             curHP -= da;
         }
 
@@ -56,6 +64,25 @@ namespace Boss
         public void BossStart()
         {
             isGame = true;
+        }
+
+        public void BossEnd()
+        {
+            isGame = false;
+        }
+
+        public bool IsAwake()
+        {
+            if (curGrogiGauge >= 1000)
+                isAwake = false;
+
+            return isAwake;
+        }
+
+        public void Awaking()
+        {
+            curGrogiGauge = 0;
+            isAwake = true;
         }
     }
 }

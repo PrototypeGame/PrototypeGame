@@ -7,28 +7,45 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Core
 {
     [Serializable]
-    public struct ClearInfomation
+    public class ClearInfomation
     {
         public string playerName;
-        public int clearTime;
-        public ClearInfomation(string name, int time)
+        public float clearTime;
+        public ClearInfomation(string name, float time)
         {
             this.playerName = name;
             this.clearTime = time;
+        }
+        public void SetName(string text)
+        {
+            Debug.Log(text);
+            playerName = text;
+            Debug.Log(playerName);
         }
     }
     public class DataContainer : MonoBehaviour
     {
     
         [Serializable]
-        public struct Datas
+        public struct SaveDatas
         {
             public List<ClearInfomation> info;
         }
-        private static Datas datas;
+        private static SaveDatas datas;
         private static string filePath;
 
-        public static Datas GetDatas() { return datas; }
+        public static SaveDatas Datas
+        {
+            get
+            {
+                if (datas.info != null)
+                    return datas;
+
+                LoadData();
+                return datas;
+            }
+        }
+
         public static string FilePath { get { return filePath; } }
 
         protected static DataContainer _instance;
@@ -116,7 +133,7 @@ namespace Core
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 FileStream stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Read);
-                Datas temp = (Datas)formatter.Deserialize(stream);
+                SaveDatas temp = (SaveDatas)formatter.Deserialize(stream);
                 stream.Close();
                 datas = temp;
             }

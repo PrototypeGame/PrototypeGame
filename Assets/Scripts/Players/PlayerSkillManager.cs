@@ -54,6 +54,7 @@ public class PlayerSkillManager : MonoBehaviour
         {
             foreach (var item in skillTargetBoss)
             {
+                item.isAwake = false;
                 // TODO: item에 데미지를 가한다
                 // 데미지 : manager.statusManager.GetFinalAttackDamage();
                 atkCam.Invoke();

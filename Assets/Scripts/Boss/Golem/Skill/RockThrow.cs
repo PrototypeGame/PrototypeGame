@@ -11,10 +11,12 @@ namespace Boss
         public float interval = 0.5f;
         public float projectSpeed = 20.0f;
         public GameObject rockOb;
+        public AudioClip soundEffect;
 
         private GolemBehavior golem;
         private Transform tr;
         private Vector3[] anglePoints = new Vector3[12];
+        private IEnumerator coru;
 
         private WaitForSeconds throwInterval;
         // Start is called before the first frame update
@@ -50,14 +52,6 @@ namespace Boss
                 rock.gameObject.SetActive(false);
                 rockPool.Add(rock);
             }
-
-            for (int i = 0; i < 6; i++)
-            {
-                var rock = Instantiate(rockOb, tr.position + anglePoints[i] * 2.0f, Quaternion.identity).GetComponent<RockThrowObject>();
-                rock.gameObject.hideFlags = HideFlags.HideInHierarchy;
-                rock.gameObject.SetActive(false);
-                rockPool.Add(rock);
-            }
         }
 
         public void Update()
@@ -68,19 +62,7 @@ namespace Boss
                 if (rockPool[i].gameObject.activeSelf)
                 {
                     rockPool[i].transform.Translate(anglePoints[i] * projectSpeed * Time.deltaTime);
-                    if ((rockPool[i].transform.position - tr.position).sqrMagnitude > 15.0f * 15.0f)
-                    {
-                        rockPool[i].gameObject.SetActive(false);
-                    }
-                }
-            }
-
-            for (; i < 18; i++)
-            {
-                if (rockPool[i].gameObject.activeSelf)
-                {
-                    rockPool[i].transform.Translate(anglePoints[i - 12] * projectSpeed * Time.deltaTime);
-                    if ((rockPool[i].transform.position - tr.position).sqrMagnitude > 16.0f * 16.0f)
+                    if ((rockPool[i].transform.position - tr.position).sqrMagnitude > 18.0f * 18.0f)
                     {
                         rockPool[i].gameObject.SetActive(false);
                     }
@@ -90,33 +72,37 @@ namespace Boss
 
         public override void ExcuteSkill(int damage)
         {
-            StartCoroutine(Skill(damage * skillFactor));
+            coru = Skill(damage * skillFactor);
+            StartCoroutine(coru);
         }
+
+        public override void StopSkill()
+        {
+            StopCoroutine(coru);
+        }
+
+        WaitForSeconds wait = new WaitForSeconds(1.2f);
 
         IEnumerator Skill(int damage)
         {
+            yield return wait;
             int i = 0;
-            Vector3 temp = new Vector3(0.0f, 0.7f, 0.0f);
+            Vector3 temp = new Vector3(0.0f, 1.0f, 0.0f);
+            golem.camShake.Invoke();
+            Core.SoundManager.OneShot(soundEffect);
             for (; i < 6; i++)
             {
-                rockPool[i].transform.position = tr.position + anglePoints[i] + temp;
+                rockPool[i].transform.position = tr.position + (anglePoints[i] * 0.5f) + temp;
                 rockPool[i].SetRockInfo(golem, damage);
                 rockPool[i].gameObject.SetActive(true);
             }
 
             yield return throwInterval;
-
+            golem.camShake.Invoke();
+            Core.SoundManager.OneShot(soundEffect);
             for (; i < 12; i++)
             {
-                rockPool[i].transform.position = tr.position + anglePoints[i] + temp;
-                rockPool[i].SetRockInfo(golem, damage);
-                rockPool[i].gameObject.SetActive(true);
-            }
-            yield return throwInterval;
-
-            for (; i < 18; i++)
-            {
-                rockPool[i].transform.position = tr.position + anglePoints[i - 12] + temp;
+                rockPool[i].transform.position = tr.position + (anglePoints[i] * 0.5f) + temp;
                 rockPool[i].SetRockInfo(golem, damage);
                 rockPool[i].gameObject.SetActive(true);
             }
